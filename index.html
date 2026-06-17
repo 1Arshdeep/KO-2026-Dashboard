@@ -1,0 +1,1440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Khalsa Olympics 2026 — Live Dashboard</title>
+<style>
+:root {
+  --navy:#0a1628; --gold:#d4a017; --gold-light:#f0c040; --blue:#1a3a6b;
+  --blue-light:#2a5298; --green:#1a6b3c; --red:#7a1a1a; --gray:#1e2030;
+  --gray2:#262838; --gray3:#303248; --text:#e8e8f0; --dim:#7a7a9a;
+  --live:#e05050; --win-bg:rgba(26,107,60,.35); --loss-bg:rgba(122,26,26,.25);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--navy);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:13px;min-height:100vh}
+
+/* ── LIVE BANNER ── */
+#liveBanner{background:linear-gradient(90deg,#1a0808,#200a0a,#1a0808);border-bottom:2px solid var(--live);transition:all .4s}
+#liveBanner.empty{background:var(--gray);border-color:var(--gray3)}
+.lb-header{display:flex;align-items:center;gap:10px;padding:7px 16px;border-bottom:1px solid rgba(255,255,255,.07)}
+.lb-title{font-size:11px;font-weight:700;color:var(--live);letter-spacing:2px;text-transform:uppercase}
+.lb-title.quiet{color:var(--dim)}
+.lb-dot{width:8px;height:8px;background:var(--live);border-radius:50%;animation:pulse 1s infinite;flex-shrink:0}
+.lb-dot.quiet{background:var(--dim);animation:none}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.lb-clock{margin-left:auto;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--text)}
+.lb-scroll{display:flex;gap:10px;padding:10px 16px;overflow-x:auto;scrollbar-width:none}
+.lb-scroll::-webkit-scrollbar{display:none}
+.lb-card{flex-shrink:0;background:rgba(255,255,255,.06);border:1px solid rgba(224,80,80,.3);border-radius:10px;padding:10px 14px;min-width:200px;cursor:pointer}
+.lb-card:hover{border-color:var(--live)}
+.lb-card-sport{font-size:10px;font-weight:700;color:var(--dim);letter-spacing:1px;display:flex;justify-content:space-between;margin-bottom:6px}
+.lb-card-sport .elapsed{color:var(--live);animation:pulse 2s infinite}
+.lb-team{display:flex;justify-content:space-between;align-items:center;padding:3px 0}
+.lb-team-name{font-size:14px;font-weight:600;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-team-score{font-size:24px;font-weight:900;min-width:30px;text-align:right}
+.lb-team.leader .lb-team-name{color:var(--gold-light)}
+.lb-team.leader .lb-team-score{color:var(--gold-light)}
+.lb-card-next{font-size:11px;color:var(--dim);margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,.07)}
+.lb-empty-msg{padding:12px 16px;font-size:13px;color:var(--dim)}
+
+/* ── HEADER ── */
+.header{background:linear-gradient(90deg,var(--blue),var(--navy));border-bottom:1px solid rgba(255,255,255,.08);padding:10px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.ko-logo{font-size:22px;font-weight:900;color:var(--gold);letter-spacing:-1px;white-space:nowrap}
+.ko-info{font-size:11px;color:var(--dim);line-height:1.5}
+.ko-info strong{color:var(--gold-light);display:block;font-size:12px}
+.header-nav{display:flex;gap:5px;flex-wrap:wrap;margin-left:auto}
+.nav-btn{background:transparent;border:1px solid var(--gray3);color:var(--dim);padding:6px 13px;border-radius:6px;cursor:pointer;font-size:12px;transition:all .15s;white-space:nowrap}
+.nav-btn:hover,.nav-btn.active{background:var(--gold);color:var(--navy);border-color:var(--gold);font-weight:700}
+
+/* ── SPORT TABS ── */
+.sport-tabs{display:flex;background:var(--gray);border-bottom:1px solid var(--gray3)}
+.sport-tab{padding:10px 20px;cursor:pointer;font-size:13px;font-weight:600;color:var(--dim);border-bottom:3px solid transparent;transition:all .15s;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.sport-tab:hover{color:var(--text);background:rgba(255,255,255,.03)}
+.sport-tab.active{color:var(--gold);border-bottom-color:var(--gold);background:rgba(212,160,23,.07)}
+.tab-badge{font-size:10px;background:var(--gray3);padding:1px 6px;border-radius:8px}
+.sport-tab.active .tab-badge{background:var(--gold);color:var(--navy)}
+
+/* ── VIEWS ── */
+.view{display:none;padding:16px}
+.view.active{display:block}
+
+/* ── SECTION TITLE ── */
+.sec-title{font-size:15px;font-weight:700;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sec-badge{font-size:10px;background:var(--gold);color:var(--navy);padding:2px 8px;border-radius:8px;font-weight:700}
+.sec-sub{font-size:12px;color:var(--dim);font-weight:400}
+hr.sep{border:none;border-top:1px solid var(--gray3);margin:20px 0}
+
+/* ── SCHEDULE TIMELINE ── */
+.schedule-grid{display:grid;grid-template-columns:80px repeat(4,1fr);gap:1px;background:var(--gray3);border-radius:8px;overflow:hidden;margin-bottom:16px}
+.schedule-grid.cols-2{grid-template-columns:80px repeat(2,1fr)}
+.schedule-grid.cols-1{grid-template-columns:80px 1fr}
+.sg-header{background:var(--blue);color:var(--text);font-size:10px;font-weight:700;padding:7px 8px;letter-spacing:.5px;text-transform:uppercase}
+.sg-time{background:var(--gray2);color:var(--dim);font-size:10px;font-weight:700;padding:7px 8px;white-space:nowrap;font-variant-numeric:tabular-nums;vertical-align:top}
+.sg-time .adj{display:block;font-size:9px;color:var(--gold);margin-top:2px}
+.sg-cell{background:var(--gray2);padding:5px 6px;transition:background .15s;cursor:pointer}
+.sg-cell:hover{background:var(--gray3)}
+.sg-cell.live-cell{background:rgba(224,80,80,.12);border-left:2px solid var(--live)}
+.sg-cell.done-cell{background:rgba(26,107,60,.1)}
+.sg-cell.break-cell{background:var(--navy);cursor:default}
+.sg-cell.break-cell span{color:var(--dim);font-style:italic;font-size:11px}
+.sg-game{font-size:11px;line-height:1.4}
+.sg-teams{font-weight:600;color:var(--text)}
+.sg-teams.tbd{color:var(--dim);font-weight:400;font-style:italic}
+.sg-score{font-size:13px;font-weight:700;color:var(--gold);margin-top:2px}
+.sg-phase{font-size:9px;color:var(--dim);margin-top:1px}
+.sg-status{font-size:9px;margin-top:2px}
+.sg-status.live{color:var(--live);font-weight:700;animation:pulse 1.5s infinite}
+.sg-status.done{color:var(--green);font-weight:700}
+.sg-status.upcoming{color:var(--dim)}
+.sg-dq{font-size:9px;color:#e05050;font-weight:700}
+.day-bar{grid-column:1/-1;background:var(--blue);color:var(--text);font-size:11px;font-weight:700;padding:7px 10px;border-top:2px solid var(--gold)}
+
+/* ── DELAY CONTROLS ── */
+.delay-strip{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--gray2);border:1px solid var(--gray3);border-radius:8px;padding:10px 12px;margin-bottom:12px}
+.delay-label{font-size:12px;color:var(--dim);white-space:nowrap}
+.delay-court-select{background:var(--navy);border:1px solid var(--gray3);color:var(--text);padding:5px 8px;border-radius:5px;font-size:12px}
+.delay-btns{display:flex;gap:5px}
+.delay-btn{background:var(--gray3);border:none;color:var(--text);padding:5px 10px;border-radius:5px;cursor:pointer;font-size:12px;font-weight:600}
+.delay-btn:hover{background:var(--gold);color:var(--navy)}
+.delay-btn.neg{border:1px solid var(--green);color:var(--green)}
+.delay-btn.neg:hover{background:var(--green);color:#fff}
+.delay-current{font-size:12px;font-weight:700;min-width:60px;color:var(--gold)}
+
+/* ── BRACKET ── */
+.bracket-wrap{overflow-x:auto;padding-bottom:8px}
+.bracket{display:flex;align-items:flex-start;gap:0}
+.br-round{display:flex;flex-direction:column;min-width:185px}
+.br-round-hdr{text-align:center;font-size:10px;font-weight:700;color:var(--dim);letter-spacing:1px;text-transform:uppercase;padding:5px 10px;background:var(--gray);border-bottom:1px solid var(--gray3)}
+.br-games{display:flex;flex-direction:column;justify-content:space-around;padding:6px;gap:6px;flex:1}
+.matchup{background:var(--gray2);border:1px solid var(--gray3);border-radius:7px;overflow:hidden;cursor:pointer;transition:border-color .15s}
+.matchup:hover{border-color:var(--gold)}
+.matchup.is-live{border-color:var(--live);box-shadow:0 0 10px rgba(224,80,80,.2)}
+.matchup.is-live::after{content:'LIVE';position:absolute;top:3px;right:5px;font-size:8px;font-weight:700;color:var(--live);letter-spacing:1px;animation:pulse 1s infinite}
+.matchup{position:relative}
+.tr{display:flex;align-items:center;padding:7px 8px;gap:7px;border-bottom:1px solid var(--gray3);transition:background .1s}
+.tr:last-child{border-bottom:none}
+.tr.won{background:var(--win-bg)}
+.tr.lost{background:var(--loss-bg);opacity:.7}
+.tr.dq-row{opacity:.4;text-decoration:line-through}
+.tr-seed{font-size:10px;color:var(--dim);width:16px;text-align:right;flex-shrink:0}
+.tr-name{flex:1;font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tr-name.tbd{color:var(--dim);font-weight:400;font-style:italic}
+.tr-score{font-size:15px;font-weight:700;min-width:24px;text-align:right}
+.tr.won .tr-score{color:var(--gold-light)}
+.match-time{font-size:9px;color:var(--dim);text-align:center;padding:2px 4px;background:rgba(0,0,0,.2)}
+
+/* ── POOLS ── */
+.pools-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:20px}
+.pool-card{background:var(--gray2);border:1px solid var(--gray3);border-radius:8px;overflow:hidden}
+.pool-hdr{padding:8px 12px;background:var(--blue);font-weight:700;font-size:12px;display:flex;justify-content:space-between}
+.pool-tbl{width:100%;border-collapse:collapse;font-size:11px}
+.pool-tbl th{padding:5px 8px;color:var(--dim);font-size:10px;font-weight:600;border-bottom:1px solid var(--gray3);text-align:left}
+.pool-tbl th:not(:first-child){text-align:center}
+.pool-tbl td{padding:6px 8px;border-bottom:1px solid rgba(255,255,255,.04)}
+.pool-tbl td:not(:first-child){text-align:center}
+.pool-tbl tr:last-child td{border:none}
+.pool-tbl .adv td{color:var(--gold-light);font-weight:700}
+.pool-tbl .adv-line td{border-top:1px dashed var(--gold) !important}
+
+/* ── SCORE ENTRY ── */
+.scorer-wrap{max-width:580px;margin:0 auto}
+.card{background:var(--gray2);border:1px solid var(--gray3);border-radius:10px;padding:18px;margin-bottom:14px}
+.card h3{font-size:11px;font-weight:700;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px}
+.frow{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.fg{display:flex;flex-direction:column;gap:4px;flex:1;min-width:110px}
+.fg label{font-size:10px;color:var(--dim);font-weight:700;text-transform:uppercase}
+.fg select,.fg input[type=text]{background:var(--navy);border:1px solid var(--gray3);color:var(--text);padding:7px 9px;border-radius:6px;font-size:13px}
+.fg select:focus,.fg input:focus{outline:none;border-color:var(--gold)}
+.score-grid{display:grid;grid-template-columns:1fr 40px 1fr;gap:10px;align-items:end;margin:14px 0}
+.score-team{text-align:center}
+.score-team-label{font-size:11px;color:var(--dim);margin-bottom:3px;font-weight:700;text-transform:uppercase}
+.score-team-name{font-size:14px;font-weight:700;color:var(--text);min-height:18px;margin-bottom:6px}
+.score-inp{background:var(--navy);border:2px solid var(--gray3);color:var(--text);font-size:40px;font-weight:900;text-align:center;padding:8px;border-radius:8px;width:100%}
+.score-inp:focus{outline:none;border-color:var(--gold)}
+.quick-adj{display:flex;gap:4px;justify-content:center;margin-top:5px;flex-wrap:wrap}
+.qa{background:var(--gray3);border:none;color:var(--text);padding:4px 9px;border-radius:4px;cursor:pointer;font-size:12px;font-weight:600}
+.qa:hover{background:var(--gold);color:var(--navy)}
+.vs-div{text-align:center;font-size:18px;font-weight:900;color:var(--dim);padding-bottom:14px}
+.btn{padding:9px 20px;border-radius:7px;border:none;cursor:pointer;font-size:13px;font-weight:700;transition:all .15s}
+.btn-gold{background:var(--gold);color:var(--navy)}
+.btn-gold:hover{background:var(--gold-light)}
+.btn-outline{background:transparent;border:1px solid var(--gray3);color:var(--dim)}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold)}
+.btn-red{background:var(--red);color:#fff}
+.btn-red:hover{background:#a02020}
+.btn-green{background:var(--green);color:#fff}
+.submit-row{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+.dq-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--gray3)}
+.dq-label{font-size:11px;color:var(--dim)}
+
+/* ── CASCADE MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:300;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--gray2);border:1px solid var(--gold);border-radius:14px;padding:24px;max-width:460px;width:92%;max-height:85vh;overflow-y:auto}
+.modal h2{color:var(--gold);font-size:18px;margin-bottom:10px}
+.modal p{color:var(--dim);font-size:13px;margin-bottom:16px;line-height:1.6}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+.setup-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.team-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:12px}
+.team-grid input{background:var(--navy);border:1px solid var(--gray3);color:var(--text);padding:6px 9px;border-radius:5px;font-size:12px}
+.team-grid input:focus{outline:none;border-color:var(--gold)}
+
+/* ── TV MODE ── */
+.tv-overlay{display:none;position:fixed;inset:0;background:var(--navy);z-index:400;flex-direction:column}
+body.tv-on .tv-overlay{display:flex}
+body.tv-on .header,.tv-on .sport-tabs,.tv-on #liveBanner,.tv-on .view{display:none!important}
+.tv-hdr{background:linear-gradient(90deg,var(--blue),var(--navy));border-bottom:3px solid var(--gold);padding:18px 30px;display:flex;align-items:center;justify-content:space-between}
+.tv-logo{font-size:38px;font-weight:900;color:var(--gold)}
+.tv-sub{font-size:16px;color:var(--dim)}
+.tv-time{font-size:30px;font-weight:700;font-variant-numeric:tabular-nums}
+.tv-courts{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:20px;flex:1;align-content:start}
+.tv-court{background:var(--gray2);border:2px solid var(--gray3);border-radius:14px;padding:20px}
+.tv-court.is-live{border-color:var(--live);box-shadow:0 0 24px rgba(224,80,80,.2)}
+.tv-court.is-done{border-color:var(--gray3)}
+.tv-court-name{font-size:12px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:14px}
+.tv-team{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--navy);border-radius:8px;margin-bottom:8px}
+.tv-team-name{font-size:20px;font-weight:700}
+.tv-team-score{font-size:44px;font-weight:900;color:var(--gold);line-height:1}
+.tv-vs{text-align:center;font-size:12px;color:var(--dim);margin-bottom:8px}
+.tv-status{text-align:center;font-size:12px;margin-top:10px}
+.tv-status.live{color:var(--live);font-weight:700;animation:pulse 1.5s infinite}
+.tv-status.done{color:var(--dim)}
+.tv-status.up{color:var(--gold)}
+.tv-exit-btn{position:fixed;bottom:16px;right:16px;opacity:.25}
+.tv-exit-btn:hover{opacity:1}
+.tv-next-up{font-size:11px;color:var(--dim);text-align:center;margin-top:6px}
+
+/* ── FLASH ── */
+.flash{position:fixed;top:70px;right:16px;background:var(--green);color:#fff;padding:11px 18px;border-radius:8px;font-weight:600;font-size:13px;z-index:999;display:none;animation:slideIn .25s ease;border:1px solid rgba(255,255,255,.2)}
+.flash.err{background:var(--red)}
+.flash.show{display:block}
+@keyframes slideIn{from{transform:translateX(60px);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ── MISC ── */
+.empty-state{text-align:center;color:var(--dim);padding:32px 16px;font-size:13px}
+.empty-state .big{font-size:28px;display:block;margin-bottom:8px}
+.results-list{display:flex;flex-direction:column;gap:7px}
+.result-item{display:flex;align-items:center;gap:10px;background:var(--gray2);border:1px solid var(--gray3);border-radius:7px;padding:9px 12px;font-size:12px}
+.ri-sport{font-size:18px}
+.ri-teams{flex:1}
+.ri-winner{font-weight:700;color:var(--gold-light)}
+.ri-loser{color:var(--dim)}
+.ri-score{font-weight:700;font-size:15px}
+.ri-time{font-size:10px;color:var(--dim)}
+@media(max-width:700px){
+  .tv-courts{grid-template-columns:1fr}
+  .br-round{min-width:155px}
+  .schedule-grid{font-size:10px}
+}
+.sim-bar{background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.3);border-radius:7px;padding:8px 12px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px}
+.sim-bar label{color:var(--gold);font-weight:700}
+.sim-bar input[type=datetime-local]{background:var(--navy);border:1px solid var(--gray3);color:var(--text);padding:5px 8px;border-radius:5px;font-size:12px}
+.sim-bar input:focus{outline:none;border-color:var(--gold)}
+</style>
+</head>
+<body>
+
+<!-- ── FLASH ── -->
+<div class="flash" id="flash"></div>
+
+<!-- ── LIVE MATCH BANNER ── -->
+<div id="liveBanner">
+  <div class="lb-header">
+    <span class="lb-dot" id="lbDot"></span>
+    <span class="lb-title" id="lbTitle">LIVE NOW</span>
+    <span class="lb-clock" id="lbClock"></span>
+  </div>
+  <div id="lbBody"></div>
+</div>
+
+<!-- ── TV OVERLAY ── -->
+<div class="tv-overlay" id="tvOverlay">
+  <div class="tv-hdr">
+    <div>
+      <div class="tv-logo">🏆 KHALSA OLYMPICS 2026</div>
+      <div class="tv-sub">July 25–26 · Paramount Fine Foods Centre, Brampton</div>
+    </div>
+    <div class="tv-time" id="tvClock"></div>
+  </div>
+  <div class="tv-courts" id="tvCourts"></div>
+  <button class="btn btn-outline tv-exit-btn" onclick="exitTV()">✕ Exit (ESC)</button>
+</div>
+
+<!-- ── CASCADE MODAL ── -->
+<div class="modal-overlay" id="cascadeModal">
+  <div class="modal">
+    <h2 id="cmTitle">⏱ Schedule Cascade</h2>
+    <p id="cmBody"></p>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeCascade(false)">Keep Original Times</button>
+      <button class="btn btn-gold" id="cmConfirm" onclick="closeCascade(true)">Cascade Times ✓</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── DQ MODAL ── -->
+<div class="modal-overlay" id="dqModal">
+  <div class="modal">
+    <h2>🚫 Disqualify / Forfeit</h2>
+    <p id="dqBody">Choose the team being disqualified. Their opponent advances automatically.</p>
+    <div class="modal-actions" id="dqActions"></div>
+  </div>
+</div>
+
+<!-- ── SETUP MODAL ── -->
+<div class="modal-overlay" id="setupModal">
+  <div class="modal">
+    <h2>⚙️ Team Setup</h2>
+    <p>Enter team names. Saving rebuilds all brackets and schedules.</p>
+    <div class="setup-tabs" id="setupTabs">
+      <button class="btn btn-gold" onclick="switchSetupSport('soccer')" id="sst-soccer">⚽ Soccer (20)</button>
+      <button class="btn btn-outline" onclick="switchSetupSport('basketball')" id="sst-basketball">🏀 Basketball (20)</button>
+      <button class="btn btn-outline" onclick="switchSetupSport('volleyball')" id="sst-volleyball">🏐 Volleyball (20)</button>
+    </div>
+    <div id="setupBody"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('setupModal')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveSetup()">Save & Rebuild</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── HEADER ── -->
+<div class="header">
+  <div class="ko-logo">KO 2026</div>
+  <div class="ko-info"><strong>KHALSA OLYMPICS 2026</strong>July 25–26 · Paramount Fine Foods Centre</div>
+  <div class="header-nav">
+    <button class="nav-btn active" onclick="showView('dashboard')" id="nav-dashboard">📊 Brackets</button>
+    <button class="nav-btn" onclick="showView('schedule')" id="nav-schedule">📅 Schedule</button>
+    <button class="nav-btn" onclick="showView('scorer')" id="nav-scorer">⌨️ Score Entry</button>
+    <button class="nav-btn" onclick="openModal('setupModal');switchSetupSport('soccer')">⚙️ Setup</button>
+    <button class="nav-btn" onclick="enterTV()">📺 TV Mode</button>
+  </div>
+</div>
+
+<!-- ── SPORT TABS ── -->
+<div class="sport-tabs">
+  <div class="sport-tab active" onclick="showSport('soccer')" id="tab-soccer">⚽ Soccer <span class="tab-badge" id="tbadge-soccer">—</span></div>
+  <div class="sport-tab" onclick="showSport('basketball')" id="tab-basketball">🏀 Basketball <span class="tab-badge" id="tbadge-basketball">—</span></div>
+  <div class="sport-tab" onclick="showSport('volleyball')" id="tab-volleyball">🏐 Volleyball <span class="tab-badge" id="tbadge-volleyball">—</span></div>
+</div>
+
+<!-- ── DASHBOARD VIEW ── -->
+<div class="view active" id="view-dashboard">
+  <div id="panel-soccer"></div>
+  <div id="panel-basketball" style="display:none"></div>
+  <div id="panel-volleyball" style="display:none"></div>
+</div>
+
+<!-- ── SCHEDULE VIEW ── -->
+<div class="view" id="view-schedule">
+  <!-- Sim bar for testing -->
+  <div class="sim-bar">
+    <label>⏰ Simulate Time (for testing):</label>
+    <input type="datetime-local" id="simTime" onchange="setSimTime(this.value)">
+    <button class="btn btn-outline" style="font-size:11px;padding:5px 10px" onclick="clearSim()">Use Real Time</button>
+    <span style="color:var(--dim)">Set to event date/time to preview live banner</span>
+  </div>
+
+  <!-- Delay controls -->
+  <div class="delay-strip">
+    <span class="delay-label">⏱ Adjust court delay:</span>
+    <select class="delay-court-select" id="delayCourt">
+      <option value="Soccer Field A">Soccer Field A</option>
+      <option value="Soccer Field B">Soccer Field B</option>
+      <option value="Soccer Field C">Soccer Field C</option>
+      <option value="Soccer Field D">Soccer Field D</option>
+      <option value="Basketball Court 1">Basketball Court 1</option>
+      <option value="Basketball Court 2">Basketball Court 2</option>
+      <option value="Volleyball Court">Volleyball Court</option>
+    </select>
+    <div class="delay-btns">
+      <button class="delay-btn neg" onclick="applyDelay(-15)">-15 min</button>
+      <button class="delay-btn neg" onclick="applyDelay(-10)">-10</button>
+      <button class="delay-btn neg" onclick="applyDelay(-5)">-5</button>
+      <button class="delay-btn" onclick="applyDelay(5)">+5</button>
+      <button class="delay-btn" onclick="applyDelay(10)">+10</button>
+      <button class="delay-btn" onclick="applyDelay(15)">+15</button>
+    </div>
+    <span class="delay-current" id="delayCurrentLabel">0 min</span>
+    <button class="btn btn-outline" style="font-size:11px;padding:4px 10px" onclick="resetDelay()">Reset</button>
+  </div>
+
+  <div id="scheduleContent"></div>
+</div>
+
+<!-- ── SCORE ENTRY VIEW ── -->
+<div class="view" id="view-scorer">
+  <div class="scorer-wrap">
+    <div class="card">
+      <h3>Score Entry</h3>
+      <div class="frow">
+        <div class="fg">
+          <label>Sport</label>
+          <select id="se-sport" onchange="seUpdateSport()">
+            <option value="soccer">⚽ Soccer</option>
+            <option value="basketball">🏀 Basketball</option>
+            <option value="volleyball">🏐 Volleyball</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Game</label>
+          <select id="se-game" onchange="seLoadGame()"></select>
+        </div>
+      </div>
+      <div id="se-time-info" style="font-size:11px;color:var(--gold);margin-bottom:10px;min-height:16px"></div>
+      <div class="score-grid">
+        <div class="score-team">
+          <div class="score-team-label">Home</div>
+          <div class="score-team-name" id="se-t1name">—</div>
+          <input type="number" class="score-inp" id="se-s1" value="0" min="0" max="200">
+          <div class="quick-adj">
+            <button class="qa" onclick="qa('se-s1',-2)">-2</button>
+            <button class="qa" onclick="qa('se-s1',-1)">-1</button>
+            <button class="qa" onclick="qa('se-s1',1)">+1</button>
+            <button class="qa" onclick="qa('se-s1',2)">+2</button>
+            <button class="qa" onclick="qa('se-s1',3)">+3</button>
+          </div>
+        </div>
+        <div class="vs-div">VS</div>
+        <div class="score-team">
+          <div class="score-team-label">Away</div>
+          <div class="score-team-name" id="se-t2name">—</div>
+          <input type="number" class="score-inp" id="se-s2" value="0" min="0" max="200">
+          <div class="quick-adj">
+            <button class="qa" onclick="qa('se-s2',-2)">-2</button>
+            <button class="qa" onclick="qa('se-s2',-1)">-1</button>
+            <button class="qa" onclick="qa('se-s2',1)">+1</button>
+            <button class="qa" onclick="qa('se-s2',2)">+2</button>
+            <button class="qa" onclick="qa('se-s2',3)">+3</button>
+          </div>
+        </div>
+      </div>
+      <div class="frow">
+        <div class="fg">
+          <label>Status</label>
+          <select id="se-status">
+            <option value="live">🔴 Live (In Progress)</option>
+            <option value="final">✅ Final</option>
+            <option value="upcoming">⏳ Upcoming</option>
+          </select>
+        </div>
+      </div>
+      <div class="dq-row">
+        <span class="dq-label">DQ / Forfeit:</span>
+        <button class="btn btn-red" id="dq-t1-btn" onclick="openDQ('t1')">DQ Home</button>
+        <button class="btn btn-red" id="dq-t2-btn" onclick="openDQ('t2')">DQ Away</button>
+      </div>
+      <div class="submit-row">
+        <button class="btn btn-outline" onclick="seReset()">Reset</button>
+        <button class="btn btn-gold" onclick="seSubmit()">Submit Score</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Recent Results</h3>
+      <div id="seRecentResults" class="results-list"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// DATE HELPERS
+// ══════════════════════════════════════════════════════════════
+const D1 = (h,m) => new Date(2026,6,25,h,m,0).getTime();   // July 25
+const D2 = (h,m) => new Date(2026,6,26,h,m,0).getTime();   // July 26
+const fmtTime = ms => {
+  const d = new Date(ms);
+  return d.toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit',hour12:true});
+};
+const fmtDateTime = ms => {
+  const d = new Date(ms);
+  return d.toLocaleString('en-CA',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',hour12:true});
+};
+
+// ══════════════════════════════════════════════════════════════
+// SCHEDULE DEFINITION
+// slot: {start(ms), dur(min), court, sport, phase, roundLabel, desc, gameKey}
+// ══════════════════════════════════════════════════════════════
+// Soccer: 25-min slots, 4 fields, July 25 + Day 2 GF
+const SOC_SLOT = 25;
+const BB_SLOT  = 25;
+const VB_SLOT  = 20;
+
+// Soccer schedule slots — each entry is one time slot with up to 4 games
+const SOCCER_SLOTS = [
+  { start: D1(10,20), rows:[
+    {court:'Soccer Field A', phase:'wb', round:'WB R1', desc:'T1 vs T2'},
+    {court:'Soccer Field B', phase:'wb', round:'WB R1', desc:'T3 vs T4'},
+    {court:'Soccer Field C', phase:'wb', round:'WB R1', desc:'T5 vs T6'},
+    {court:'Soccer Field D', phase:'wb', round:'WB R1', desc:'T7 vs T8'},
+  ]},
+  { start: D1(10,45), rows:[
+    {court:'Soccer Field A', phase:'wb', round:'WB R1', desc:'T9 vs T10'},
+    {court:'Soccer Field B', phase:'wb', round:'WB R1', desc:'T11 vs T12'},
+    {court:'Soccer Field C', phase:'wb', round:'WB R1', desc:'T13 vs T14'},
+    {court:'Soccer Field D', phase:'wb', round:'WB R1', desc:'T15 vs T16'},
+  ]},
+  { start: D1(11,10), rows:[
+    {court:'Soccer Field A', phase:'wb', round:'WB R1', desc:'T17 vs T18'},
+    {court:'Soccer Field B', phase:'wb', round:'WB R1', desc:'T19 vs T20'},
+    {court:'Soccer Field C', phase:'lb', round:'LB R1', desc:'L1 vs L2'},
+    {court:'Soccer Field D', phase:'lb', round:'LB R1', desc:'L3 vs L4'},
+  ]},
+  { start: D1(11,35), rows:[
+    {court:'Soccer Field A', phase:'wb', round:'WB R2', desc:'WBW1 vs WBW2'},
+    {court:'Soccer Field B', phase:'wb', round:'WB R2', desc:'WBW3 vs WBW4'},
+    {court:'Soccer Field C', phase:'wb', round:'WB R2', desc:'WBW5 vs WBW6'},
+    {court:'Soccer Field D', phase:'lb', round:'LB R1', desc:'L5 vs L6'},
+  ]},
+  // Lunch 12:00–12:30
+  { start: D1(12,30), rows:[
+    {court:'Soccer Field A', phase:'wb', round:'WB R2', desc:'WBW7 vs WBW8'},
+    {court:'Soccer Field B', phase:'wb', round:'WB R2', desc:'WBW9 vs WBW10'},
+    {court:'Soccer Field C', phase:'lb', round:'LB R2', desc:'LBW1 vs LBW2'},
+    {court:'Soccer Field D', phase:'lb', round:'LB R2', desc:'LBW3 vs LBW4'},
+  ]},
+  { start: D1(12,55), rows:[
+    {court:'Soccer Field A', phase:'wb', round:'WB R3', desc:'WBW11 vs WBW12'},
+    {court:'Soccer Field B', phase:'wb', round:'WB R3', desc:'WBW13 vs WBW14'},
+    {court:'Soccer Field C', phase:'lb', round:'LB R2', desc:'LBW5 vs WBL1'},
+    {court:'Soccer Field D', phase:'lb', round:'LB R2', desc:'LBW6 vs WBL2'},
+  ]},
+  { start: D1(13,20), rows:[
+    {court:'Soccer Field A', phase:'wb', round:'WB R3', desc:'WBW15 vs WBW16'},
+    {court:'Soccer Field B', phase:'lb', round:'LB R3', desc:'LBW7 vs WBL3'},
+    {court:'Soccer Field C', phase:'lb', round:'LB R3', desc:'LBW8 vs WBL4'},
+    {court:'Soccer Field D', phase:'lb', round:'LB R3', desc:'LBW9 vs WBL5'},
+  ]},
+  { start: D1(13,45), rows:[
+    {court:'Soccer Field A', phase:'wb', round:'WB R4', desc:'WB Semifinal 1'},
+    {court:'Soccer Field B', phase:'wb', round:'WB R4', desc:'WB Semifinal 2'},
+    {court:'Soccer Field C', phase:'lb', round:'LB R4', desc:'LBW10 vs WBL6'},
+    {court:'Soccer Field D', phase:'lb', round:'LB SF', desc:'LBW11 vs LBW12'},
+  ]},
+  { start: D1(14,10), rows:[
+    {court:'Soccer Field A', phase:'wb', round:'WB SF', desc:'WB Semifinal'},
+    {court:'Soccer Field B', phase:'wb', round:'WB Final', desc:'WB Final'},
+    {court:'Soccer Field C', phase:'lb', round:'LB Final', desc:'LB Final'},
+  ]},
+  // Day 2
+  { start: D2(13,0), rows:[
+    {court:'Soccer Field A', phase:'gf', round:'Grand Final', desc:'WB Winner vs LB Winner'},
+  ]},
+  { start: D2(13,25), rows:[
+    {court:'Soccer Field A', phase:'gf', round:'GF Reset', desc:'Reset Game (if needed)'},
+  ]},
+];
+
+// Basketball: 25-min slots, 2 courts
+const BB_SLOTS = [
+  // Day 1 — 5:15 PM to ~10:40 PM
+  ...[
+    [D1(17,15), 'T1 vs T2',       'T3 vs T4'],
+    [D1(17,40), 'T5 vs T6',       'T7 vs T8'],
+    [D1(18, 5), 'T9 vs T10',      'T11 vs T12'],
+    [D1(18,30), 'T13 vs T14',     'T15 vs T16'],
+    [D1(18,55), 'T17 vs T18',     'T19 vs T20'],
+    [D1(19,20), 'WBW1 vs WBW2',   'L1 vs L2'],
+    [D1(19,45), 'WBW3 vs WBW4',   'L3 vs L4'],
+    [D1(20,10), 'WBW5 vs WBW6',   'L5 vs L6'],
+    [D1(20,35), 'WBW7 vs WBW8',   'LBW1 vs LBW2'],
+    [D1(21, 0), 'WBW9 vs WBW10',  'LBW3 vs LBW4'],
+    [D1(21,25), 'WB R3 Game 1',   'LBW5 vs WBL1'],
+    [D1(21,50), 'WB R3 Game 2',   'LBW6 vs WBL2'],
+    [D1(22,15), 'WB R3 Game 3',   'LBW7 vs WBL3'],
+  ].map(([s,c1,c2],i) => ({
+    start:s,
+    rows:[
+      {court:'Basketball Court 1', phase: i<5?'wb':i<8?'wb_r2':'wb_r3', round: i<5?'WB R1':i<8?'WB R2':'WB R3', desc:c1},
+      {court:'Basketball Court 2', phase: i<5?'wb':i<8?'lb_r1':'lb_r2', round: i<5?'WB R1':i<8?'LB R1':'LB R2', desc:c2},
+    ]
+  })),
+  // Day 2
+  {start:D2(15,30), rows:[{court:'Basketball Court 1',phase:'wb_r4',round:'WB R4',desc:'WBW1 vs WBW2'},{court:'Basketball Court 2',phase:'lb_r3',round:'LB R3',desc:'LBW8 vs WBL4'}]},
+  {start:D2(15,55), rows:[{court:'Basketball Court 1',phase:'wb_r4',round:'WB R4',desc:'WBW3 vs WBW4'},{court:'Basketball Court 2',phase:'lb_r4',round:'LB R4',desc:'LBW9 vs WBL5'}]},
+  {start:D2(16,20), rows:[{court:'Basketball Court 1',phase:'wb_sf',round:'WB SF',desc:'WB Semifinal'},{court:'Basketball Court 2',phase:'lb_sf',round:'LB SF',desc:'LBW10 vs LBW11'}]},
+  {start:D2(16,45), rows:[{court:'Basketball Court 1',phase:'wb_f',round:'WB Final',desc:'WB Final'},{court:'Basketball Court 2',phase:'lb_f',round:'LB Final',desc:'LB Final'}]},
+  {start:D2(17,10), rows:[{court:'Basketball Court 1',phase:'gf',round:'Grand Final',desc:'WB Winner vs LB Winner'}]},
+  {start:D2(17,35), rows:[{court:'Basketball Court 1',phase:'gf',round:'GF Reset',desc:'Reset Game (if needed)'}]},
+];
+
+// Volleyball: 20-min slots, 1 court, Day 1 only
+const VB_SLOTS = [
+  [D1(17,10),'R1 Game 1','T1 vs T2'],
+  [D1(17,30),'R1 Game 2','T3 vs T4'],
+  [D1(17,50),'R1 Game 3','T5 vs T6'],
+  [D1(18,10),'R1 Game 4','T7 vs T8'],
+  [D1(18,30),'R1 Game 5','T9 vs T10'],
+  [D1(18,50),'R1 Game 6','T11 vs T12'],
+  [D1(19,10),'R1 Game 7','T13 vs T14'],
+  [D1(19,30),'R1 Game 8','T15 vs T16'],
+  [D1(19,50),'R1 Game 9','T17 vs T18'],
+  [D1(20,10),'R1 Game 10','T19 vs T20'],
+  [D1(20,30),'Quarterfinal 1','W1 vs W2'],
+  [D1(20,50),'Quarterfinal 2','W3 vs W4'],
+  [D1(21,10),'Quarterfinal 3','W5 vs W6'],
+  [D1(21,30),'Quarterfinal 4','W7 vs W8'],
+  [D1(21,50),'Semifinal 1','QF1W vs QF2W'],
+  [D1(22,10),'Semifinal 2','QF3W vs QF4W'],
+  [D1(22,30),'3rd Place','SF1L vs SF2L'],
+  [D1(22,50),'Grand Final','SF1W vs SF2W'],
+].map(([s,round,desc]) => ({start:s, rows:[{court:'Volleyball Court',phase:round.includes('Grand')?'gf':round.includes('Semi')?'sf':round.includes('QF')||round.includes('Quarter')?'qf':round.includes('3rd')?'3rd':'r1', round, desc}]}));
+
+// ══════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════
+const SK = 'ko2026_v3';
+
+function defaultTeams() {
+  return {
+    soccer: Array.from({length:20},(_,i)=>`Soccer T${i+1}`),
+    basketball: Array.from({length:20},(_,i)=>`BB Team ${i+1}`),
+    volleyball: Array.from({length:20},(_,i)=>`VB Team ${i+1}`),
+  };
+}
+
+function defaultState() {
+  const s = {
+    teams: defaultTeams(),
+    games: {},          // gameId -> game
+    courtDelays: {},    // courtName -> delayMinutes
+    simTime: null,      // null = real time
+  };
+  buildAllGames(s);
+  return s;
+}
+
+let state = (() => {
+  try { const r = JSON.parse(localStorage.getItem(SK)); if (r?.games) return r; } catch(e) {}
+  return defaultState();
+})();
+
+function save() { localStorage.setItem(SK, JSON.stringify(state)); }
+
+// ══════════════════════════════════════════════════════════════
+// GAME BUILDING FROM SLOTS
+// ══════════════════════════════════════════════════════════════
+function buildAllGames(s) {
+  let idx = 0;
+  const addGames = (slotArr, sport, slotMin) => {
+    const courtOrder = {};
+    slotArr.forEach(slot => {
+      slot.rows.forEach(row => {
+        const courtIdx = (courtOrder[row.court] = (courtOrder[row.court]||0));
+        courtOrder[row.court]++;
+        const id = `${sport}_${row.court.replace(/\s+/g,'_')}_${courtIdx}`;
+        s.games[id] = {
+          id, sport, court:row.court, phase:row.phase, round:row.round,
+          desc:row.desc, scheduledStart:slot.start, slotMin,
+          team1:row.desc.split(' vs ')[0]||'TBD',
+          team2:row.desc.split(' vs ')[1]||'TBD',
+          score1:0, score2:0, status:'upcoming',
+          winner:null, loser:null, dq:null, ts:null,
+        };
+        idx++;
+      });
+    });
+  };
+  addGames(SOCCER_SLOTS,'soccer',SOC_SLOT);
+  addGames(BB_SLOTS,'basketball',BB_SLOT);
+  addGames(VB_SLOTS,'volleyball',VB_SLOT);
+}
+
+// ══════════════════════════════════════════════════════════════
+// TIME HELPERS
+// ══════════════════════════════════════════════════════════════
+function now() {
+  if (state.simTime) return new Date(state.simTime).getTime();
+  return Date.now();
+}
+
+function effectiveStart(game) {
+  const delay = (state.courtDelays[game.court]||0) * 60000;
+  return game.scheduledStart + delay;
+}
+
+function effectiveEnd(game) {
+  return effectiveStart(game) + game.slotMin * 60000;
+}
+
+function isLiveByTime(game) {
+  const n = now(), s = effectiveStart(game), e = effectiveEnd(game);
+  return n >= s && n <= e;
+}
+
+function isUpcomingByTime(game) {
+  return now() < effectiveStart(game);
+}
+
+function elapsedMin(game) {
+  return Math.max(0, Math.floor((now() - effectiveStart(game)) / 60000));
+}
+
+function getCourtGamesOrdered(courtName, sport) {
+  return Object.values(state.games)
+    .filter(g => g.sport === sport && g.court === courtName)
+    .sort((a,b) => a.scheduledStart - b.scheduledStart);
+}
+
+// ══════════════════════════════════════════════════════════════
+// LIVE BANNER
+// ══════════════════════════════════════════════════════════════
+const SPORT_ICON = {soccer:'⚽',basketball:'🏀',volleyball:'🏐'};
+
+function renderBanner() {
+  const n = now();
+  const d = new Date(n);
+  document.getElementById('lbClock').textContent =
+    d.toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
+
+  const liveGames = Object.values(state.games).filter(g => {
+    if (g.status === 'final') return false;
+    return isLiveByTime(g) || g.status === 'live';
+  });
+
+  const dot = document.getElementById('lbDot');
+  const title = document.getElementById('lbTitle');
+  const body = document.getElementById('lbBody');
+  const banner = document.getElementById('liveBanner');
+
+  if (!liveGames.length) {
+    dot.classList.add('quiet'); title.classList.add('quiet');
+    banner.classList.add('empty');
+    // Show next upcoming game
+    const next = Object.values(state.games)
+      .filter(g => g.status !== 'final' && isUpcomingByTime(g))
+      .sort((a,b) => effectiveStart(a) - effectiveStart(b))[0];
+    body.innerHTML = next
+      ? `<div class="lb-empty-msg">No live games right now. Next: <strong>${next.team1} vs ${next.team2}</strong> — ${next.sport.toUpperCase()} · ${next.court} · <strong>${fmtTime(effectiveStart(next))}</strong></div>`
+      : `<div class="lb-empty-msg">No upcoming games scheduled.</div>`;
+    return;
+  }
+
+  dot.classList.remove('quiet'); title.classList.remove('quiet');
+  banner.classList.remove('empty');
+
+  const cards = liveGames.map(g => {
+    const t1lead = g.score1 >= g.score2;
+    const elap = g.status === 'live' ? elapsedMin(g) : null;
+    const nextGame = Object.values(state.games)
+      .filter(x => x.court === g.court && x.status === 'upcoming' && effectiveStart(x) > effectiveStart(g))
+      .sort((a,b) => effectiveStart(a)-effectiveStart(b))[0];
+    return `<div class="lb-card" onclick="showView('scorer');seSelectGame('${g.id}')">
+      <div class="lb-card-sport">
+        <span>${SPORT_ICON[g.sport]} ${g.sport.toUpperCase()} · ${g.court} · ${g.round}</span>
+        ${elap !== null ? `<span class="elapsed">${elap}'</span>` : '<span class="elapsed">LIVE</span>'}
+      </div>
+      <div class="lb-team ${t1lead?'leader':''}">
+        <span class="lb-team-name">${g.team1}${g.dq==='team1'?' 🚫':''}</span>
+        <span class="lb-team-score">${g.score1}</span>
+      </div>
+      <div class="lb-team ${!t1lead?'leader':''}">
+        <span class="lb-team-name">${g.team2}${g.dq==='team2'?' 🚫':''}</span>
+        <span class="lb-team-score">${g.score2}</span>
+      </div>
+      ${nextGame ? `<div class="lb-card-next">Next: ${nextGame.team1} vs ${nextGame.team2} @ ${fmtTime(effectiveStart(nextGame))}</div>` : ''}
+    </div>`;
+  }).join('');
+
+  body.innerHTML = `<div class="lb-scroll">${cards}</div>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// SCHEDULE VIEW
+// ══════════════════════════════════════════════════════════════
+function renderSchedule() {
+  const n = now();
+  let html = '';
+
+  // Soccer
+  html += renderScheduleTable('soccer', SOCCER_SLOTS, SOC_SLOT,
+    ['Soccer Field A','Soccer Field B','Soccer Field C','Soccer Field D'],
+    '⚽ Soccer — 4 Fields · 25-min slots · July 25 + Day 2 Grand Final');
+
+  html += '<hr class="sep">';
+
+  // Basketball
+  html += renderScheduleTable('basketball', BB_SLOTS, BB_SLOT,
+    ['Basketball Court 1','Basketball Court 2'],
+    '🏀 Basketball — 2 Courts · 25-min slots · July 25 Eve + July 26');
+
+  html += '<hr class="sep">';
+
+  // Volleyball
+  html += renderScheduleTable('volleyball', VB_SLOTS, VB_SLOT,
+    ['Volleyball Court'],
+    '🏐 Volleyball — 1 Court · 20-min slots · July 25 Evening');
+
+  document.getElementById('scheduleContent').innerHTML = html;
+  updateDelayLabel();
+}
+
+function renderScheduleTable(sport, slots, slotMin, courts, title) {
+  const n = now();
+  const cols = courts.length;
+  const colClass = cols === 4 ? '' : cols === 2 ? 'cols-2' : 'cols-1';
+
+  // Build map: scheduledStart -> {court -> game}
+  const slotMap = {};
+  Object.values(state.games).filter(g => g.sport === sport).forEach(g => {
+    const key = g.scheduledStart;
+    if (!slotMap[key]) slotMap[key] = {};
+    slotMap[key][g.court] = g;
+  });
+
+  let lastDay = null;
+  let html = `<div class="sec-title">${title}</div>`;
+  html += `<div class="schedule-grid ${colClass}">`;
+  html += `<div class="sg-header">Time</div>`;
+  courts.forEach(c => { html += `<div class="sg-header">${c.replace(/^(Soccer |Basketball |)/,'')}</div>`; });
+
+  // Breaks
+  const breaks = {
+    [D1(12,0)]: '🍽 Lunch — 12:00–12:30 PM',
+    [D1(5*60*60*1000)]: null,
+  };
+
+  const allStarts = [...new Set(slots.map(s => s.start))].sort((a,b)=>a-b);
+
+  let prevStart = null;
+  allStarts.forEach(startMs => {
+    // Day separator
+    const d = new Date(startMs);
+    const dayLabel = d.getDate() === 25 ? 'DAY 1 — Saturday July 25, 2026' : 'DAY 2 — Sunday July 26, 2026';
+    if (dayLabel !== lastDay) {
+      lastDay = dayLabel;
+      html += `<div class="day-bar">${dayLabel}</div>`;
+    }
+
+    // Lunch break for soccer
+    if (sport === 'soccer' && prevStart && prevStart < D1(12,0) && startMs >= D1(12,30)) {
+      html += `<div class="sg-time" style="grid-column:1">12:00–12:30</div>`;
+      html += `<div class="sg-cell break-cell" style="grid-column:2/-1"><span>🍽 Lunch Break — 30 minutes</span></div>`;
+    }
+    if (sport === 'basketball' && d.getDate() === 26 && prevStart && new Date(prevStart).getDate() === 25) {
+      html += `<div class="day-bar">DAY 2 — Sunday July 26, 2026</div>`;
+    }
+
+    prevStart = startMs;
+
+    const delay = 0; // effective delay per court computed per-cell
+    const endMs = startMs + slotMin * 60000;
+    const gamesAtSlot = slotMap[startMs] || {};
+
+    html += `<div class="sg-time">${fmtTime(startMs)}<br><span style="font-size:9px;color:var(--dim)">${fmtTime(endMs)}</span>`;
+
+    // Show delay if any court has delay at this time
+    const anyDelay = courts.some(c => (state.courtDelays[c]||0) !== 0);
+    if (anyDelay) {
+      const sampleDelay = state.courtDelays[courts[0]]||0;
+      if (sampleDelay !== 0) {
+        const adj = startMs + sampleDelay * 60000;
+        html += `<span class="adj">${sampleDelay>0?'+':''}${sampleDelay}m → ${fmtTime(adj)}</span>`;
+      }
+    }
+    html += `</div>`;
+
+    courts.forEach(court => {
+      const g = gamesAtSlot[court];
+      if (!g) {
+        html += `<div class="sg-cell break-cell"><span>—</span></div>`;
+        return;
+      }
+      const effStart = effectiveStart(g);
+      const effEnd = effectiveEnd(g);
+      const isLive = n >= effStart && n <= effEnd;
+      const isDone = g.status === 'final';
+      const cellClass = isDone ? 'done-cell' : isLive ? 'live-cell' : '';
+
+      const delayMins = state.courtDelays[court] || 0;
+      const delayStr = delayMins !== 0 ? `<span style="font-size:9px;color:${delayMins>0?'#e05050':'var(--green)'}"> (${delayMins>0?'+':''}${delayMins}m)</span>` : '';
+
+      html += `<div class="sg-cell ${cellClass}" onclick="seSelectGameById('${g.id}');showView('scorer')">
+        <div class="sg-game">
+          <div class="sg-teams ${g.team1==='TBD'||g.team1.startsWith('T')?'tbd':''}">${g.team1} vs ${g.team2}${delayStr}</div>
+          ${isDone||isLive ? `<div class="sg-score">${g.score1} – ${g.score2}</div>` : ''}
+          <div class="sg-phase">${g.round}</div>
+          <div class="sg-status ${isDone?'done':isLive?'live':'upcoming'}">${isDone?'✓ Final':isLive?'● LIVE':'Upcoming'}</div>
+          ${g.dq ? `<div class="sg-dq">🚫 DQ: ${g.dq==='team1'?g.team1:g.team2}</div>` : ''}
+        </div>
+      </div>`;
+    });
+  });
+
+  html += '</div>';
+  return html;
+}
+
+// ══════════════════════════════════════════════════════════════
+// DELAY / CASCADE
+// ══════════════════════════════════════════════════════════════
+function applyDelay(mins) {
+  const court = document.getElementById('delayCourt').value;
+  state.courtDelays[court] = (state.courtDelays[court]||0) + mins;
+  save();
+  flash(`${court}: ${state.courtDelays[court]>0?'+':''}${state.courtDelays[court]} min delay applied`);
+  renderAll();
+}
+
+function resetDelay() {
+  const court = document.getElementById('delayCourt').value;
+  state.courtDelays[court] = 0;
+  save();
+  flash(`${court}: delay reset to 0`);
+  renderAll();
+}
+
+function updateDelayLabel() {
+  const court = document.getElementById('delayCourt')?.value;
+  if (!court) return;
+  const d = state.courtDelays[court]||0;
+  const el = document.getElementById('delayCurrentLabel');
+  if (el) el.textContent = `${d>0?'+':''}${d} min`;
+}
+
+// Cascade prompt after finalizing a game
+let pendingCascade = null;
+
+function promptCascade(game, earlyLateMin) {
+  if (earlyLateMin === 0) return;
+  const court = game.court;
+  const dir = earlyLateMin < 0 ? 'early' : 'late';
+  const abs = Math.abs(earlyLateMin);
+  pendingCascade = {court, delta: earlyLateMin};
+  document.getElementById('cmTitle').textContent = `⏱ Schedule Cascade — ${court}`;
+  document.getElementById('cmBody').innerHTML =
+    `Game ended <strong>${abs} minute${abs>1?'s':''} ${dir}</strong>.<br><br>
+     Shift all remaining games on <strong>${court}</strong> by <strong>${earlyLateMin > 0 ? '+' : ''}${earlyLateMin} min</strong>?<br>
+     <span style="font-size:11px;color:var(--dim)">This updates scheduled times for all upcoming games on this court/field.</span>`;
+  openModal('cascadeModal');
+}
+
+function closeCascade(apply) {
+  closeModal('cascadeModal');
+  if (apply && pendingCascade) {
+    const {court, delta} = pendingCascade;
+    state.courtDelays[court] = (state.courtDelays[court]||0) + delta;
+    save();
+    flash(`Cascade applied: ${court} shifted ${delta > 0 ? '+' : ''}${delta} min`);
+    renderAll();
+  }
+  pendingCascade = null;
+}
+
+// ══════════════════════════════════════════════════════════════
+// DQ
+// ══════════════════════════════════════════════════════════════
+let dqGameId = null;
+
+function openDQ(side) {
+  const id = document.getElementById('se-game').value;
+  const g = state.games[id];
+  if (!g) return;
+  dqGameId = id;
+  const teamName = side === 't1' ? g.team1 : g.team2;
+  const oppName = side === 't1' ? g.team2 : g.team1;
+  document.getElementById('dqBody').innerHTML =
+    `Disqualify <strong>${teamName}</strong>?<br>
+     <span style="color:var(--dim);font-size:12px">${oppName} will advance automatically. The DQ cascades through the bracket.</span>`;
+  document.getElementById('dqActions').innerHTML = `
+    <button class="btn btn-outline" onclick="closeModal('dqModal')">Cancel</button>
+    <button class="btn btn-red" onclick="confirmDQ('${side}')">🚫 DQ ${teamName}</button>
+  `;
+  openModal('dqModal');
+}
+
+function confirmDQ(side) {
+  closeModal('dqModal');
+  const g = state.games[dqGameId];
+  if (!g) return;
+  g.dq = side === 't1' ? 'team1' : 'team2';
+  g.winner = side === 't1' ? g.team2 : g.team1;
+  g.loser  = side === 't1' ? g.team1 : g.team2;
+  g.status = 'final';
+  g.score1 = side === 't1' ? 0 : 1;
+  g.score2 = side === 't1' ? 1 : 0;
+  g.ts = now();
+  save();
+  flash(`🚫 ${g.dq === 'team1' ? g.team1 : g.team2} disqualified — ${g.winner} advances`);
+  renderAll();
+  seLoadGame();
+}
+
+// ══════════════════════════════════════════════════════════════
+// BRACKET / DASHBOARD
+// ══════════════════════════════════════════════════════════════
+let currentSport = 'soccer';
+let currentView = 'dashboard';
+
+function showView(v) {
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  document.getElementById(`view-${v}`).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById(`nav-${v}`)?.classList.add('active');
+  currentView = v;
+  if (v === 'schedule') renderSchedule();
+  if (v === 'scorer') { seUpdateSport(); seLoadRecentResults(); }
+  if (v === 'dashboard') renderDashboard();
+}
+
+function showSport(sp) {
+  currentSport = sp;
+  ['soccer','basketball','volleyball'].forEach(s => {
+    document.getElementById(`tab-${s}`).classList.toggle('active', s === sp);
+    document.getElementById(`panel-${s}`).style.display = s === sp ? 'block' : 'none';
+  });
+  renderDashboard();
+}
+
+function renderDashboard() {
+  renderSoccerBracket();
+  renderBBPanel();
+  renderVBPanel();
+  updateBadges();
+}
+
+function updateBadges() {
+  ['soccer','basketball','volleyball'].forEach(sp => {
+    const games = Object.values(state.games).filter(g => g.sport === sp);
+    const live = games.filter(g => isLiveByTime(g) && g.status !== 'final').length;
+    const done = games.filter(g => g.status === 'final').length;
+    const el = document.getElementById(`tbadge-${sp}`);
+    if (el) el.textContent = live > 0 ? `${live} LIVE` : `${done}/${games.length}`;
+  });
+}
+
+function renderSoccerBracket() {
+  const el = document.getElementById('panel-soccer');
+  el.innerHTML = `
+    <div class="sec-title">⚽ Soccer — Double Elimination <span class="sec-badge">20 Teams · 4 Fields · ~38 Games</span>
+      <span class="sec-sub">Day 1: 10:20 AM–5 PM · Day 2 GF: 1:00 PM</span>
+    </div>
+    ${buildScheduleGrid('soccer')}
+    <hr class="sep">
+    ${buildBracketSection('soccer','wb','Winners Bracket')}
+    <hr class="sep">
+    ${buildBracketSection('soccer','lb','Losers Bracket')}
+    <hr class="sep">
+    ${buildBracketSection('soccer','gf','Grand Final')}
+  `;
+}
+
+function renderBBPanel() {
+  const el = document.getElementById('panel-basketball');
+  el.innerHTML = `
+    <div class="sec-title">🏀 Basketball — Double Elimination <span class="sec-badge">20 Teams · 2 Courts · ~38 Games</span>
+      <span class="sec-sub">Day 1: 5:15 PM–11 PM · Day 2: 3:30 PM–6:45 PM</span>
+    </div>
+    ${buildScheduleGrid('basketball')}
+    <hr class="sep">
+    ${buildBracketSection('basketball','wb','Winners Bracket')}
+    <hr class="sep">
+    ${buildBracketSection('basketball','lb','Losers Bracket')}
+    <hr class="sep">
+    ${buildBracketSection('basketball','gf','Championship')}
+  `;
+}
+
+function renderVBPanel() {
+  const el = document.getElementById('panel-volleyball');
+  el.innerHTML = `
+    <div class="sec-title">🏐 Volleyball — Single Elimination <span class="sec-badge">20 Teams · 1 Court · 19 Games</span>
+      <span class="sec-sub">Day 1 only: 5:10 PM–11:20 PM · Hard stop 8 PM Day 2 if overflow</span>
+    </div>
+    ${buildScheduleGrid('volleyball')}
+    <hr class="sep">
+    ${buildBracketSection('volleyball','r1','Round 1')}
+    <hr class="sep">
+    ${buildBracketSection('volleyball','qf','Quarterfinals')}
+    <hr class="sep">
+    ${buildBracketSection('volleyball','sf','Semifinals')}
+    <hr class="sep">
+    ${buildBracketSection('volleyball','gf','Grand Final')}
+  `;
+}
+
+// Mini inline schedule grid (compact, just for the panel top)
+function buildScheduleGrid(sport) {
+  const n = now();
+  const games = Object.values(state.games)
+    .filter(g => g.sport === sport)
+    .sort((a,b) => effectiveStart(a) - effectiveStart(b));
+
+  const live = games.filter(g => isLiveByTime(g) && g.status !== 'final');
+  const upcoming = games.filter(g => g.status !== 'final' && !isLiveByTime(g) && now() < effectiveEnd(g)).slice(0,6);
+
+  if (!live.length && !upcoming.length) return '';
+
+  const items = [...live, ...upcoming];
+  return `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+    ${items.map(g => {
+      const isLv = isLiveByTime(g) && g.status !== 'final';
+      return `<div style="background:${isLv?'rgba(224,80,80,.12)':'var(--gray2)'};border:1px solid ${isLv?'var(--live)':'var(--gray3)'};border-radius:7px;padding:7px 10px;font-size:11px;cursor:pointer" onclick="seSelectGameById('${g.id}');showView('scorer')">
+        <div style="color:var(--dim);margin-bottom:3px">${g.court} · ${fmtTime(effectiveStart(g))}${isLv?` <span style="color:var(--live);animation:pulse 1s infinite">● LIVE</span>`:''}</div>
+        <div style="font-weight:600">${g.team1} <span style="color:var(--dim)">vs</span> ${g.team2}</div>
+        ${isLv||g.status==='live' ? `<div style="color:var(--gold);font-weight:700;font-size:14px;text-align:center;margin-top:3px">${g.score1} – ${g.score2}</div>` : ''}
+        <div style="color:var(--dim);font-size:9px;margin-top:2px">${g.round}</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function buildBracketSection(sport, phase, label) {
+  const games = Object.values(state.games)
+    .filter(g => g.sport === sport && (g.phase === phase || g.phase.startsWith(phase)))
+    .sort((a,b) => effectiveStart(a)-effectiveStart(b));
+  if (!games.length) return '';
+
+  // Group by round
+  const roundMap = {};
+  games.forEach(g => {
+    if (!roundMap[g.round]) roundMap[g.round] = [];
+    roundMap[g.round].push(g);
+  });
+  const rounds = Object.keys(roundMap);
+
+  let html = `<div style="font-size:13px;font-weight:700;color:var(--dim);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px">${label}</div>
+    <div class="bracket-wrap"><div class="bracket">`;
+
+  rounds.forEach(r => {
+    html += `<div class="br-round"><div class="br-round-hdr">${r}</div><div class="br-games">`;
+    roundMap[r].forEach(g => { html += matchupCard(g); });
+    html += '</div></div>';
+  });
+
+  html += '</div></div>';
+  return html;
+}
+
+function matchupCard(g) {
+  const n = now();
+  const isLv = (isLiveByTime(g) && g.status !== 'final') || g.status === 'live';
+  const isDone = g.status === 'final';
+  const t1w = isDone && g.score1 > g.score2;
+  const t2w = isDone && g.score2 > g.score1;
+  const dly = state.courtDelays[g.court]||0;
+  const timeStr = fmtTime(effectiveStart(g)) + (dly!==0?` <span style="color:${dly>0?'var(--live)':'var(--green)'};font-size:9px">${dly>0?'+':''}${dly}m</span>`:'');
+
+  return `<div class="matchup ${isLv?'is-live':''}" onclick="seSelectGameById('${g.id}');showView('scorer')">
+    <div class="match-time">${timeStr} · ${g.court}</div>
+    <div class="tr ${t1w?'won':''} ${!t1w&&isDone?'lost':''} ${g.dq==='team1'?'dq-row':''}">
+      <span class="tr-seed"></span>
+      <span class="tr-name ${g.team1.startsWith('T')||g.team1==='TBD'?'tbd':''}">${g.team1}${g.dq==='team1'?' 🚫':''}</span>
+      <span class="tr-score">${isDone||isLv?g.score1:''}</span>
+    </div>
+    <div class="tr ${t2w?'won':''} ${!t2w&&isDone?'lost':''} ${g.dq==='team2'?'dq-row':''}">
+      <span class="tr-seed"></span>
+      <span class="tr-name ${g.team2.startsWith('T')||g.team2==='TBD'?'tbd':''}">${g.team2}${g.dq==='team2'?' 🚫':''}</span>
+      <span class="tr-score">${isDone||isLv?g.score2:''}</span>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// SCORE ENTRY
+// ══════════════════════════════════════════════════════════════
+function seUpdateSport() {
+  const sport = document.getElementById('se-sport').value;
+  const sel = document.getElementById('se-game');
+  const games = Object.values(state.games)
+    .filter(g => g.sport === sport)
+    .sort((a,b) => effectiveStart(a) - effectiveStart(b));
+
+  sel.innerHTML = games.map(g => {
+    const status = g.status === 'live' ? ' 🔴' : g.status === 'final' ? ' ✅' : '';
+    const time = fmtTime(effectiveStart(g));
+    return `<option value="${g.id}">[${time}] ${g.court} — ${g.team1} vs ${g.team2}${status}</option>`;
+  }).join('');
+
+  // Auto-select first live game
+  const firstLive = games.find(g => g.status === 'live' || isLiveByTime(g));
+  if (firstLive) sel.value = firstLive.id;
+
+  seLoadGame();
+}
+
+function seSelectGame(id) {
+  const g = state.games[id];
+  if (!g) return;
+  document.getElementById('se-sport').value = g.sport;
+  seUpdateSport();
+  document.getElementById('se-game').value = id;
+  seLoadGame();
+}
+
+function seSelectGameById(id) {
+  seSelectGame(id);
+}
+
+function seLoadGame() {
+  const id = document.getElementById('se-game').value;
+  const g = state.games[id];
+  if (!g) return;
+  document.getElementById('se-t1name').textContent = g.team1;
+  document.getElementById('se-t2name').textContent = g.team2;
+  document.getElementById('se-s1').value = g.score1;
+  document.getElementById('se-s2').value = g.score2;
+  document.getElementById('se-status').value = g.status === 'upcoming' ? 'upcoming' : g.status;
+  document.getElementById('dq-t1-btn').textContent = `DQ ${g.team1.length>12?g.team1.slice(0,12)+'…':g.team1}`;
+  document.getElementById('dq-t2-btn').textContent = `DQ ${g.team2.length>12?g.team2.slice(0,12)+'…':g.team2}`;
+
+  const dly = state.courtDelays[g.court]||0;
+  const adjStart = effectiveStart(g), adjEnd = effectiveEnd(g);
+  document.getElementById('se-time-info').innerHTML =
+    `⏰ ${fmtTime(adjStart)} → ${fmtTime(adjEnd)} · ${g.court}` +
+    (dly !== 0 ? ` <span style="color:${dly>0?'var(--live)':'var(--green)'}">(${dly>0?'+':''}${dly}m adjusted)</span>` : '') +
+    (isLiveByTime(g) && g.status !== 'final' ? ` <span style="color:var(--live);font-weight:700">● LIVE NOW — ${elapsedMin(g)}'</span>` : '');
+}
+
+function seSubmit() {
+  const id = document.getElementById('se-game').value;
+  const g = state.games[id];
+  if (!g) return;
+  const s1 = parseInt(document.getElementById('se-s1').value)||0;
+  const s2 = parseInt(document.getElementById('se-s2').value)||0;
+  const status = document.getElementById('se-status').value;
+
+  const wasLive = g.status === 'live';
+  const goingFinal = status === 'final';
+  g.score1 = s1; g.score2 = s2; g.status = status;
+
+  if (goingFinal) {
+    g.winner = s1 >= s2 ? g.team1 : g.team2;
+    g.loser  = s1 >= s2 ? g.team2 : g.team1;
+    if (!g.ts) g.ts = now();
+
+    // Check if ended early or late vs schedule
+    const n = now();
+    const scheduledEnd = effectiveEnd(g);
+    const diffMin = Math.round((n - scheduledEnd) / 60000);
+    if (Math.abs(diffMin) >= 3) promptCascade(g, diffMin);
+  }
+
+  save();
+  flash(`✅ ${g.team1} ${s1}–${s2} ${g.team2} saved`);
+  seUpdateSport();
+  seLoadGame();
+  seLoadRecentResults();
+  renderAll();
+}
+
+function seReset() {
+  document.getElementById('se-s1').value = 0;
+  document.getElementById('se-s2').value = 0;
+  document.getElementById('se-status').value = 'upcoming';
+}
+
+function qa(id, delta) {
+  const el = document.getElementById(id);
+  el.value = Math.max(0, parseInt(el.value||0) + delta);
+}
+
+function seLoadRecentResults() {
+  const finals = Object.values(state.games)
+    .filter(g => g.status === 'final' && g.ts)
+    .sort((a,b) => b.ts - a.ts).slice(0,10);
+  const el = document.getElementById('seRecentResults');
+  if (!finals.length) {
+    el.innerHTML = '<div class="empty-state"><span class="big">🏆</span>Results appear here as games finish.</div>';
+    return;
+  }
+  el.innerHTML = finals.map(g => {
+    const t1w = g.score1 > g.score2;
+    return `<div class="result-item">
+      <span class="ri-sport">${SPORT_ICON[g.sport]}</span>
+      <div class="ri-teams">
+        <span class="${t1w?'ri-winner':'ri-loser'}">${g.team1}</span>
+        <span style="color:var(--dim)"> vs </span>
+        <span class="${!t1w?'ri-winner':'ri-loser'}">${g.team2}</span>
+        ${g.dq ? `<span class="sg-dq"> · 🚫 DQ</span>` : ''}
+        <div style="font-size:10px;color:var(--dim)">${g.court} · ${g.round} · ${fmtTime(g.ts)}</div>
+      </div>
+      <div class="ri-score">${g.score1}–${g.score2}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════
+// TV MODE
+// ══════════════════════════════════════════════════════════════
+const COURTS_TV = [
+  {name:'⚽ Soccer Field A', court:'Soccer Field A', sport:'soccer'},
+  {name:'⚽ Soccer Field B', court:'Soccer Field B', sport:'soccer'},
+  {name:'⚽ Soccer Field C', court:'Soccer Field C', sport:'soccer'},
+  {name:'🏀 Basketball Court 1', court:'Basketball Court 1', sport:'basketball'},
+  {name:'🏀 Basketball Court 2', court:'Basketball Court 2', sport:'basketball'},
+  {name:'🏐 Volleyball Court', court:'Volleyball Court', sport:'volleyball'},
+];
+
+function renderTV() {
+  const n = now();
+  document.getElementById('tvClock').textContent =
+    new Date(n).toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
+
+  document.getElementById('tvCourts').innerHTML = COURTS_TV.map(c => {
+    const courtGames = Object.values(state.games)
+      .filter(g => g.court === c.court)
+      .sort((a,b) => effectiveStart(a)-effectiveStart(b));
+
+    const live = courtGames.find(g => (isLiveByTime(g) && g.status !== 'final') || g.status === 'live');
+    const last = !live && courtGames.filter(g => g.status === 'final').sort((a,b)=>b.ts-a.ts)[0];
+    const next = courtGames.find(g => g.status !== 'final' && now() < effectiveStart(g));
+    const g = live || last;
+
+    let body = '';
+    if (g) {
+      const t1lead = g.score1 >= g.score2;
+      body = `
+        <div class="tv-team" style="${t1lead&&live?'border:1px solid rgba(212,160,23,.3)':''}">
+          <span class="tv-team-name">${g.team1}${g.dq==='team1'?' 🚫':''}</span>
+          <span class="tv-team-score">${g.score1}</span>
+        </div>
+        <div class="tv-vs">VS</div>
+        <div class="tv-team" style="${!t1lead&&live?'border:1px solid rgba(212,160,23,.3)':''}">
+          <span class="tv-team-name">${g.team2}${g.dq==='team2'?' 🚫':''}</span>
+          <span class="tv-team-score">${g.score2}</span>
+        </div>
+        <div class="tv-status ${live?'live':g.status==='final'?'done':'up'}">
+          ${live ? `● IN PROGRESS · ${elapsedMin(g)}' of ${g.slotMin}'` : g.status==='final' ? `FINAL — ${g.round}` : ''}
+        </div>
+        ${next ? `<div class="tv-next-up">Next: ${next.team1} vs ${next.team2} @ ${fmtTime(effectiveStart(next))}</div>` : ''}
+      `;
+    } else {
+      body = `<div style="text-align:center;color:var(--dim);padding:30px;font-size:18px">
+        ${next ? `Next game:<br><strong style="color:var(--text)">${next.team1} vs ${next.team2}</strong><br><span style="color:var(--gold);font-size:22px">${fmtTime(effectiveStart(next))}</span>` : 'Standby'}
+      </div>`;
+    }
+
+    return `<div class="tv-court ${live?'is-live':last?'is-done':''}">
+      <div class="tv-court-name">${c.name}</div>
+      ${body}
+    </div>`;
+  }).join('');
+}
+
+function enterTV() {
+  document.body.classList.add('tv-on');
+  renderTV();
+  document.addEventListener('keydown', tvKeyHandler);
+}
+
+function exitTV() {
+  document.body.classList.remove('tv-on');
+  document.removeEventListener('keydown', tvKeyHandler);
+}
+
+function tvKeyHandler(e) { if (e.key === 'Escape') exitTV(); }
+
+// ══════════════════════════════════════════════════════════════
+// SETUP
+// ══════════════════════════════════════════════════════════════
+let setupSport = 'soccer';
+
+function switchSetupSport(sp) {
+  setupSport = sp;
+  ['soccer','basketball','volleyball'].forEach(s => {
+    document.getElementById(`sst-${s}`).className = s===sp?'btn btn-gold':'btn btn-outline';
+  });
+  const teams = state.teams[sp];
+  document.getElementById('setupBody').innerHTML =
+    `<div class="team-grid">${teams.map((t,i) =>
+      `<input type="text" id="st-${sp}-${i}" placeholder="Team ${i+1}" value="${t}">`
+    ).join('')}</div>`;
+}
+
+function saveSetup() {
+  ['soccer','basketball','volleyball'].forEach(sp => {
+    state.teams[sp] = state.teams[sp].map((_,i) => {
+      const v = document.getElementById(`st-${sp}-${i}`)?.value?.trim();
+      return v || `${sp} T${i+1}`;
+    });
+  });
+  // Rebuild games preserving scores
+  buildAllGames(state);
+  save();
+  closeModal('setupModal');
+  flash('✅ Teams saved — brackets updated');
+  renderAll();
+  seUpdateSport();
+}
+
+// ══════════════════════════════════════════════════════════════
+// SIM TIME
+// ══════════════════════════════════════════════════════════════
+function setSimTime(v) {
+  state.simTime = v ? new Date(v).toISOString() : null;
+  save();
+  renderAll();
+}
+
+function clearSim() {
+  state.simTime = null;
+  document.getElementById('simTime').value = '';
+  save();
+  renderAll();
+}
+
+// ══════════════════════════════════════════════════════════════
+// MODALS
+// ══════════════════════════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+// Click outside to close
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) closeModal(el.id); });
+});
+
+// ══════════════════════════════════════════════════════════════
+// FLASH
+// ══════════════════════════════════════════════════════════════
+function flash(msg, err=false) {
+  const el = document.getElementById('flash');
+  el.textContent = msg;
+  el.className = 'flash show' + (err ? ' err' : '');
+  clearTimeout(flash._t);
+  flash._t = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ══════════════════════════════════════════════════════════════
+// RENDER ALL + TICK
+// ══════════════════════════════════════════════════════════════
+function renderAll() {
+  renderBanner();
+  if (currentView === 'dashboard') renderDashboard();
+  if (currentView === 'schedule') renderSchedule();
+  if (document.body.classList.contains('tv-on')) renderTV();
+  updateBadges();
+}
+
+// Tick every 30 seconds (banner + TV auto-refresh)
+setInterval(renderAll, 30000);
+// Clock ticks every second for TV
+setInterval(() => {
+  const d = new Date(now());
+  const t = d.toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
+  document.getElementById('lbClock').textContent = t;
+  if (document.getElementById('tvClock')) document.getElementById('tvClock').textContent = t;
+}, 1000);
+
+// localStorage sync (multi-device)
+setInterval(() => {
+  try {
+    const raw = localStorage.getItem(SK);
+    if (!raw) return;
+    const remote = JSON.parse(raw);
+    if (remote && remote.games) { state = remote; renderAll(); }
+  } catch(e) {}
+}, 15000);
+
+// ── INIT ──
+renderBanner();
+renderDashboard();
+seUpdateSport();
+showSport('soccer');
+</script>
+</body>
+</html>
