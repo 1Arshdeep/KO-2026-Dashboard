@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KO 2026 — Scorekeeper Admin</title>
+<style>
+/* ===== RESET & BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #080c14;
+  --surface: #0f1420;
+  --card: #161c2e;
+  --border: #1e2a45;
+  --gold: #d4a017;
+  --gold-light: #f0c040;
+  --red: #dc2626;
+  --green: #16a34a;
+  --amber: #d97706;
+  --text: #f1f5f9;
+  --dim: #64748b;
+  --radius: 10px;
+}
+html { font-size: 16px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  padding-bottom: 80px;
+}
+button {
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  font-weight: 700;
+  border-radius: var(--radius);
+  transition: opacity 0.15s, transform 0.1s;
+}
+button:active { transform: scale(0.96); }
+button:disabled { opacity: 0.4; cursor: not-allowed; }
+select, input[type="text"] {
+  font-family: inherit;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+select:focus, input[type="text"]:focus {
+  outline: 2px solid var(--gold);
+  outline-offset: -2px;
+}
+
+/* ===== STICKY HEADER ===== */
+#header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+#header-left { display: flex; flex-direction: column; line-height: 1.2; }
+#header-label { font-size: 10px; color: var(--dim); letter-spacing: 0.1em; text-transform: uppercase; }
+#header-title { font-size: 18px; font-weight: 900; color: var(--gold); letter-spacing: 0.05em; }
+#live-clock {
+  font-size: 20px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  letter-spacing: 0.04em;
+}
+#header-right { display: flex; align-items: center; gap: 8px; }
+#btn-view-live {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+}
+#btn-setup {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+}
+
+/* ===== SPORT TABS ===== */
+#sport-tabs {
+  display: flex;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.sport-tab {
+  flex: 1;
+  padding: 14px 8px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dim);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  background: none;
+  border-radius: 0;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: color 0.2s, border-color 0.2s;
+}
+.sport-tab.active {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+/* ===== TEST MODE BAR ===== */
+#test-mode-bar {
+  display: none;
+  background: #7f1d1d;
+  border-bottom: 1px solid #991b1b;
+  padding: 10px 16px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+#test-mode-bar.visible { display: flex; }
+#test-mode-bar span { font-size: 13px; font-weight: 600; color: #fca5a5; }
+#btn-exit-test {
+  background: #991b1b;
+  color: #fca5a5;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+/* ===== MAIN CONTENT ===== */
+#main { max-width: 640px; margin: 0 auto; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.card-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--dim);
+  margin-bottom: 12px;
+}
+
+/* ===== GAME SELECTOR ===== */
+#game-select {
+  width: 100%;
+  padding: 12px;
+  font-size: 14px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+#game-meta {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 13px;
+  color: var(--dim);
+}
+#game-meta span { display: flex; gap: 4px; }
+#game-meta b { color: var(--text); }
+#live-badge {
+  display: none;
+  background: var(--gold);
+  color: #000;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.08em;
+  align-self: center;
+}
+#live-badge.visible { display: inline-block; }
+
+/* ===== SCORE ENTRY ===== */
+#score-card .teams-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 8px;
+  align-items: start;
+}
+.team-col { display: flex; flex-direction: column; gap: 8px; }
+.team-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+  text-align: center;
+  line-height: 1.2;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.score-display {
+  font-size: 52px;
+  font-weight: 900;
+  color: var(--gold);
+  text-align: center;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.btn-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 5px;
+}
+.btn-score {
+  min-height: 52px;
+  font-size: 16px;
+  font-weight: 800;
+  border-radius: 8px;
+  padding: 0;
+}
+.btn-minus {
+  background: transparent;
+  border: 2px solid var(--red);
+  color: var(--red);
+}
+.btn-plus {
+  background: var(--gold);
+  color: #080c14;
+  border: none;
+}
+.vs-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 40px;
+  gap: 4px;
+}
+.vs-text { font-size: 13px; font-weight: 700; color: var(--dim); }
+.vs-sep { width: 1px; height: 60px; background: var(--border); }
+
+/* ===== TIMER CARD ===== */
+#timer-card { position: relative; }
+#timer-display-wrap { text-align: center; margin-bottom: 12px; }
+#timer-main {
+  font-size: 5rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: var(--green);
+  transition: color 0.3s;
+}
+#timer-main.amber { color: var(--amber); }
+#timer-main.red { color: var(--red); }
+#timer-main.flash { animation: flash-red 0.5s infinite alternate; }
+@keyframes flash-red { from { color: var(--red); } to { color: #ff6b6b; } }
+#timer-ot {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--red);
+  margin-top: 4px;
+  display: none;
+}
+#timer-progress-wrap {
+  background: var(--surface);
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+#timer-progress {
+  height: 100%;
+  width: 100%;
+  background: var(--green);
+  transition: width 0.1s, background-color 0.3s;
+  border-radius: 4px;
+}
+#timer-buttons { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.btn-timer {
+  min-height: 52px;
+  font-size: 15px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+#btn-start-pause { background: var(--gold); color: #080c14; border: none; }
+#fulltime-overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(8,12,20,0.92);
+  border-radius: var(--radius);
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 14px;
+  z-index: 10;
+}
+#fulltime-overlay.visible { display: flex; }
+#fulltime-overlay .ft-text {
+  font-size: 2.2rem;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 0.06em;
+}
+#btn-dismiss-ft {
+  background: var(--gold);
+  color: #080c14;
+  font-size: 15px;
+  padding: 12px 28px;
+}
+
+/* ===== STATUS CONTROLS ===== */
+#status-buttons { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.btn-status {
+  min-height: 56px;
+  font-size: 13px;
+  background: var(--surface);
+  color: var(--dim);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 6px;
+  line-height: 1.2;
+}
+.btn-status .icon { font-size: 18px; }
+.btn-status.active {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(212,160,23,0.08);
+}
+
+/* ===== DQ CARD ===== */
+#dq-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.btn-dq {
+  min-height: 52px;
+  font-size: 13px;
+  background: var(--surface);
+  color: var(--red);
+  border: 1px solid #991b1b;
+  border-radius: 8px;
+  padding: 8px 6px;
+  line-height: 1.3;
+}
+.btn-dq:hover { background: rgba(220,38,38,0.1); }
+
+/* ===== COURT DELAY CARD ===== */
+#advanced-toggle {
+  width: 100%;
+  text-align: left;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+#advanced-toggle .arrow { transition: transform 0.2s; }
+#advanced-toggle.open .arrow { transform: rotate(180deg); }
+#advanced-content {
+  display: none;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 var(--radius) var(--radius);
+  padding: 16px;
+  margin-top: -1px;
+}
+#advanced-content.visible { display: block; }
+#delay-display {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: var(--gold);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  margin: 12px 0;
+}
+.delay-buttons { display: grid; grid-template-columns: repeat(6,1fr); gap: 6px; margin-bottom: 10px; }
+.btn-delay {
+  min-height: 48px;
+  font-size: 13px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.btn-delay.neg { color: var(--red); border-color: #7f1d1d; }
+.btn-delay.pos { color: var(--green); border-color: #14532d; }
+#btn-delay-reset {
+  width: 100%;
+  min-height: 44px;
+  background: var(--surface);
+  color: var(--dim);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+/* ===== NEXT UP CARD ===== */
+.next-game-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.next-game-item:last-child { border-bottom: none; padding-bottom: 0; }
+.next-game-time { font-size: 12px; color: var(--dim); min-width: 70px; font-variant-numeric: tabular-nums; }
+.next-game-teams { font-size: 14px; font-weight: 600; flex: 1; }
+.next-game-round { font-size: 11px; color: var(--dim); }
+
+/* ===== MODAL ===== */
+#modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(8,12,20,0.85);
+  z-index: 200;
+  overflow-y: auto;
+  padding: 20px 16px;
+}
+#modal-overlay.visible { display: block; }
+#modal-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+#modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+#modal-header h2 { font-size: 18px; font-weight: 800; }
+#btn-close-modal {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-size: 18px;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-sport-section { margin-bottom: 20px; }
+.modal-sport-title { font-size: 13px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+.team-inputs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.team-input {
+  padding: 8px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  width: 100%;
+}
+.modal-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+#btn-save-teams {
+  flex: 1;
+  min-height: 48px;
+  background: var(--gold);
+  color: #080c14;
+  font-size: 15px;
+  border-radius: 8px;
+}
+#btn-test-mode {
+  min-height: 48px;
+  padding: 0 18px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-size: 14px;
+  border-radius: 8px;
+}
+#btn-test-mode.active { background: #7f1d1d; color: #fca5a5; border-color: #991b1b; }
+
+/* ===== CONFIRM MODAL ===== */
+#confirm-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(8,12,20,0.9);
+  z-index: 300;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+#confirm-overlay.visible { display: flex; }
+#confirm-box {
+  background: var(--card);
+  border: 1px solid #991b1b;
+  border-radius: var(--radius);
+  padding: 24px;
+  max-width: 340px;
+  width: 100%;
+  text-align: center;
+}
+#confirm-box h3 { font-size: 18px; margin-bottom: 8px; color: var(--red); }
+#confirm-box p { font-size: 14px; color: var(--dim); margin-bottom: 20px; line-height: 1.5; }
+#confirm-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+#btn-confirm-yes { min-height: 48px; background: var(--red); color: white; font-size: 15px; border-radius: 8px; }
+#btn-confirm-no { min-height: 48px; background: var(--surface); color: var(--text); border: 1px solid var(--border); font-size: 15px; border-radius: 8px; }
+
+/* ===== MISC ===== */
+.no-game-msg { color: var(--dim); font-size: 14px; text-align: center; padding: 20px 0; }
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header id="header">
+  <div id="header-left">
+    <span id="header-label">⌨️ SCOREKEEPER</span>
+    <span id="header-title">KO 2026</span>
+  </div>
+  <div id="live-clock">00:00:00</div>
+  <div id="header-right">
+    <a id="btn-view-live" href="index.html" target="_blank">👁 View Live</a>
+    <button id="btn-setup">⚙️ Setup</button>
+  </div>
+</header>
+
+<!-- ===== SPORT TABS ===== -->
+<div id="sport-tabs">
+  <button class="sport-tab active" data-sport="soccer">⚽ Soccer</button>
+  <button class="sport-tab" data-sport="basketball">🏀 Basketball</button>
+  <button class="sport-tab" data-sport="volleyball">🏐 Volleyball</button>
+</div>
+
+<!-- ===== TEST MODE BAR ===== -->
+<div id="test-mode-bar">
+  <span>⚠️ TEST MODE ACTIVE — Times shifted to today</span>
+  <button id="btn-exit-test">Exit Test Mode</button>
+</div>
+
+<!-- ===== MAIN ===== -->
+<div id="main">
+
+  <!-- GAME SELECTOR -->
+  <div class="card" id="selector-card">
+    <div class="card-title">Select Game</div>
+    <select id="game-select" size="1">
+      <option value="">Loading games…</option>
+    </select>
+    <div id="game-meta">
+      <span>Scheduled: <b id="meta-scheduled">—</b></span>
+      <span>Effective: <b id="meta-effective">—</b></span>
+      <span>Court: <b id="meta-court">—</b></span>
+      <span id="live-badge">LIVE NOW</span>
+    </div>
+  </div>
+
+  <!-- SCORE ENTRY -->
+  <div class="card" id="score-card">
+    <div class="card-title">Score Entry</div>
+    <div class="teams-row">
+      <div class="team-col" id="col-team1">
+        <div class="team-name" id="name1">—</div>
+        <div class="score-display" id="score1">0</div>
+        <div class="btn-grid">
+          <button class="btn-score btn-minus" data-team="1" data-delta="-1">−1</button>
+          <button class="btn-score btn-plus" data-team="1" data-delta="1">+1</button>
+          <button class="btn-score btn-plus" data-team="1" data-delta="2">+2</button>
+          <button class="btn-score btn-plus" data-team="1" data-delta="3">+3</button>
+        </div>
+      </div>
+      <div class="vs-col">
+        <span class="vs-text">VS</span>
+        <div class="vs-sep"></div>
+      </div>
+      <div class="team-col" id="col-team2">
+        <div class="team-name" id="name2">—</div>
+        <div class="score-display" id="score2">0</div>
+        <div class="btn-grid">
+          <button class="btn-score btn-minus" data-team="2" data-delta="-1">−1</button>
+          <button class="btn-score btn-plus" data-team="2" data-delta="1">+1</button>
+          <button class="btn-score btn-plus" data-team="2" data-delta="2">+2</button>
+          <button class="btn-score btn-plus" data-team="2" data-delta="3">+3</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMER -->
+  <div class="card" id="timer-card">
+    <div class="card-title">Game Timer</div>
+    <div id="fulltime-overlay">
+      <div class="ft-text">⚡ FULL TIME</div>
+      <button id="btn-dismiss-ft">Dismiss</button>
+    </div>
+    <div id="timer-display-wrap">
+      <div id="timer-main">15:00</div>
+      <div id="timer-ot"></div>
+    </div>
+    <div id="timer-progress-wrap">
+      <div id="timer-progress"></div>
+    </div>
+    <div id="timer-buttons">
+      <button id="btn-start-pause" class="btn-timer">▶ START</button>
+      <button id="btn-reset" class="btn-timer">↺ Reset</button>
+      <button id="btn-set15" class="btn-timer">Set 15:00</button>
+    </div>
+  </div>
+
+  <!-- STATUS CONTROLS -->
+  <div class="card">
+    <div class="card-title">Game Status</div>
+    <div id="status-buttons">
+      <button class="btn-status active" data-status="upcoming">
+        <span class="icon">⏳</span><span>UPCOMING</span>
+      </button>
+      <button class="btn-status" data-status="live">
+        <span class="icon">🔴</span><span>LIVE</span>
+      </button>
+      <button class="btn-status" data-status="final">
+        <span class="icon">✅</span><span>FINAL</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- DQ CARD -->
+  <div class="card" id="dq-card">
+    <div class="card-title">DQ / Forfeit</div>
+    <div id="dq-buttons">
+      <button class="btn-dq" id="btn-dq1">🚫 DQ <span id="dq-name1">Team 1</span></button>
+      <button class="btn-dq" id="btn-dq2">🚫 DQ <span id="dq-name2">Team 2</span></button>
+    </div>
+  </div>
+
+  <!-- COURT DELAY (collapsible) -->
+  <div>
+    <button id="advanced-toggle">
+      ⚙️ Advanced — Court Delay
+      <span class="arrow">▼</span>
+    </button>
+    <div id="advanced-content">
+      <div class="card-title">Delay for <span id="delay-court-name">—</span></div>
+      <div class="delay-buttons">
+        <button class="btn-delay neg" data-min="-15">−15m</button>
+        <button class="btn-delay neg" data-min="-10">−10m</button>
+        <button class="btn-delay neg" data-min="-5">−5m</button>
+        <button class="btn-delay pos" data-min="5">+5m</button>
+        <button class="btn-delay pos" data-min="10">+10m</button>
+        <button class="btn-delay pos" data-min="15">+15m</button>
+      </div>
+      <div id="delay-display">+0 min</div>
+      <button id="btn-delay-reset">↺ Reset Delay</button>
+    </div>
+  </div>
+
+  <!-- NEXT UP -->
+  <div class="card" id="next-up-card">
+    <div class="card-title">Next Up On This Court</div>
+    <div id="next-up-list"><div class="no-game-msg">Select a game above</div></div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- ===== SETUP MODAL ===== -->
+<div id="modal-overlay">
+  <div id="modal-box">
+    <div id="modal-header">
+      <h2>⚙️ Tournament Setup</h2>
+      <button id="btn-close-modal">✕</button>
+    </div>
+    <div id="modal-sport-sections"></div>
+    <div class="modal-actions">
+      <button id="btn-save-teams">💾 Save Teams &amp; Rebuild Schedule</button>
+      <button id="btn-test-mode">🧪 Test Mode</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CONFIRM MODAL ===== -->
+<div id="confirm-overlay">
+  <div id="confirm-box">
+    <h3>⚠️ Confirm DQ</h3>
+    <p id="confirm-msg">Are you sure?</p>
+    <div id="confirm-buttons">
+      <button id="btn-confirm-yes">Yes, DQ</button>
+      <button id="btn-confirm-no">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== STATE =====
+const STORAGE_KEY = 'ko2026_v3';
+let state = null;
+let currentSport = 'soccer';
+let currentGameId = null;
+let buzzerFired = false;
+let fulltimeShown = false;
+let timerInterval = null;
+let confirmCallback = null;
+
+const DEFAULT_TEAMS = {
+  soccer: ['Lions FC','Tigers United','Eagles SC','Warriors FC','Panthers FC','Cobras SC','Hawks United','Bulls FC','Stallions SC','Falcons FC','Wolves FC','Cheetahs SC','Rhinos FC','Bears FC','Dragons SC','Phoenix FC','Vipers SC','Sharks FC','Rams FC','Broncos SC'],
+  basketball: ['Heat BB','Thunder BB','Raptors BB','Blazers BB','Nets BB','Kings BB','Suns BB','Wolves BB','Bulls BB','Hawks BB','Celtics BB','Pistons BB','Spurs BB','Magic BB','Lakers BB','Jazz BB','Bucks BB','Grizzlies BB','Pacers BB','Cavs BB'],
+  volleyball: ['Aces VB','Spikes VB','Sets VB','Blocks VB','Serves VB','Digs VB','Kills VB','Passes VB','Lifts VB','Floats VB','Rolls VB','Tips VB','Dumps VB','Swings VB','Cuts VB','Drives VB','Jumps VB','Slides VB','Spins VB','Dives VB']
+};
+
+// ===== SCHEDULE GENERATION =====
+function makeId(sport, court, idx) {
+  return `${sport}_${court.replace(/ /g,'_')}_${idx}`;
+}
+
+function getRoundLabel(sport, slotIdx) {
+  if (sport === 'volleyball') {
+    if (slotIdx <= 9) return 'Pool Play';
+    if (slotIdx <= 12) return 'Quarterfinal';
+    if (slotIdx === 13) return 'Semifinal';
+    return 'Final';
+  } else {
+    if (slotIdx <= 5) return 'Pool Play';
+    if (slotIdx <= 7) return 'Quarterfinal';
+    if (slotIdx === 8) return 'Semifinal';
+    return 'Final';
+  }
+}
+
+function buildSchedule(teams) {
+  const games = {};
+
+  const D1 = (h,m) => new Date(2026,6,25,h,m,0).getTime();
+  const D2 = (h,m) => new Date(2026,6,26,h,m,0).getTime();
+
+  const soccerSlots1 = [[8,0],[8,30],[9,0],[9,30],[10,0],[10,30],[11,0],[11,30],[12,0],[12,30]];
+  const soccerSlots2 = soccerSlots1;
+  const soccerFields = ['Soccer Field A','Soccer Field B','Soccer Field C','Soccer Field D'];
+  const soccerTeams = teams.soccer;
+
+  let soccerGlobalIdx = 0;
+  soccerFields.forEach(field => {
+    [soccerSlots1, soccerSlots2].forEach((slots, dayIdx) => {
+      const dfn = dayIdx === 0 ? D1 : D2;
+      slots.forEach(([h,m], slotIdx) => {
+        const id = makeId('soccer', field, soccerGlobalIdx);
+        const t1 = soccerGlobalIdx % soccerTeams.length;
+        const t2 = (soccerGlobalIdx + 1) % soccerTeams.length;
+        games[id] = {
+          id, sport:'soccer', court:field,
+          phase: dayIdx === 0 ? 'Day 1' : 'Day 2',
+          round: getRoundLabel('soccer', slotIdx),
+          desc: `${soccerTeams[t1]} vs ${soccerTeams[t2]}`,
+          scheduledStart: dfn(h,m), slotMin:25,
+          team1: soccerTeams[t1], team2: soccerTeams[t2],
+          score1:0, score2:0,
+          status:'upcoming', winner:null, loser:null, dq:null, ts: Date.now()
+        };
+        soccerGlobalIdx++;
+      });
+    });
+  });
+
+  const bbSlots1 = [[8,0],[8,30],[9,0],[9,30],[10,0],[10,30],[11,0],[11,30],[12,0],[12,30]];
+  const bbCourts = ['Basketball Court A','Basketball Court B'];
+  const bbTeams = teams.basketball;
+  let bbGlobalIdx = 0;
+  bbCourts.forEach(court => {
+    [bbSlots1, bbSlots1].forEach((slots, dayIdx) => {
+      const dfn = dayIdx === 0 ? D1 : D2;
+      slots.forEach(([h,m], slotIdx) => {
+        const id = makeId('basketball', court, bbGlobalIdx);
+        const t1 = bbGlobalIdx % bbTeams.length;
+        const t2 = (bbGlobalIdx + 1) % bbTeams.length;
+        games[id] = {
+          id, sport:'basketball', court,
+          phase: dayIdx === 0 ? 'Day 1' : 'Day 2',
+          round: getRoundLabel('basketball', slotIdx),
+          desc: `${bbTeams[t1]} vs ${bbTeams[t2]}`,
+          scheduledStart: dfn(h,m), slotMin:25,
+          team1: bbTeams[t1], team2: bbTeams[t2],
+          score1:0, score2:0,
+          status:'upcoming', winner:null, loser:null, dq:null, ts: Date.now()
+        };
+        bbGlobalIdx++;
+      });
+    });
+  });
+
+  const vbSlots = [[8,0],[8,20],[8,40],[9,0],[9,20],[9,40],[10,0],[10,20],[10,40],[11,0],[11,20],[11,40],[12,0],[12,20],[12,40]];
+  const vbTeams = teams.volleyball;
+  let vbGlobalIdx = 0;
+  [vbSlots, vbSlots].forEach((slots, dayIdx) => {
+    const dfn = dayIdx === 0 ? D1 : D2;
+    slots.forEach(([h,m], slotIdx) => {
+      const id = makeId('volleyball', 'Volleyball Court', vbGlobalIdx);
+      const t1 = vbGlobalIdx % vbTeams.length;
+      const t2 = (vbGlobalIdx + 1) % vbTeams.length;
+      games[id] = {
+        id, sport:'volleyball', court:'Volleyball Court',
+        phase: dayIdx === 0 ? 'Day 1' : 'Day 2',
+        round: getRoundLabel('volleyball', slotIdx),
+        desc: `${vbTeams[t1]} vs ${vbTeams[t2]}`,
+        scheduledStart: dfn(h,m), slotMin:20,
+        team1: vbTeams[t1], team2: vbTeams[t2],
+        score1:0, score2:0,
+        status:'upcoming', winner:null, loser:null, dq:null, ts: Date.now()
+      };
+      vbGlobalIdx++;
+    });
+  });
+
+  return games;
+}
+
+function shiftGamesToToday(games) {
+  // Shift Day 1 to today, Day 2 to tomorrow
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const tomorrow = new Date(today.getTime() + 86400000);
+  const origDay1 = new Date(2026,6,25);
+  const origDay2 = new Date(2026,6,26);
+
+  Object.values(games).forEach(g => {
+    const orig = new Date(g.scheduledStart);
+    const h = orig.getHours(), m = orig.getMinutes();
+    // Determine if orig is day1 or day2
+    const origDate = new Date(orig.getFullYear(), orig.getMonth(), orig.getDate());
+    if (origDate.getTime() === origDay1.getTime()) {
+      g.scheduledStart = new Date(today.getFullYear(), today.getMonth(), today.getDate(), h, m, 0).getTime();
+    } else {
+      g.scheduledStart = new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), h, m, 0).getTime();
+    }
+  });
+  return games;
+}
+
+// ===== SYNC =====
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return null;
+}
+
+function initState() {
+  const teams = JSON.parse(JSON.stringify(DEFAULT_TEAMS));
+  const games = buildSchedule(teams);
+  return {
+    teams,
+    games,
+    courtDelays: {},
+    timers: {},
+    simTime: null
+  };
+}
+
+window.addEventListener('storage', e => {
+  if (e.key === STORAGE_KEY && e.newValue) {
+    try {
+      state = JSON.parse(e.newValue);
+      refresh();
+    } catch(e) {}
+  }
+});
+
+// ===== TIMER =====
+function getElapsed(gameId) {
+  const t = state.timers[gameId];
+  if (!t) return 0;
+  let s = t.accumulated || 0;
+  if (t.running && t.startedAt) s += (Date.now() - t.startedAt) / 1000;
+  return s;
+}
+
+function getRemaining(gameId) {
+  const t = state.timers[gameId];
+  const dur = (t && t.duration) ? t.duration : 900;
+  return dur - getElapsed(gameId);
+}
+
+function playBuzzer() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.15, 0.3].forEach(offset => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.frequency.value = 880; g.gain.value = 0.4;
+      o.start(ctx.currentTime + offset);
+      o.stop(ctx.currentTime + offset + 0.12);
+    });
+  } catch(e) {}
+}
+
+function formatTime(seconds) {
+  const abs = Math.abs(seconds);
+  const m = Math.floor(abs / 60);
+  const s = Math.floor(abs % 60);
+  return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+function ensureTimer(gameId, duration) {
+  if (!state.timers[gameId]) {
+    state.timers[gameId] = { startedAt: null, accumulated: 0, running: false, duration: duration || 900 };
+  }
+}
+
+function startTimer(gameId) {
+  ensureTimer(gameId);
+  const t = state.timers[gameId];
+  if (!t.running) {
+    t.startedAt = Date.now();
+    t.running = true;
+    saveState();
+  }
+}
+
+function pauseTimer(gameId) {
+  const t = state.timers[gameId];
+  if (!t) return;
+  if (t.running) {
+    t.accumulated = getElapsed(gameId);
+    t.startedAt = null;
+    t.running = false;
+    saveState();
+  }
+}
+
+function resetTimer(gameId) {
+  state.timers[gameId] = { startedAt: null, accumulated: 0, running: false, duration: 900 };
+  buzzerFired = false;
+  fulltimeShown = false;
+  document.getElementById('fulltime-overlay').classList.remove('visible');
+  saveState();
+}
+
+function tickTimer() {
+  if (!currentGameId) return;
+  const remaining = getRemaining(currentGameId);
+  const elapsed = getElapsed(currentGameId);
+  const t = state.timers[currentGameId];
+  const duration = (t && t.duration) ? t.duration : 900;
+
+  // Buzzer
+  if (remaining <= 0 && !buzzerFired && t && t.running) {
+    buzzerFired = true;
+    playBuzzer();
+    if (!fulltimeShown) {
+      fulltimeShown = true;
+      document.getElementById('fulltime-overlay').classList.add('visible');
+    }
+  }
+
+  // Display
+  const el = document.getElementById('timer-main');
+  const otEl = document.getElementById('timer-ot');
+  const prog = document.getElementById('timer-progress');
+  const isRunning = t && t.running;
+
+  if (remaining >= 0) {
+    el.textContent = formatTime(remaining);
+    otEl.style.display = 'none';
+  } else {
+    el.textContent = formatTime(duration);
+    otEl.style.display = 'block';
+    otEl.textContent = `+${formatTime(-remaining)} OT`;
+  }
+
+  // Color
+  el.className = '';
+  if (remaining <= 0) {
+    if (isRunning) el.classList.add('flash');
+    else el.classList.add('red');
+  } else if (remaining <= 120) {
+    el.classList.add('red');
+  } else if (remaining <= 300) {
+    el.classList.add('amber');
+  }
+
+  // Progress bar
+  const pct = Math.max(0, Math.min(100, (remaining / duration) * 100));
+  prog.style.width = pct + '%';
+  if (remaining <= 0) prog.style.backgroundColor = 'var(--red)';
+  else if (remaining <= 120) prog.style.backgroundColor = 'var(--red)';
+  else if (remaining <= 300) prog.style.backgroundColor = 'var(--amber)';
+  else prog.style.backgroundColor = 'var(--green)';
+
+  // Start/Pause button
+  const btn = document.getElementById('btn-start-pause');
+  if (isRunning) {
+    btn.textContent = '⏸ PAUSE';
+  } else {
+    btn.textContent = '▶ START';
+  }
+}
+
+// ===== CLOCK =====
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const s = String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('live-clock').textContent = `${h}:${m}:${s}`;
+}
+
+// ===== EFFECTIVE TIME =====
+function getEffectiveStart(game) {
+  const delay = (state.courtDelays && state.courtDelays[game.court]) || 0;
+  return game.scheduledStart + delay * 60000;
+}
+
+function formatTs(ts) {
+  const d = new Date(ts);
+  let h = d.getHours();
+  const m = String(d.getMinutes()).padStart(2,'0');
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  return `${h}:${m} ${ampm}`;
+}
+
+function getGameEmoji(game) {
+  if (game.status === 'live') return '🔴';
+  if (game.status === 'final') return '✅';
+  return '⏳';
+}
+
+// ===== UI RENDER =====
+function buildGameSelect() {
+  const sel = document.getElementById('game-select');
+  const prevId = currentGameId;
+
+  const sportGames = Object.values(state.games)
+    .filter(g => g.sport === currentSport)
+    .sort((a,b) => getEffectiveStart(a) - getEffectiveStart(b));
+
+  sel.innerHTML = '';
+  if (sportGames.length === 0) {
+    sel.innerHTML = '<option value="">No games found</option>';
+    return;
+  }
+
+  sportGames.forEach(g => {
+    const opt = document.createElement('option');
+    opt.value = g.id;
+    const timeStr = formatTs(getEffectiveStart(g));
+    const emoji = getGameEmoji(g);
+    opt.textContent = `[${timeStr}] ${g.court} — ${g.team1} vs ${g.team2} ${emoji}`;
+    opt.selected = g.id === prevId;
+    sel.appendChild(opt);
+  });
+
+  // If no selection, select first
+  if (!prevId || !state.games[prevId] || state.games[prevId].sport !== currentSport) {
+    sel.selectedIndex = 0;
+    currentGameId = sportGames[0]?.id || null;
+  } else {
+    currentGameId = prevId;
+  }
+}
+
+function renderGameMeta() {
+  const g = currentGameId ? state.games[currentGameId] : null;
+  if (!g) {
+    document.getElementById('meta-scheduled').textContent = '—';
+    document.getElementById('meta-effective').textContent = '—';
+    document.getElementById('meta-court').textContent = '—';
+    document.getElementById('live-badge').classList.remove('visible');
+    return;
+  }
+  document.getElementById('meta-scheduled').textContent = formatTs(g.scheduledStart);
+  document.getElementById('meta-effective').textContent = formatTs(getEffectiveStart(g));
+  document.getElementById('meta-court').textContent = g.court;
+
+  const now = Date.now();
+  const eff = getEffectiveStart(g);
+  const isLiveNow = g.status === 'live' || (now >= eff && now < eff + g.slotMin * 60000);
+  document.getElementById('live-badge').classList.toggle('visible', isLiveNow);
+}
+
+function renderScoreCard() {
+  const g = currentGameId ? state.games[currentGameId] : null;
+  document.getElementById('name1').textContent = g ? g.team1 : '—';
+  document.getElementById('name2').textContent = g ? g.team2 : '—';
+  document.getElementById('score1').textContent = g ? g.score1 : 0;
+  document.getElementById('score2').textContent = g ? g.score2 : 0;
+  document.getElementById('dq-name1').textContent = g ? g.team1 : 'Team 1';
+  document.getElementById('dq-name2').textContent = g ? g.team2 : 'Team 2';
+}
+
+function renderStatus() {
+  const g = currentGameId ? state.games[currentGameId] : null;
+  const status = g ? g.status : 'upcoming';
+  document.querySelectorAll('.btn-status').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.status === status);
+  });
+}
+
+function renderDelay() {
+  const g = currentGameId ? state.games[currentGameId] : null;
+  const court = g ? g.court : '—';
+  const delay = (state.courtDelays && state.courtDelays[court]) || 0;
+  document.getElementById('delay-court-name').textContent = court;
+  document.getElementById('delay-display').textContent = (delay >= 0 ? '+' : '') + delay + ' min';
+}
+
+function renderNextUp() {
+  const g = currentGameId ? state.games[currentGameId] : null;
+  const el = document.getElementById('next-up-list');
+  if (!g) { el.innerHTML = '<div class="no-game-msg">Select a game above</div>'; return; }
+
+  const courtGames = Object.values(state.games)
+    .filter(og => og.court === g.court && og.status === 'upcoming' && og.id !== g.id)
+    .sort((a,b) => getEffectiveStart(a) - getEffectiveStart(b))
+    .slice(0, 3);
+
+  if (courtGames.length === 0) {
+    el.innerHTML = '<div class="no-game-msg">No upcoming games on this court</div>';
+    return;
+  }
+
+  el.innerHTML = courtGames.map(og => `
+    <div class="next-game-item">
+      <div class="next-game-time">${formatTs(getEffectiveStart(og))}</div>
+      <div class="next-game-teams">${og.team1} vs ${og.team2}<br><span class="next-game-round">${og.round}</span></div>
+    </div>
+  `).join('');
+}
+
+function renderTimerButtons() {
+  const g = currentGameId ? state.games[currentGameId] : null;
+  if (g) ensureTimer(currentGameId, 900);
+  tickTimer();
+}
+
+function renderTestModeBar() {
+  const bar = document.getElementById('test-mode-bar');
+  bar.classList.toggle('visible', !!state.simTime);
+  const btn = document.getElementById('btn-test-mode');
+  btn.classList.toggle('active', !!state.simTime);
+  btn.textContent = state.simTime ? '🧪 Test Mode ON' : '🧪 Test Mode';
+}
+
+function refresh() {
+  buildGameSelect();
+  renderGameMeta();
+  renderScoreCard();
+  renderStatus();
+  renderDelay();
+  renderNextUp();
+  renderTimerButtons();
+  renderTestModeBar();
+}
+
+// ===== EVENT HANDLERS =====
+
+// Sport tabs
+document.querySelectorAll('.sport-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    currentGameId = null;
+    currentSport = tab.dataset.sport;
+    document.querySelectorAll('.sport-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    buzzerFired = false;
+    fulltimeShown = false;
+    document.getElementById('fulltime-overlay').classList.remove('visible');
+    refresh();
+  });
+});
+
+// Game select
+document.getElementById('game-select').addEventListener('change', e => {
+  currentGameId = e.target.value || null;
+  buzzerFired = false;
+  fulltimeShown = false;
+  document.getElementById('fulltime-overlay').classList.remove('visible');
+  renderGameMeta();
+  renderScoreCard();
+  renderStatus();
+  renderDelay();
+  renderNextUp();
+  renderTimerButtons();
+});
+
+// Score buttons
+document.querySelectorAll('.btn-score').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (!currentGameId) return;
+    const g = state.games[currentGameId];
+    if (!g) return;
+    const team = btn.dataset.team;
+    const delta = parseInt(btn.dataset.delta);
+    if (team === '1') g.score1 = Math.max(0, g.score1 + delta);
+    else g.score2 = Math.max(0, g.score2 + delta);
+    g.ts = Date.now();
+    saveState();
+    renderScoreCard();
+    buildGameSelect();
+  });
+});
+
+// Timer buttons
+document.getElementById('btn-start-pause').addEventListener('click', () => {
+  if (!currentGameId) return;
+  ensureTimer(currentGameId);
+  const t = state.timers[currentGameId];
+  if (t.running) {
+    pauseTimer(currentGameId);
+  } else {
+    startTimer(currentGameId);
+  }
+  tickTimer();
+});
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  if (!currentGameId) return;
+  resetTimer(currentGameId);
+  tickTimer();
+});
+
+document.getElementById('btn-set15').addEventListener('click', () => {
+  if (!currentGameId) return;
+  state.timers[currentGameId] = { startedAt: null, accumulated: 0, running: false, duration: 900 };
+  buzzerFired = false;
+  fulltimeShown = false;
+  document.getElementById('fulltime-overlay').classList.remove('visible');
+  saveState();
+  tickTimer();
+});
+
+document.getElementById('btn-dismiss-ft').addEventListener('click', () => {
+  document.getElementById('fulltime-overlay').classList.remove('visible');
+});
+
+// Status buttons
+document.querySelectorAll('.btn-status').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (!currentGameId) return;
+    const g = state.games[currentGameId];
+    if (!g) return;
+    const newStatus = btn.dataset.status;
+    g.status = newStatus;
+    g.ts = Date.now();
+
+    if (newStatus === 'live') {
+      ensureTimer(currentGameId);
+      if (!state.timers[currentGameId].running) {
+        startTimer(currentGameId);
+      }
+    } else if (newStatus === 'final') {
+      if (state.timers[currentGameId]) {
+        pauseTimer(currentGameId);
+      }
+      // Determine winner/loser
+      if (!g.dq) {
+        if (g.score1 > g.score2) { g.winner = g.team1; g.loser = g.team2; }
+        else if (g.score2 > g.score1) { g.winner = g.team2; g.loser = g.team1; }
+        else { g.winner = null; g.loser = null; }
+      }
+    }
+
+    saveState();
+    renderStatus();
+    buildGameSelect();
+    renderGameMeta();
+    tickTimer();
+  });
+});
+
+// DQ buttons
+function showConfirm(msg, cb) {
+  document.getElementById('confirm-msg').textContent = msg;
+  confirmCallback = cb;
+  document.getElementById('confirm-overlay').classList.add('visible');
+}
+
+document.getElementById('btn-dq1').addEventListener('click', () => {
+  if (!currentGameId) return;
+  const g = state.games[currentGameId];
+  if (!g) return;
+  showConfirm(`Disqualify ${g.team1}? This will set ${g.team2} as winner.`, () => {
+    g.dq = 'team1';
+    g.winner = g.team2;
+    g.loser = g.team1;
+    g.status = 'final';
+    g.ts = Date.now();
+    if (state.timers[currentGameId]) pauseTimer(currentGameId);
+    saveState();
+    refresh();
+  });
+});
+
+document.getElementById('btn-dq2').addEventListener('click', () => {
+  if (!currentGameId) return;
+  const g = state.games[currentGameId];
+  if (!g) return;
+  showConfirm(`Disqualify ${g.team2}? This will set ${g.team1} as winner.`, () => {
+    g.dq = 'team2';
+    g.winner = g.team1;
+    g.loser = g.team2;
+    g.status = 'final';
+    g.ts = Date.now();
+    if (state.timers[currentGameId]) pauseTimer(currentGameId);
+    saveState();
+    refresh();
+  });
+});
+
+document.getElementById('btn-confirm-yes').addEventListener('click', () => {
+  if (confirmCallback) confirmCallback();
+  confirmCallback = null;
+  document.getElementById('confirm-overlay').classList.remove('visible');
+});
+
+document.getElementById('btn-confirm-no').addEventListener('click', () => {
+  confirmCallback = null;
+  document.getElementById('confirm-overlay').classList.remove('visible');
+});
+
+// Advanced toggle
+document.getElementById('advanced-toggle').addEventListener('click', () => {
+  const btn = document.getElementById('advanced-toggle');
+  const content = document.getElementById('advanced-content');
+  btn.classList.toggle('open');
+  content.classList.toggle('visible');
+});
+
+// Delay buttons
+document.querySelectorAll('.btn-delay').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (!currentGameId) return;
+    const g = state.games[currentGameId];
+    if (!g) return;
+    const delta = parseInt(btn.dataset.min);
+    if (!state.courtDelays) state.courtDelays = {};
+    state.courtDelays[g.court] = (state.courtDelays[g.court] || 0) + delta;
+    saveState();
+    renderDelay();
+    renderGameMeta();
+    buildGameSelect();
+    renderNextUp();
+  });
+});
+
+document.getElementById('btn-delay-reset').addEventListener('click', () => {
+  if (!currentGameId) return;
+  const g = state.games[currentGameId];
+  if (!g) return;
+  if (!state.courtDelays) state.courtDelays = {};
+  state.courtDelays[g.court] = 0;
+  saveState();
+  renderDelay();
+  renderGameMeta();
+  buildGameSelect();
+  renderNextUp();
+});
+
+// Setup modal
+function buildModalInputs() {
+  const container = document.getElementById('modal-sport-sections');
+  container.innerHTML = '';
+  ['soccer','basketball','volleyball'].forEach(sport => {
+    const section = document.createElement('div');
+    section.className = 'modal-sport-section';
+    const titles = { soccer:'⚽ Soccer Teams', basketball:'🏀 Basketball Teams', volleyball:'🏐 Volleyball Teams' };
+    section.innerHTML = `<div class="modal-sport-title">${titles[sport]}</div><div class="team-inputs-grid" id="inputs-${sport}"></div>`;
+    container.appendChild(section);
+    const grid = section.querySelector(`#inputs-${sport}`);
+    const teamList = state.teams[sport] || DEFAULT_TEAMS[sport];
+    for (let i = 0; i < 20; i++) {
+      const inp = document.createElement('input');
+      inp.type = 'text';
+      inp.className = 'team-input';
+      inp.dataset.sport = sport;
+      inp.dataset.idx = i;
+      inp.value = teamList[i] || '';
+      inp.placeholder = `Team ${i+1}`;
+      grid.appendChild(inp);
+    }
+  });
+}
+
+document.getElementById('btn-setup').addEventListener('click', () => {
+  buildModalInputs();
+  document.getElementById('modal-overlay').classList.add('visible');
+});
+
+document.getElementById('btn-close-modal').addEventListener('click', () => {
+  document.getElementById('modal-overlay').classList.remove('visible');
+});
+
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal-overlay')) {
+    document.getElementById('modal-overlay').classList.remove('visible');
+  }
+});
+
+document.getElementById('btn-save-teams').addEventListener('click', () => {
+  const newTeams = { soccer:[], basketball:[], volleyball:[] };
+  document.querySelectorAll('.team-input').forEach(inp => {
+    newTeams[inp.dataset.sport][parseInt(inp.dataset.idx)] = inp.value.trim() || DEFAULT_TEAMS[inp.dataset.sport][inp.dataset.idx];
+  });
+  state.teams = newTeams;
+  // Rebuild schedule, preserving existing game results where possible
+  const newGames = buildSchedule(newTeams);
+  if (state.simTime) {
+    shiftGamesToToday(newGames);
+  }
+  // Merge existing statuses
+  Object.keys(newGames).forEach(id => {
+    if (state.games[id]) {
+      const old = state.games[id];
+      newGames[id].score1 = old.score1;
+      newGames[id].score2 = old.score2;
+      newGames[id].status = old.status;
+      newGames[id].winner = old.winner;
+      newGames[id].loser = old.loser;
+      newGames[id].dq = old.dq;
+    }
+  });
+  state.games = newGames;
+  saveState();
+  document.getElementById('modal-overlay').classList.remove('visible');
+  currentGameId = null;
+  refresh();
+});
+
+// Test mode
+document.getElementById('btn-test-mode').addEventListener('click', () => {
+  if (state.simTime) {
+    // Exit test mode — rebuild with original times
+    state.simTime = null;
+    const newGames = buildSchedule(state.teams);
+    // Merge statuses
+    Object.keys(newGames).forEach(id => {
+      if (state.games[id]) {
+        const old = state.games[id];
+        newGames[id].score1 = old.score1;
+        newGames[id].score2 = old.score2;
+        newGames[id].status = old.status;
+        newGames[id].winner = old.winner;
+        newGames[id].loser = old.loser;
+        newGames[id].dq = old.dq;
+      }
+    });
+    state.games = newGames;
+  } else {
+    state.simTime = Date.now();
+    shiftGamesToToday(state.games);
+  }
+  saveState();
+  document.getElementById('modal-overlay').classList.remove('visible');
+  currentGameId = null;
+  refresh();
+});
+
+document.getElementById('btn-exit-test').addEventListener('click', () => {
+  state.simTime = null;
+  const newGames = buildSchedule(state.teams);
+  Object.keys(newGames).forEach(id => {
+    if (state.games[id]) {
+      const old = state.games[id];
+      newGames[id].score1 = old.score1;
+      newGames[id].score2 = old.score2;
+      newGames[id].status = old.status;
+      newGames[id].winner = old.winner;
+      newGames[id].loser = old.loser;
+      newGames[id].dq = old.dq;
+    }
+  });
+  state.games = newGames;
+  saveState();
+  currentGameId = null;
+  refresh();
+});
+
+// ===== INIT =====
+function init() {
+  state = loadState();
+  if (!state) {
+    state = initState();
+    saveState();
+  }
+  // Ensure all required keys exist
+  if (!state.teams) state.teams = JSON.parse(JSON.stringify(DEFAULT_TEAMS));
+  if (!state.games) state.games = buildSchedule(state.teams);
+  if (!state.courtDelays) state.courtDelays = {};
+  if (!state.timers) state.timers = {};
+
+  refresh();
+
+  // Clock
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // Timer tick
+  timerInterval = setInterval(() => {
+    tickTimer();
+  }, 100);
+}
+
+init();
+</script>
+</body>
+</html>
