@@ -348,6 +348,92 @@ body.tv-on .header,.tv-on .sport-tabs,.tv-on #liveBanner,.tv-on .view{display:no
 .tv-upcoming-teams{flex:1;font-weight:600}
 .tv-upcoming-round{font-size:10px;color:var(--dim)}
 @media(max-width:900px){.tv-live-grid{grid-template-columns:repeat(2,1fr)}.tv-bracket-cols{grid-template-columns:1fr 1fr}}
+
+/* ══════════════════════════════════════════════════════════════
+   LIVE CONTROL VIEW
+══════════════════════════════════════════════════════════════ */
+.lc-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 16px;background:var(--gray2);border-bottom:2px solid var(--gray3);position:sticky;top:0;z-index:20}
+.lc-sport-btns{display:flex;gap:6px;flex-wrap:wrap}
+.lc-sport-btn{padding:7px 16px;border-radius:20px;border:1px solid var(--gray3);background:var(--navy);color:var(--dim);cursor:pointer;font-size:13px;font-weight:700;transition:all .15s;white-space:nowrap}
+.lc-sport-btn.active{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.lc-action-group{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+.lc-act-btn{padding:8px 14px;border-radius:7px;border:none;cursor:pointer;font-size:12px;font-weight:700;transition:all .2s;white-space:nowrap}
+.lc-act-btn.start-all{background:linear-gradient(135deg,#14532d,#166534);border:2px solid #22c55e;color:#fff}
+.lc-act-btn.start-all:hover{background:linear-gradient(135deg,#15803d,#16a34a)}
+.lc-act-btn.pause-all{background:rgba(212,160,23,.15);border:2px solid var(--gold);color:var(--gold)}
+.lc-act-btn.end-all{background:rgba(26,107,60,.15);border:2px solid #22c55e;color:#86efac}
+.lc-act-btn.reset-all{background:var(--gray3);border:2px solid var(--gray3);color:var(--dim)}
+.lc-round-info{font-size:11px;color:var(--dim);margin-left:8px}
+
+.lc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;padding:16px}
+
+.lc-card{background:var(--gray2);border:2px solid var(--gray3);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px;transition:border-color .2s}
+.lc-card.is-live{border-color:var(--live);box-shadow:0 0 16px rgba(224,80,80,.15)}
+.lc-card.is-final{border-color:var(--gray3);opacity:.65}
+.lc-card.is-paused{border-color:var(--gold)}
+
+.lc-card-hdr{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.lc-card-name{font-size:11px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:1.5px}
+.lc-card-round{font-size:10px;color:var(--dim);margin-top:2px}
+
+.lc-timer-block{text-align:center;padding:8px;background:var(--navy);border-radius:10px}
+.lc-timer-num{font-size:36px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:2px;line-height:1;transition:color .3s}
+.lc-timer-num.running{color:#22c55e}
+.lc-timer-num.paused{color:var(--gold)}
+.lc-timer-num.done{color:var(--live);animation:pulse 1s infinite}
+.lc-timer-num.idle{color:var(--dim)}
+.lc-timer-label{font-size:10px;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin-top:3px}
+.lc-timer-controls{display:flex;gap:6px;justify-content:center;margin-top:8px;flex-wrap:wrap}
+.lc-tc-btn{padding:6px 14px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:700;transition:all .15s}
+.lc-tc-start{background:linear-gradient(135deg,#14532d,#166534);border:1px solid #22c55e;color:#fff}
+.lc-tc-start:hover{background:linear-gradient(135deg,#15803d,#16a34a)}
+.lc-tc-pause{background:rgba(212,160,23,.15);border:1px solid var(--gold);color:var(--gold)}
+.lc-tc-pause:hover{background:rgba(212,160,23,.25)}
+.lc-tc-reset{background:var(--gray3);border:1px solid var(--gray3);color:var(--dim)}
+.lc-tc-reset:hover{border-color:var(--live);color:var(--live)}
+.lc-tc-end{background:rgba(26,107,60,.2);border:1px solid #22c55e;color:#86efac}
+.lc-tc-end:hover{background:rgba(26,107,60,.35)}
+
+.lc-teams-row{display:grid;grid-template-columns:1fr 30px 1fr;gap:6px;align-items:center}
+.lc-team-col{display:flex;flex-direction:column;align-items:center;gap:6px}
+.lc-team-name-display{font-size:13px;font-weight:700;text-align:center;cursor:text;border-radius:5px;padding:3px 6px;min-width:80px;word-break:break-word;border:1px solid transparent;transition:border-color .15s;line-height:1.3}
+.lc-team-name-display:hover{border-color:var(--gray3);background:var(--navy)}
+.lc-team-name-display:focus{outline:none;border-color:var(--gold);background:var(--navy);color:var(--text)}
+.lc-score-big{font-size:52px;font-weight:900;color:var(--gold);line-height:1;text-align:center}
+.lc-score-btns{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
+.lc-sc-btn{padding:5px 10px;border-radius:5px;border:none;cursor:pointer;font-size:12px;font-weight:700;transition:all .15s;background:var(--gray3);color:var(--text)}
+.lc-sc-btn:hover{background:var(--gold);color:var(--navy)}
+.lc-sc-btn.neg:hover{background:var(--live);color:#fff}
+.lc-vs-label{text-align:center;font-size:14px;font-weight:900;color:var(--dim)}
+
+.lc-event-entry{display:flex;flex-direction:column;gap:8px;padding:10px;background:var(--navy);border-radius:8px}
+.lc-evt-title{font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
+.lc-evt-name-row{display:flex;gap:6px;align-items:center}
+.lc-evt-name-row input{flex:1;background:var(--gray2);border:1px solid var(--gray3);color:var(--text);padding:6px 9px;border-radius:6px;font-size:12px}
+.lc-evt-name-row input:focus{outline:none;border-color:var(--gold)}
+.lc-evt-type-row{display:flex;gap:5px;flex-wrap:wrap}
+.lc-et-btn{padding:5px 10px;border-radius:5px;border:1px solid var(--gray3);background:var(--gray2);color:var(--dim);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
+.lc-et-btn:hover{border-color:var(--gold);color:var(--gold)}
+.lc-et-btn.goal-t1,.lc-et-btn.goal-t2{border-color:#22c55e;color:#86efac;background:rgba(34,197,94,.1)}
+.lc-et-btn.goal-t1:hover,.lc-et-btn.goal-t2:hover{background:rgba(34,197,94,.25)}
+.lc-et-btn.yellow{border-color:#ca8a04;color:#fde047}
+.lc-et-btn.red-card{border-color:var(--live);color:#fca5a5}
+.lc-et-btn.foul{border-color:var(--dim)}
+
+.lc-event-list{display:flex;flex-direction:column;gap:3px;max-height:130px;overflow-y:auto}
+.lc-event-row{display:flex;align-items:center;gap:7px;font-size:11px;padding:4px 6px;background:var(--gray2);border-radius:4px}
+.lc-er-icon{font-size:12px;flex-shrink:0}
+.lc-er-min{color:var(--dim);font-size:10px;font-weight:700;min-width:20px}
+.lc-er-player{flex:1;font-weight:600}
+.lc-er-team{font-size:9px;color:var(--dim)}
+.lc-er-del{background:none;border:none;color:var(--gray3);cursor:pointer;font-size:11px;padding:0 2px}
+.lc-er-del:hover{color:var(--live)}
+
+@media(max-width:600px){
+  .lc-grid{grid-template-columns:1fr}
+  .lc-score-big{font-size:42px}
+  .lc-timer-num{font-size:28px}
+}
 </style>
 </head>
 <body>
@@ -451,6 +537,7 @@ body.tv-on .header,.tv-on .sport-tabs,.tv-on #liveBanner,.tv-on .view{display:no
     <button class="nav-btn" onclick="showView('schedule')" id="nav-schedule">📅 Schedule</button>
     <button class="nav-btn" onclick="showView('scorer')" id="nav-scorer">⌨️ Score Entry</button>
     <button class="nav-btn" onclick="openModal('setupModal');switchSetupSport('soccer')">⚙️ Setup</button>
+    <button class="nav-btn" onclick="showView('livecontrol')" id="nav-livecontrol">🎮 Live Control</button>
     <button class="nav-btn" onclick="enterTV()">📺 TV Mode</button>
   </div>
 </div>
@@ -597,6 +684,23 @@ body.tv-on .header,.tv-on .sport-tabs,.tv-on #liveBanner,.tv-on .view{display:no
       <div id="seRecentResults" class="results-list"></div>
     </div>
   </div>
+</div>
+
+<!-- ── LIVE CONTROL VIEW ── -->
+<div class="view" id="view-livecontrol">
+  <div class="lc-toolbar">
+    <div class="lc-sport-btns">
+      <button class="lc-sport-btn active" id="lcbtn-soccer"    onclick="lcSetSport('soccer')">⚽ Soccer (4 Fields)</button>
+      <button class="lc-sport-btn"        id="lcbtn-basketball" onclick="lcSetSport('basketball')">🏀 Basketball (2 Courts)</button>
+      <button class="lc-sport-btn"        id="lcbtn-volleyball" onclick="lcSetSport('volleyball')">🏐 Volleyball (1 Court)</button>
+    </div>
+    <div class="lc-action-group">
+      <button class="lc-act-btn start-all" onclick="lcStartAll()">🚀 Start All</button>
+      <button class="lc-act-btn pause-all" onclick="lcPauseAll()">⏸ Pause All</button>
+      <button class="lc-act-btn end-all"   onclick="lcEndAll()">✅ End All</button>
+    </div>
+  </div>
+  <div class="lc-grid" id="lcGrid"></div>
 </div>
 
 <script>
@@ -763,6 +867,7 @@ function defaultState() {
     courtDelays: {},    // courtName -> delayMinutes
     simTime: null,      // null = real time
     events: {},         // gameId -> [{id,type,team,player,minute,ts}]
+    timers: {},         // gameId -> {startedAt,accumulated,running,duration}
   };
   buildAllGames(s);
   return s;
@@ -1142,6 +1247,7 @@ function showView(v, pushState = true) {
   if (v === 'schedule') renderSchedule();
   if (v === 'scorer') { seUpdateSport(); seLoadRecentResults(); renderEventLog(); }
   if (v === 'dashboard') renderDashboard();
+  if (v === 'livecontrol') renderLCGrid();
   if (pushState && history.pushState) {
     history.pushState({ view: v, sport: currentSport }, '', '#' + v);
   }
@@ -1596,6 +1702,404 @@ function seLoadRecentResults() {
 }
 
 // ══════════════════════════════════════════════════════════════
+// LIVE CONTROL — per-court timer, inline name edit, quick score
+// ══════════════════════════════════════════════════════════════
+const LC_COURTS = {
+  soccer:     ['Soccer Field A','Soccer Field B','Soccer Field C','Soccer Field D'],
+  basketball: ['Basketball Court 1','Basketball Court 2'],
+  volleyball: ['Volleyball Court'],
+};
+// Sport default durations in seconds
+const SPORT_DURATION = { soccer: 1200, basketball: 1500, volleyball: 1200 };
+
+let lcSport = 'soccer';
+
+// ── Timer helpers ──
+function timerGet(gameId) {
+  if (!state.timers) state.timers = {};
+  if (!state.timers[gameId]) {
+    const g = state.games[gameId];
+    state.timers[gameId] = {
+      startedAt: null, accumulated: 0, running: false,
+      duration: g ? SPORT_DURATION[g.sport] || 1200 : 1200,
+    };
+  }
+  return state.timers[gameId];
+}
+
+function timerRemaining(gameId) {
+  const t = timerGet(gameId);
+  let elapsed = t.accumulated || 0;
+  if (t.running && t.startedAt) elapsed += (now() - t.startedAt) / 1000;
+  return Math.max(0, t.duration - elapsed);
+}
+
+function timerElapsed(gameId) {
+  const t = timerGet(gameId);
+  let elapsed = t.accumulated || 0;
+  if (t.running && t.startedAt) elapsed += (now() - t.startedAt) / 1000;
+  return Math.min(elapsed, t.duration);
+}
+
+function fmtTimer(secs) {
+  const m = Math.floor(secs / 60);
+  const s = Math.floor(secs % 60);
+  return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+
+function lcStartTimer(gameId) {
+  const t = timerGet(gameId);
+  if (t.running) return;
+  if (timerRemaining(gameId) <= 0) return; // already done
+  t.running = true;
+  t.startedAt = now();
+  // Also set game status to live
+  const g = state.games[gameId];
+  if (g && g.status !== 'final') g.status = 'live';
+  save();
+  lcRefreshCard(gameId);
+  renderAll();
+}
+
+function lcPauseTimer(gameId) {
+  const t = timerGet(gameId);
+  if (!t.running) return;
+  t.accumulated += (now() - t.startedAt) / 1000;
+  t.running = false;
+  t.startedAt = null;
+  save();
+  lcRefreshCard(gameId);
+}
+
+function lcResetTimer(gameId) {
+  const t = timerGet(gameId);
+  t.running = false;
+  t.startedAt = null;
+  t.accumulated = 0;
+  save();
+  lcRefreshCard(gameId);
+}
+
+function lcEndGame(gameId) {
+  lcPauseTimer(gameId);
+  const g = state.games[gameId];
+  if (!g) return;
+  const s1 = g.score1, s2 = g.score2;
+  g.status = 'final';
+  g.winner = s1 >= s2 ? g.team1 : g.team2;
+  g.loser  = s1 >= s2 ? g.team2 : g.team1;
+  if (!g.ts) g.ts = now();
+  save();
+  flash(`✅ ${g.team1} ${s1}–${s2} ${g.team2} — FINAL`);
+  renderAll();
+  renderLCGrid();
+}
+
+// ── Score ──
+function lcScore(gameId, team, delta) {
+  const g = state.games[gameId];
+  if (!g || g.status === 'final') return;
+  if (team === 'team1') g.score1 = Math.max(0, g.score1 + delta);
+  else                  g.score2 = Math.max(0, g.score2 + delta);
+  save();
+  // Animate score
+  const el = document.getElementById(`lc-score-${gameId}-${team}`);
+  if (el) { el.textContent = team === 'team1' ? g.score1 : g.score2; el.classList.remove('score-anim'); void el.offsetWidth; el.classList.add('score-anim'); }
+  renderAll();
+}
+
+// ── Inline team name editing ──
+function lcSaveTeamName(gameId, teamKey, el) {
+  const name = (el.textContent || '').trim();
+  if (!name) { el.textContent = state.games[gameId]?.[teamKey] || 'TBD'; return; }
+  const g = state.games[gameId];
+  if (!g) return;
+  g[teamKey] = name;
+  // Sync back into teams array if we can identify the index
+  save();
+  renderAll();
+  // Update banner + bracket (don't re-render the whole LC card to avoid losing focus)
+  const otherEl = document.getElementById(`lc-name-${gameId}-${teamKey}`);
+  if (otherEl) otherEl.textContent = name;
+}
+
+// ── Quick event entry ──
+function lcLogEvent(gameId, team, type) {
+  const g = state.games[gameId];
+  if (!g) return;
+  const playerEl = document.getElementById(`lc-player-${gameId}`);
+  const player = playerEl ? playerEl.value.trim() : '';
+  const elapsed = Math.floor(timerElapsed(gameId) / 60);
+
+  if (!state.events) state.events = {};
+  if (!state.events[gameId]) state.events[gameId] = [];
+  state.events[gameId].push({
+    id: Date.now() + '_' + Math.floor(Math.random()*9999),
+    gameId, type, team, player, minute: elapsed, ts: now(),
+  });
+
+  // If it's a goal, increment score
+  if (type === 'goal') {
+    if (team === 'team1') g.score1++;
+    else g.score2++;
+    flash(`⚽ GOAL! ${player ? player + ' — ' : ''}${team==='team1'?g.team1:g.team2} · ${g.score1}–${g.score2}`);
+  } else {
+    const icon = evtIcon(g.sport, type);
+    flash(`${icon} ${type} — ${player||'player'} (${team==='team1'?g.team1:g.team2})`);
+  }
+
+  if (playerEl) playerEl.value = '';
+  save();
+  lcRefreshCard(gameId);
+  renderAll();
+}
+
+// ── Start / Pause / End All ──
+function lcGetCurrentGame(court) {
+  const games = Object.values(state.games)
+    .filter(g => g.court === court && g.sport === lcSport)
+    .sort((a,b) => effectiveStart(a)-effectiveStart(b));
+  const live = games.find(g => g.status === 'live' || (isLiveByTime(g) && g.status !== 'final'));
+  if (live) return live;
+  const next = games.find(g => g.status !== 'final');
+  if (next) return next;
+  return games.filter(g=>g.status==='final').sort((a,b)=>b.ts-a.ts)[0] || null;
+}
+
+function lcStartAll() {
+  LC_COURTS[lcSport].forEach(court => {
+    const g = lcGetCurrentGame(court);
+    if (g && g.status !== 'final') lcStartTimer(g.id);
+  });
+  flash(`🚀 All ${lcSport} games started!`);
+  renderLCGrid();
+}
+
+function lcPauseAll() {
+  LC_COURTS[lcSport].forEach(court => {
+    const g = lcGetCurrentGame(court);
+    if (g) lcPauseTimer(g.id);
+  });
+  flash(`⏸ All ${lcSport} games paused`);
+  renderLCGrid();
+}
+
+function lcEndAll() {
+  if (!confirm(`Mark ALL ${lcSport} games as FINAL?`)) return;
+  LC_COURTS[lcSport].forEach(court => {
+    const g = lcGetCurrentGame(court);
+    if (g && g.status !== 'final') lcEndGame(g.id);
+  });
+  flash(`✅ All ${lcSport} games marked final`);
+  renderLCGrid();
+}
+
+// ── Render ──
+function lcSetSport(sp) {
+  lcSport = sp;
+  ['soccer','basketball','volleyball'].forEach(s => {
+    document.getElementById(`lcbtn-${s}`)?.classList.toggle('active', s === sp);
+  });
+  renderLCGrid();
+}
+
+function lcEventButtons(g) {
+  const sport = g.sport;
+  if (sport === 'soccer') return [
+    `<button class="lc-et-btn goal-t1" onclick="lcLogEvent('${g.id}','team1','goal')">⚽ Goal — <span id="lc-name-${g.id}-team1-btn">${g.team1.slice(0,10)}</span></button>`,
+    `<button class="lc-et-btn goal-t2" onclick="lcLogEvent('${g.id}','team2','goal')">⚽ Goal — <span id="lc-name-${g.id}-team2-btn">${g.team2.slice(0,10)}</span></button>`,
+    `<button class="lc-et-btn yellow" onclick="lcLogEvent('${g.id}',_lcTeamChoice('${g.id}'),'yellow')">🟡 Yellow</button>`,
+    `<button class="lc-et-btn red-card" onclick="lcLogEvent('${g.id}',_lcTeamChoice('${g.id}'),'red')">🔴 Red</button>`,
+    `<button class="lc-et-btn foul" onclick="lcLogEvent('${g.id}',_lcTeamChoice('${g.id}'),'foul')">⚠️ Foul</button>`,
+  ].join('');
+  if (sport === 'basketball') return [
+    `<button class="lc-et-btn goal-t1" onclick="lcLogEvent('${g.id}','team1','goal')">🏀 +2 — ${g.team1.slice(0,8)}</button>`,
+    `<button class="lc-et-btn goal-t2" onclick="lcLogEvent('${g.id}','team2','goal')">🏀 +2 — ${g.team2.slice(0,8)}</button>`,
+    `<button class="lc-et-btn foul" onclick="lcLogEvent('${g.id}',_lcTeamChoice('${g.id}'),'foul')">✋ Foul</button>`,
+    `<button class="lc-et-btn yellow" onclick="lcLogEvent('${g.id}',_lcTeamChoice('${g.id}'),'travel')">🚶 Travel</button>`,
+    `<button class="lc-et-btn red-card" onclick="lcLogEvent('${g.id}',_lcTeamChoice('${g.id}'),'technical')">⚡ Technical</button>`,
+  ].join('');
+  // volleyball
+  return [
+    `<button class="lc-et-btn goal-t1" onclick="lcLogEvent('${g.id}','team1','goal')">🏐 Point — ${g.team1.slice(0,8)}</button>`,
+    `<button class="lc-et-btn goal-t2" onclick="lcLogEvent('${g.id}','team2','goal')">🏐 Point — ${g.team2.slice(0,8)}</button>`,
+    `<button class="lc-et-btn yellow" onclick="lcLogEvent('${g.id}',_lcTeamChoice('${g.id}'),'sanction')">⚠️ Sanction</button>`,
+  ].join('');
+}
+
+// Helper: for card/foul buttons pick the highlighted team (or team1 fallback)
+const _lcTeamHighlight = {};
+function _lcTeamChoice(gameId) {
+  return _lcTeamHighlight[gameId] || 'team1';
+}
+
+function lcCardHtml(gameId) {
+  const g = lcGetCurrentGame(gameId) || state.games[gameId]; // gameId here is actually a court
+  return '';
+}
+
+function buildLCCard(court) {
+  const g = lcGetCurrentGame(court);
+  if (!g) return `<div class="lc-card"><div class="lc-card-hdr"><div class="lc-card-name">${court.replace(/Soccer |Basketball |/,'')}</div></div><div style="color:var(--dim);text-align:center;padding:20px;font-size:13px">No games scheduled</div></div>`;
+
+  const t = timerGet(g.id);
+  const rem = timerRemaining(g.id);
+  const isDone = rem <= 0 || g.status === 'final';
+  const isRunning = t.running;
+  const isPaused = !isRunning && t.accumulated > 0 && !isDone;
+
+  let timerClass = 'idle';
+  if (isDone) timerClass = 'done';
+  else if (isRunning) timerClass = 'running';
+  else if (isPaused) timerClass = 'paused';
+
+  const evts = getGameEvents(g.id);
+
+  const evtRows = evts.length
+    ? evts.map(e => `<div class="lc-event-row">
+        <span class="lc-er-icon">${evtIcon(g.sport,e.type)}</span>
+        <span class="lc-er-min">${e.minute}'</span>
+        <span class="lc-er-player">${e.player||e.type}</span>
+        <span class="lc-er-team">${(e.team==='team1'?g.team1:g.team2).slice(0,10)}</span>
+        <button class="lc-er-del" onclick="deleteEvent('${g.id}','${e.id}');lcRefreshCard('${g.id}')">✕</button>
+      </div>`).join('')
+    : '<div style="color:var(--dim);font-size:11px;text-align:center;padding:6px">No events yet</div>';
+
+  const cardClass = g.status==='final' ? 'is-final' : isRunning ? 'is-live' : isPaused ? 'is-paused' : '';
+
+  return `<div class="lc-card ${cardClass}" id="lccard-${g.id}">
+    <div class="lc-card-hdr">
+      <div>
+        <div class="lc-card-name">${SPORT_ICON[g.sport]} ${court.replace(/Soccer |Basketball |/,'')}</div>
+        <div class="lc-card-round">${g.round} · ${fmtTime(effectiveStart(g))}</div>
+      </div>
+      <div class="lc-timer-block">
+        <div class="lc-timer-num ${timerClass}" id="lctimer-${g.id}">${fmtTimer(rem)}</div>
+        <div class="lc-timer-label">${isDone ? '⏰ TIME' : isRunning ? '▶ RUNNING' : isPaused ? '⏸ PAUSED' : '⏱ READY'}</div>
+      </div>
+    </div>
+    <div class="lc-timer-controls">
+      ${!isDone ? `<button class="lc-tc-btn lc-tc-start" onclick="lcStartTimer('${g.id}')">▶ Start</button>` : ''}
+      ${isRunning ? `<button class="lc-tc-btn lc-tc-pause" onclick="lcPauseTimer('${g.id}')">⏸ Pause</button>` : ''}
+      <button class="lc-tc-btn lc-tc-reset" onclick="lcResetTimer('${g.id}')">↺ Reset</button>
+      ${g.status !== 'final' ? `<button class="lc-tc-btn lc-tc-end" onclick="lcEndGame('${g.id}')">✅ End Game</button>` : '<span style="color:#86efac;font-size:11px;font-weight:700;padding:6px">✅ FINAL</span>'}
+    </div>
+    <div class="lc-teams-row">
+      <div class="lc-team-col">
+        <span class="lc-team-name-display" id="lc-name-${g.id}-team1" contenteditable="true"
+          onblur="lcSaveTeamName('${g.id}','team1',this)"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}"
+          >${g.team1}</span>
+        <div class="lc-score-big score-anim-wrap" id="lc-score-${g.id}-team1">${g.score1}</div>
+        <div class="lc-score-btns">
+          <button class="lc-sc-btn neg" onclick="lcScore('${g.id}','team1',-1)">−1</button>
+          <button class="lc-sc-btn" onclick="lcScore('${g.id}','team1',1)">+1</button>
+          <button class="lc-sc-btn" onclick="lcScore('${g.id}','team1',2)">+2</button>
+          <button class="lc-sc-btn" onclick="lcScore('${g.id}','team1',3)">+3</button>
+        </div>
+      </div>
+      <div class="lc-vs-label">VS</div>
+      <div class="lc-team-col">
+        <span class="lc-team-name-display" id="lc-name-${g.id}-team2" contenteditable="true"
+          onblur="lcSaveTeamName('${g.id}','team2',this)"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}"
+          >${g.team2}</span>
+        <div class="lc-score-big score-anim-wrap" id="lc-score-${g.id}-team2">${g.score2}</div>
+        <div class="lc-score-btns">
+          <button class="lc-sc-btn neg" onclick="lcScore('${g.id}','team2',-1)">−1</button>
+          <button class="lc-sc-btn" onclick="lcScore('${g.id}','team2',1)">+1</button>
+          <button class="lc-sc-btn" onclick="lcScore('${g.id}','team2',2)">+2</button>
+          <button class="lc-sc-btn" onclick="lcScore('${g.id}','team2',3)">+3</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick event entry -->
+    <div class="lc-event-entry">
+      <div class="lc-evt-title">Log Event</div>
+      <div class="lc-evt-name-row">
+        <input type="text" id="lc-player-${g.id}" placeholder="Player name (optional)" autocomplete="off">
+      </div>
+      <div class="lc-evt-type-row">
+        ${lcEventButtons(g)}
+      </div>
+    </div>
+
+    <!-- Event log -->
+    <div class="lc-event-list" id="lc-evtlog-${g.id}">${evtRows}</div>
+  </div>`;
+}
+
+function renderLCGrid() {
+  const courts = LC_COURTS[lcSport] || [];
+  document.getElementById('lcGrid').innerHTML = courts.map(buildLCCard).join('');
+}
+
+// Refresh just the timer number without full re-render (prevents contenteditable reset)
+function lcRefreshCard(gameId) {
+  const t = timerGet(gameId);
+  const rem = timerRemaining(gameId);
+  const isDone = rem <= 0 || state.games[gameId]?.status === 'final';
+  const isRunning = t.running;
+  const isPaused = !isRunning && t.accumulated > 0 && !isDone;
+
+  const timerEl = document.getElementById(`lctimer-${gameId}`);
+  if (timerEl) {
+    timerEl.textContent = fmtTimer(rem);
+    timerEl.className = `lc-timer-num ${isDone?'done':isRunning?'running':isPaused?'paused':'idle'}`;
+  }
+
+  // Update card border class
+  const card = document.getElementById(`lccard-${gameId}`);
+  if (card) {
+    card.classList.remove('is-live','is-final','is-paused');
+    if (state.games[gameId]?.status === 'final') card.classList.add('is-final');
+    else if (isRunning) card.classList.add('is-live');
+    else if (isPaused) card.classList.add('is-paused');
+  }
+
+  // Update event log
+  const logEl = document.getElementById(`lc-evtlog-${gameId}`);
+  const g = state.games[gameId];
+  if (logEl && g) {
+    const evts = getGameEvents(gameId);
+    logEl.innerHTML = evts.length
+      ? evts.map(e => `<div class="lc-event-row">
+          <span class="lc-er-icon">${evtIcon(g.sport,e.type)}</span>
+          <span class="lc-er-min">${e.minute}'</span>
+          <span class="lc-er-player">${e.player||e.type}</span>
+          <span class="lc-er-team">${(e.team==='team1'?g.team1:g.team2).slice(0,10)}</span>
+          <button class="lc-er-del" onclick="deleteEvent('${gameId}','${e.id}');lcRefreshCard('${gameId}')">✕</button>
+        </div>`).join('')
+      : '<div style="color:var(--dim);font-size:11px;text-align:center;padding:6px">No events yet</div>';
+  }
+}
+
+// Tick timers every second when in LC view
+setInterval(() => {
+  if (currentView !== 'livecontrol') return;
+  LC_COURTS[lcSport]?.forEach(court => {
+    const g = lcGetCurrentGame(court);
+    if (!g) return;
+    const t = timerGet(g.id);
+    if (!t.running) return;
+    const rem = timerRemaining(g.id);
+    const timerEl = document.getElementById(`lctimer-${g.id}`);
+    if (timerEl) {
+      timerEl.textContent = fmtTimer(rem);
+      if (rem <= 0) {
+        timerEl.className = 'lc-timer-num done';
+        // Auto-pause when time runs out
+        lcPauseTimer(g.id);
+        flash(`⏰ TIME UP — ${g.court}`, false);
+      }
+    }
+    // Also update elapsed in TV scorers
+    if (document.body.classList.contains('tv-on') && tvCurrentView === 0) renderTV1();
+  });
+}, 1000);
+
+// ══════════════════════════════════════════════════════════════
 // TV MODE — 4 rotating views
 // ══════════════════════════════════════════════════════════════
 const COURTS_TV = [
@@ -1697,7 +2201,7 @@ function renderTV1() {
         <span class="tv-lc-name">${g.team2}${g.dq==='team2'?' 🚫':''}</span>
         <span class="tv-lc-score">${g.score2}</span>
       </div>
-      <div class="tv-lc-status ${live?'live':last?'done':''}">${live?`● ${elapsedMin(g)}' of ${g.slotMin}'`:last?`FINAL · ${g.round}`:next?`Next @ ${fmtTime(effectiveStart(next))}`:'Standby'}</div>
+      <div class="tv-lc-status ${live?'live':last?'done':''}">${live?(()=>{const rem=timerRemaining(g.id);const t=timerGet(g.id);return t.accumulated>0||t.running?`● ${fmtTimer(rem)} left`:`● ${elapsedMin(g)}' elapsed`;})():last?`FINAL · ${g.round}`:next?`Next @ ${fmtTime(effectiveStart(next))}`:'Standby'}</div>
       ${evtHtml}
     </div>`;
   }).join('');
@@ -1930,6 +2434,7 @@ function renderAll() {
   renderBanner();
   if (currentView === 'dashboard') renderDashboard();
   if (currentView === 'schedule') renderSchedule();
+  if (currentView === 'livecontrol') renderLCGrid();
   if (document.body.classList.contains('tv-on')) renderTV();
   updateBadges();
 }
@@ -1953,9 +2458,11 @@ window.applyFirebaseState = (data) => {
     games: data.games || {},
     simTime: data.simTime || null,
     events: data.events || {},
+    timers: data.timers || {},
   });
   renderAll();
   if (currentView === 'scorer') { seLoadGame(); renderEventLog(); }
+  if (currentView === 'livecontrol') renderLCGrid();
 };
 
 // ── INIT ──
