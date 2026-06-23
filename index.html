@@ -180,6 +180,14 @@ hr.sep{border:none;border-top:1px solid var(--gray3);margin:20px 0}
 .team-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:12px}
 .team-grid input{background:var(--navy);border:1px solid var(--gray3);color:var(--text);padding:6px 9px;border-radius:5px;font-size:12px}
 .team-grid input:focus{outline:none;border-color:var(--gold)}
+.np-court-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--navy);border:1px solid var(--gray3);border-radius:7px;margin-bottom:6px;cursor:pointer;transition:border-color .15s}
+.np-court-row:hover{border-color:var(--gold)}
+.np-court-row.on{border-color:var(--gold);background:rgba(212,160,23,.08)}
+.np-court-row input{width:18px;height:18px;accent-color:var(--gold);cursor:pointer}
+.np-court-label{flex:1;font-size:13px;font-weight:600}
+.np-court-status{font-size:10px;color:var(--dim)}
+.np-court-status.live{color:var(--live);font-weight:700}
+.np-mode-tag{font-size:11px;color:var(--gold);margin-bottom:10px;font-weight:600}
 
 /* ── TV MODE ── */
 .tv-overlay{display:none;position:fixed;inset:0;background:var(--navy);z-index:400;flex-direction:column}
@@ -541,6 +549,28 @@ body.tv-on .header,.tv-on .sport-tabs,.tv-on #liveBanner,.tv-on .view{display:no
   </div>
 </div>
 
+<!-- ── NOW PLAYING MODAL ── -->
+<div class="modal-overlay" id="nowPlayingModal">
+  <div class="modal">
+    <h2>🎯 Now Playing</h2>
+    <p>Choose which fields/courts are in play. TV Mode &amp; Live displays show only these — everything else is hidden.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+      <button class="btn btn-gold" onclick="npPreset('soccer')">⚽ Soccer Session (4 fields)</button>
+      <button class="btn btn-gold" onclick="npPreset('bbvb')">🏀🏐 Basketball + Volleyball</button>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
+      <button class="btn btn-outline" onclick="npPreset('auto')">🤖 Auto (follow schedule)</button>
+      <button class="btn btn-outline" onclick="npPreset('all')">Show All</button>
+      <button class="btn btn-outline" onclick="npPreset('none')">Clear</button>
+    </div>
+    <div id="npCourtList"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('nowPlayingModal')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveNowPlaying()">Apply</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── HEADER ── -->
 <div class="header">
   <div class="ko-logo">KO 2026</div>
@@ -550,6 +580,7 @@ body.tv-on .header,.tv-on .sport-tabs,.tv-on #liveBanner,.tv-on .view{display:no
     <button class="nav-btn" onclick="showView('schedule')" id="nav-schedule">📅 Schedule</button>
     <button class="nav-btn" onclick="showView('scorer')" id="nav-scorer">⌨️ Score Entry</button>
     <button class="nav-btn" onclick="openModal('setupModal');switchSetupSport('soccer')">⚙️ Setup</button>
+    <button class="nav-btn" onclick="openNowPlaying()" id="nav-nowplaying">🎯 Now Playing</button>
     <button class="nav-btn" onclick="showView('livecontrol')" id="nav-livecontrol">🎮 Live Control</button>
     <button class="nav-btn" onclick="enterTV()">📺 TV Mode</button>
   </div>
@@ -899,6 +930,7 @@ function defaultState() {
     simTime: null,      // null = real time
     events: {},         // gameId -> [{id,type,team,player,minute,ts}]
     timers: {},         // gameId -> {startedAt,accumulated,running,duration}
+    activeCourts: null, // null = AUTO (follow schedule); [] / [names] = manual
   };
   buildAllGames(s);
   return s;
@@ -2158,6 +2190,27 @@ const COURTS_TV = [
   {name:'🏀 Basketball Court 2', court:'Basketball Court 2', sport:'basketball'},
   {name:'🏐 Volleyball Court', court:'Volleyball Court', sport:'volleyball'},
 ];
+// Returns the courts to display, honoring the Now Playing selection.
+// activeCourts === null → AUTO: courts with a live game or one starting within 90 min.
+function getActiveTVCourts() {
+  const ac = state.activeCourts;
+  if (Array.isArray(ac)) {
+    return COURTS_TV.filter(c => ac.includes(c.court));
+  }
+  // AUTO mode
+  const WINDOW = 90 * 60000;
+  const n = now();
+  const auto = COURTS_TV.filter(c => {
+    const cGames = Object.values(state.games).filter(g => g.court === c.court);
+    const hasLive = cGames.some(g => (isLiveByTime(g) && g.status !== 'final') || g.status === 'live');
+    const startingSoon = cGames.some(g => g.status !== 'final' && effectiveStart(g) - n > 0 && effectiveStart(g) - n <= WINDOW);
+    const recentFinal = cGames.some(g => g.status === 'final' && g.ts && (n - g.ts) <= WINDOW);
+    return hasLive || startingSoon || recentFinal;
+  });
+  // Fall back to all courts if nothing matches (e.g. before event / testing)
+  return auto.length ? auto : COURTS_TV;
+}
+
 const TV_VIEW_NAMES = ['LIVE SCORES','BRACKET PROGRESS','SCORERS & CARDS','UPCOMING GAMES'];
 const TV_ROTATE_MS = 25000;
 let tvCurrentView = 0;
@@ -2221,7 +2274,7 @@ function renderTVCurrentView() {
 function renderTV1() {
   const el = document.getElementById('tvLiveGrid');
   if (!el) return;
-  el.innerHTML = COURTS_TV.map(c => {
+  el.innerHTML = getActiveTVCourts().map(c => {
     const cGames = Object.values(state.games).filter(g => g.court === c.court).sort((a,b) => effectiveStart(a)-effectiveStart(b));
     const live = cGames.find(g => (isLiveByTime(g) && g.status !== 'final') || g.status === 'live');
     const last = !live && cGames.filter(g => g.status === 'final').sort((a,b)=>b.ts-a.ts)[0];
@@ -2337,8 +2390,8 @@ function renderTV2() {
 function renderTV3() {
   const el = document.getElementById('tvScorersGrid');
   if (!el) return;
-  // Show all courts that have at least one event or are live
-  const courts = COURTS_TV.filter(c => {
+  // Among the active courts, show those that are live or have events
+  const courts = getActiveTVCourts().filter(c => {
     const cGames = Object.values(state.games).filter(g => g.court === c.court);
     const hasLive = cGames.some(g => (isLiveByTime(g)&&g.status!=='final')||g.status==='live');
     const hasEvents = cGames.some(g => (state.events?.[g.id]||[]).length > 0);
@@ -2377,8 +2430,10 @@ function renderTV3() {
 function renderTV4() {
   const el = document.getElementById('tvUpcomingView');
   if (!el) return;
+  const activeCourtNames = getActiveTVCourts().map(c => c.court);
   const upcoming = Object.values(state.games)
     .filter(g => g.status !== 'final' && !((isLiveByTime(g)&&g.status!=='final')||g.status==='live'))
+    .filter(g => activeCourtNames.includes(g.court))
     .sort((a,b) => effectiveStart(a)-effectiveStart(b))
     .slice(0,8);
 
@@ -2475,6 +2530,66 @@ function saveSetup() {
 }
 
 // ══════════════════════════════════════════════════════════════
+// NOW PLAYING — choose active courts/fields
+// ══════════════════════════════════════════════════════════════
+let npSelection = null; // working copy while modal is open
+
+function openNowPlaying() {
+  // Start from current state (null = AUTO → represent as all-off + auto flag)
+  npSelection = Array.isArray(state.activeCourts) ? [...state.activeCourts] : null;
+  renderNowPlaying();
+  openModal('nowPlayingModal');
+}
+
+function npPreset(kind) {
+  if (kind === 'soccer')      npSelection = COURTS_TV.filter(c => c.sport === 'soccer').map(c => c.court);
+  else if (kind === 'bbvb')   npSelection = COURTS_TV.filter(c => c.sport === 'basketball' || c.sport === 'volleyball').map(c => c.court);
+  else if (kind === 'all')    npSelection = COURTS_TV.map(c => c.court);
+  else if (kind === 'none')   npSelection = [];
+  else if (kind === 'auto')   npSelection = null;
+  renderNowPlaying();
+}
+
+function npToggle(court) {
+  if (!Array.isArray(npSelection)) npSelection = []; // leaving auto
+  if (npSelection.includes(court)) npSelection = npSelection.filter(c => c !== court);
+  else npSelection = [...npSelection, court];
+  renderNowPlaying();
+}
+
+function renderNowPlaying() {
+  const isAuto = !Array.isArray(npSelection);
+  const modeTag = isAuto
+    ? '🤖 AUTO mode — courts appear automatically based on the schedule'
+    : `✋ MANUAL mode — ${npSelection.length} court${npSelection.length===1?'':'s'} selected`;
+
+  const rows = COURTS_TV.map(c => {
+    const on = !isAuto && npSelection.includes(c.court);
+    const cGames = Object.values(state.games).filter(g => g.court === c.court);
+    const live = cGames.some(g => (isLiveByTime(g)&&g.status!=='final')||g.status==='live');
+    return `<div class="np-court-row ${on?'on':''}" onclick="npToggle('${c.court}')">
+      <input type="checkbox" ${on?'checked':''} onclick="event.stopPropagation();npToggle('${c.court}')">
+      <span class="np-court-label">${c.name}</span>
+      <span class="np-court-status ${live?'live':''}">${live?'● LIVE':''}</span>
+    </div>`;
+  }).join('');
+
+  document.getElementById('npCourtList').innerHTML =
+    `<div class="np-mode-tag">${modeTag}</div>${rows}`;
+}
+
+function saveNowPlaying() {
+  state.activeCourts = Array.isArray(npSelection) ? npSelection : null;
+  save();
+  closeModal('nowPlayingModal');
+  const label = Array.isArray(state.activeCourts)
+    ? `Showing ${state.activeCourts.length} court(s)`
+    : 'Auto mode (follow schedule)';
+  flash(`🎯 Now Playing: ${label}`);
+  renderAll();
+}
+
+// ══════════════════════════════════════════════════════════════
 // SIM TIME
 // ══════════════════════════════════════════════════════════════
 function setSimTime(v) {
@@ -2544,6 +2659,7 @@ window.applyFirebaseState = (data) => {
     simTime: data.simTime || null,
     events: data.events || {},
     timers: data.timers || {},
+    activeCourts: data.activeCourts !== undefined ? data.activeCourts : null,
   });
   renderAll();
   if (currentView === 'scorer') { seLoadGame(); renderEventLog(); }
