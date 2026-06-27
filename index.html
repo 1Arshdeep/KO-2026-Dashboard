@@ -102,33 +102,28 @@ hr.sep{border:none;border-top:1px solid var(--gray3);margin:20px 0}
 .delay-btn.neg:hover{background:var(--green);color:#fff}
 .delay-current{font-size:12px;font-weight:700;min-width:60px;color:var(--gold)}
 
-/* ── BRACKET (structured tree) ── */
+/* ── BRACKET ── */
 .bracket-wrap{overflow-x:auto;padding-bottom:8px}
-.bracket{display:flex;align-items:stretch;gap:0;min-width:min-content}
-.br-round{display:flex;flex-direction:column;min-width:210px;flex:1}
-.br-round-hdr{text-align:center;font-size:11px;font-weight:800;color:var(--text);letter-spacing:1.5px;text-transform:uppercase;padding:8px 10px;margin-bottom:4px}
-.br-games{display:flex;flex-direction:column;justify-content:space-around;padding:6px 18px;gap:10px;flex:1}
-/* connector elbows between rounds */
-.bm-wrap{position:relative;display:flex;flex-direction:column}
-.br-round:not(:last-child) .bm-wrap::after{content:'';position:absolute;top:calc(50% + 7px);right:-18px;width:18px;height:2px;background:var(--gray3)}
-.br-round:not(:first-child) .bm-wrap::before{content:'';position:absolute;top:calc(50% + 7px);left:-18px;width:18px;height:2px;background:var(--gray3)}
-.bm-badge{align-self:flex-start;font-size:9px;font-weight:800;color:var(--dim);background:var(--gray);border:1px solid var(--gray3);border-radius:5px;padding:1px 7px;margin-bottom:4px;letter-spacing:.5px}
-.matchup{background:var(--gray2);border:1px solid var(--gray3);border-radius:8px;overflow:hidden;cursor:pointer;transition:border-color .15s;position:relative}
+.bracket{display:flex;align-items:flex-start;gap:0}
+.br-round{display:flex;flex-direction:column;min-width:185px}
+.br-round-hdr{text-align:center;font-size:10px;font-weight:700;color:var(--dim);letter-spacing:1px;text-transform:uppercase;padding:5px 10px;background:var(--gray);border-bottom:1px solid var(--gray3)}
+.br-games{display:flex;flex-direction:column;justify-content:space-around;padding:6px;gap:6px;flex:1}
+.matchup{background:var(--gray2);border:1px solid var(--gray3);border-radius:7px;overflow:hidden;cursor:pointer;transition:border-color .15s}
 .matchup:hover{border-color:var(--gold)}
 .matchup.is-live{border-color:var(--live);box-shadow:0 0 10px rgba(224,80,80,.2)}
-.matchup.is-live::after{content:'LIVE';position:absolute;top:3px;right:6px;font-size:8px;font-weight:700;color:var(--live);letter-spacing:1px;animation:pulse 1s infinite;z-index:1}
-.tr{display:flex;align-items:center;padding:9px 10px;gap:8px;border-bottom:1px solid var(--gray3);transition:background .1s}
+.matchup.is-live::after{content:'LIVE';position:absolute;top:3px;right:5px;font-size:8px;font-weight:700;color:var(--live);letter-spacing:1px;animation:pulse 1s infinite}
+.matchup{position:relative}
+.tr{display:flex;align-items:center;padding:7px 8px;gap:7px;border-bottom:1px solid var(--gray3);transition:background .1s}
 .tr:last-child{border-bottom:none}
 .tr.won{background:var(--win-bg)}
-.tr.lost{opacity:.5}
+.tr.lost{background:var(--loss-bg);opacity:.7}
 .tr.dq-row{opacity:.4;text-decoration:line-through}
-.tr-seed{font-size:10px;color:var(--dim);width:20px;height:18px;line-height:18px;text-align:center;flex-shrink:0;background:var(--gray);border-radius:4px;font-weight:700}
-.tr-name{flex:1;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tr.won .tr-name{color:var(--gold-light);font-weight:800}
+.tr-seed{font-size:10px;color:var(--dim);width:16px;text-align:right;flex-shrink:0}
+.tr-name{flex:1;font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tr-name.tbd{color:var(--dim);font-weight:400;font-style:italic}
-.tr-score{font-size:16px;font-weight:800;min-width:24px;text-align:right}
+.tr-score{font-size:15px;font-weight:700;min-width:24px;text-align:right}
 .tr.won .tr-score{color:var(--gold-light)}
-.bm-time{font-size:10px;color:var(--dim);text-align:center;padding:5px 4px 0}
+.match-time{font-size:9px;color:var(--dim);text-align:center;padding:2px 4px;background:rgba(0,0,0,.2)}
 
 /* ── POOLS ── */
 .pools-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:20px}
@@ -185,28 +180,6 @@ hr.sep{border:none;border-top:1px solid var(--gray3);margin:20px 0}
 .team-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:12px}
 .team-grid input{background:var(--navy);border:1px solid var(--gray3);color:var(--text);padding:6px 9px;border-radius:5px;font-size:12px}
 .team-grid input:focus{outline:none;border-color:var(--gold)}
-.np-court-row{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--navy);border:1px solid var(--gray3);border-radius:7px;margin-bottom:6px;cursor:pointer;transition:border-color .15s}
-.np-court-row:hover{border-color:var(--gold)}
-.np-court-row.on{border-color:var(--gold);background:rgba(212,160,23,.08)}
-.np-court-row input{width:18px;height:18px;accent-color:var(--gold);cursor:pointer}
-.np-court-label{flex:1;font-size:13px;font-weight:600}
-.np-court-status{font-size:10px;color:var(--dim)}
-.np-court-status.live{color:var(--live);font-weight:700}
-.np-mode-tag{font-size:11px;color:var(--gold);margin-bottom:10px;font-weight:600}
-/* Rosters editor */
-.roster-import{background:var(--navy);border:1px dashed var(--gold);border-radius:8px;padding:12px;margin-bottom:14px}
-.roster-import h4{font-size:12px;color:var(--gold);margin-bottom:6px}
-.roster-import p{font-size:11px;color:var(--dim);margin-bottom:8px;line-height:1.5}
-.roster-import input[type=file]{font-size:12px;color:var(--text);margin-bottom:8px;width:100%}
-.roster-import textarea{width:100%;background:var(--gray2);border:1px solid var(--gray3);color:var(--text);border-radius:6px;padding:8px;font-size:12px;font-family:monospace;min-height:70px;resize:vertical}
-.roster-import textarea:focus{outline:none;border-color:var(--gold)}
-.roster-team-sel{display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap}
-.roster-team-sel select{flex:1;min-width:160px;background:var(--navy);border:1px solid var(--gray3);color:var(--text);padding:8px 10px;border-radius:6px;font-size:13px}
-.roster-team-sel select:focus{outline:none;border-color:var(--gold)}
-.roster-count{font-size:11px;color:var(--dim)}
-#rosterTextarea{width:100%;background:var(--navy);border:1px solid var(--gray3);color:var(--text);border-radius:8px;padding:10px;font-size:13px;min-height:200px;resize:vertical;line-height:1.7}
-#rosterTextarea:focus{outline:none;border-color:var(--gold)}
-.roster-hint{font-size:11px;color:var(--dim);margin:6px 0}
 
 /* ── TV MODE ── */
 .tv-overlay{display:none;position:fixed;inset:0;background:var(--navy);z-index:400;flex-direction:column}
@@ -229,9 +202,17 @@ body.tv-on .header,.tv-on .sport-tabs,.tv-on #liveBanner,.tv-on .view{display:no
 .tv-status.live{color:var(--live);font-weight:700;animation:pulse 1.5s infinite}
 .tv-status.done{color:var(--dim)}
 .tv-status.up{color:var(--gold)}
-.tv-exit-btn{position:fixed;bottom:16px;right:16px;opacity:.25}
+.tv-exit-btn{position:fixed;bottom:60px;right:16px;opacity:.25}
 .tv-exit-btn:hover{opacity:1}
 .tv-next-up{font-size:11px;color:var(--dim);text-align:center;margin-top:6px}
+.tv-carousel-bar{background:rgba(0,0,0,.5);border-top:1px solid rgba(255,255,255,.08);padding:10px 24px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.tv-nav-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--text);width:34px;height:34px;border-radius:8px;font-size:14px;cursor:pointer;flex-shrink:0}
+.tv-nav-btn:hover{background:rgba(255,255,255,.18)}
+.tv-dot{width:10px;height:10px;border-radius:5px;background:rgba(255,255,255,.25);cursor:pointer;transition:background .2s,width .2s,border-radius .2s;flex-shrink:0}
+.tv-dot.active{background:var(--gold);width:22px}
+.tv-panel-label{font-size:12px;font-weight:700;color:var(--dim);letter-spacing:2px;text-transform:uppercase;flex:1;text-align:center}
+.tv-pause-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:var(--dim);font-size:12px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;flex-shrink:0}
+.tv-pause-btn:hover{color:var(--text)}
 
 /* ── FLASH ── */
 .flash{position:fixed;top:70px;right:16px;background:var(--green);color:#fff;padding:11px 18px;border-radius:8px;font-weight:600;font-size:13px;z-index:999;display:none;animation:slideIn .25s ease;border:1px solid rgba(255,255,255,.2)}
@@ -259,231 +240,6 @@ body.tv-on .header,.tv-on .sport-tabs,.tv-on #liveBanner,.tv-on .view{display:no
 .sim-bar label{color:var(--gold);font-weight:700}
 .sim-bar input[type=datetime-local]{background:var(--navy);border:1px solid var(--gray3);color:var(--text);padding:5px 8px;border-radius:5px;font-size:12px}
 .sim-bar input:focus{outline:none;border-color:var(--gold)}
-
-/* ── START GAME BUTTON ── */
-.start-game-btn{width:100%;padding:13px;background:linear-gradient(135deg,#14532d,#166534);border:2px solid #22c55e;border-radius:10px;color:#fff;font-size:15px;font-weight:800;cursor:pointer;margin-bottom:12px;letter-spacing:.5px;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px}
-.start-game-btn:hover{background:linear-gradient(135deg,#15803d,#16a34a);box-shadow:0 0 20px rgba(34,197,94,.25)}
-.start-game-btn.is-live{background:linear-gradient(135deg,#7f1d1d,#991b1b);border-color:var(--live)}
-.start-game-btn.is-final{background:var(--gray3);border-color:var(--gray3);cursor:default;opacity:.55}
-
-/* ── SCORE ANIMATION ── */
-@keyframes scoreFlash{0%{transform:scale(1)}30%{transform:scale(1.45);color:var(--gold-light)}100%{transform:scale(1)}}
-.score-anim{animation:scoreFlash .35s ease}
-
-/* ── EVENT TRACKING ── */
-.event-section{background:var(--navy);border:1px solid var(--gray3);border-radius:10px;padding:14px;margin-top:14px}
-.event-section-title{font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
-.evt-type-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
-.evt-btn{padding:7px 12px;border-radius:6px;border:1px solid var(--gray3);background:var(--gray2);color:var(--text);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
-.evt-btn:hover{border-color:var(--gold);color:var(--gold)}
-.evt-btn.active{border-color:var(--gold);background:rgba(212,160,23,.15);color:var(--gold-light)}
-.evt-btn.goal.active{border-color:#22c55e;background:rgba(34,197,94,.15);color:#86efac}
-.evt-btn.yellow.active{border-color:#ca8a04;background:rgba(202,138,4,.18);color:#fde047}
-.evt-btn.red.active{border-color:var(--live);background:rgba(224,80,80,.15);color:#fca5a5}
-.evt-team-row{display:flex;gap:8px;margin-bottom:10px}
-.evt-team-btn{flex:1;padding:7px;border-radius:6px;border:1px solid var(--gray3);background:var(--gray2);color:var(--dim);font-size:12px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.evt-team-btn.active{border-color:var(--gold);background:rgba(212,160,23,.15);color:var(--gold-light)}
-.evt-player-row{display:flex;gap:8px;align-items:center;margin-bottom:10px}
-.evt-player-row input[type=text]{flex:1;background:var(--gray2);border:1px solid var(--gray3);color:var(--text);padding:7px 10px;border-radius:6px;font-size:13px}
-.evt-player-row input[type=number]{width:60px;background:var(--gray2);border:1px solid var(--gray3);color:var(--text);padding:7px 8px;border-radius:6px;font-size:13px;text-align:center}
-.evt-player-row input:focus{outline:none;border-color:var(--gold)}
-.evt-log-btn{background:var(--gold);border:none;color:var(--navy);padding:7px 16px;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
-.evt-log-btn:hover{background:var(--gold-light)}
-.event-log{max-height:170px;overflow-y:auto;display:flex;flex-direction:column;gap:4px;margin-top:8px}
-.event-log-item{display:flex;align-items:center;gap:8px;padding:5px 8px;background:var(--gray2);border-radius:5px;font-size:12px}
-.eli-icon{font-size:13px;flex-shrink:0}
-.eli-min{color:var(--dim);font-size:10px;font-weight:700;min-width:22px}
-.eli-player{flex:1;font-weight:600}
-.eli-team{font-size:10px;color:var(--dim)}
-.eli-del{background:none;border:none;color:var(--gray3);cursor:pointer;font-size:13px;padding:0 2px;flex-shrink:0}
-.eli-del:hover{color:var(--live)}
-
-/* ── TV 4 VIEWS ── */
-.tv-views-container{flex:1;overflow:hidden;position:relative}
-.tv-view{display:none;position:absolute;inset:0;flex-direction:column;overflow:hidden}
-.tv-view.active{display:flex;animation:tvSlideIn .35s ease}
-@keyframes tvSlideIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
-.tv-indicator{display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 20px;background:rgba(0,0,0,.3);border-top:1px solid var(--gray3);flex-shrink:0}
-.tv-dot{width:8px;height:8px;border-radius:50%;background:var(--gray3);cursor:pointer;transition:all .3s}
-.tv-dot.active{background:var(--gold);width:22px;border-radius:4px}
-.tv-view-label{font-size:10px;color:var(--dim);letter-spacing:1.5px;text-transform:uppercase;min-width:100px;text-align:center}
-.tv-pause-btn{background:rgba(255,255,255,.07);border:1px solid var(--gray3);color:var(--dim);padding:4px 12px;border-radius:20px;cursor:pointer;font-size:11px;font-weight:600;margin-left:8px;transition:all .15s}
-.tv-pause-btn:hover,.tv-pause-btn.paused{border-color:var(--gold);color:var(--gold)}
-.tv-nav-btn{background:rgba(255,255,255,.06);border:1px solid var(--gray3);color:var(--dim);width:26px;height:26px;border-radius:50%;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.tv-nav-btn:hover{border-color:var(--gold);color:var(--gold)}
-
-/* TV V1: Live Scores grid — fills the whole screen, columns set per count */
-.tv-live-grid{display:grid;gap:16px;padding:18px;flex:1;min-height:0;grid-auto-rows:1fr;align-content:stretch}
-.tv-live-card{background:var(--gray2);border:2px solid var(--gray3);border-radius:16px;padding:22px 26px;display:flex;flex-direction:column;justify-content:center;min-height:0}
-.tv-live-card.is-live{border-color:var(--live);box-shadow:0 0 24px rgba(224,80,80,.2)}
-.tv-lc-sport{font-size:clamp(12px,1.4vw,18px);font-weight:800;color:var(--dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:auto}
-.tv-lc-team{display:flex;justify-content:space-between;align-items:center;padding:clamp(6px,1vh,16px) 0}
-.tv-lc-name{font-size:clamp(20px,2.6vw,40px);font-weight:800;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:14px}
-.tv-lc-score{font-size:clamp(44px,6vw,104px);font-weight:900;color:var(--gold);line-height:.9;min-width:1.4em;text-align:right}
-.tv-lc-vs{text-align:center;font-size:clamp(11px,1.1vw,16px);color:var(--dim);margin:2px 0}
-.tv-lc-status{font-size:clamp(12px,1.3vw,18px);text-align:center;margin-top:auto;padding-top:10px;border-top:1px solid var(--gray3);font-weight:700}
-.tv-lc-status.live{color:var(--live);animation:pulse 1.5s infinite}
-.tv-lc-status.done{color:var(--dim)}
-.tv-lc-events{margin-top:8px;display:flex;flex-direction:column;gap:3px}
-.tv-lc-event{font-size:clamp(11px,1.1vw,15px);color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-/* TV V2: Bracket Standings */
-.tv-bracket-view{flex:1;display:flex;flex-direction:column;padding:16px;gap:12px;overflow:hidden}
-.tv-sport-tabs{display:flex;gap:8px}
-.tv-sport-tab{padding:6px 20px;border-radius:20px;border:1px solid var(--gray3);background:var(--gray2);color:var(--dim);cursor:pointer;font-size:13px;font-weight:600;transition:all .15s}
-.tv-sport-tab.active{background:var(--gold);color:var(--navy);border-color:var(--gold)}
-.tv-standings-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.tv-standings-stat{font-size:13px;color:var(--dim)}
-.tv-standings-stat strong{color:var(--text)}
-.tv-live-pill{background:rgba(224,80,80,.15);border:1px solid rgba(224,80,80,.4);border-radius:20px;padding:3px 12px;font-size:12px;color:var(--live);animation:pulse 1.5s infinite}
-.tv-standings-wrap{flex:1;overflow-y:auto;border-radius:10px;border:1px solid var(--gray3)}
-.tv-standings-tbl{width:100%;border-collapse:collapse;font-size:14px}
-.tv-standings-tbl thead th{padding:10px 16px;color:var(--dim);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid var(--gray3);text-align:left;background:var(--gray2);position:sticky;top:0}
-.tv-standings-tbl thead th:nth-child(3),.tv-standings-tbl thead th:nth-child(4){text-align:center}
-.tv-srow{border-bottom:1px solid rgba(255,255,255,.04)}
-.tv-srow.wb .tv-st-name{color:var(--text);font-weight:700}
-.tv-srow.lb .tv-st-name{color:var(--dim)}
-.tv-srow.elim .tv-st-name{color:var(--gray3);text-decoration:line-through;font-weight:400}
-.tv-srow.champion .tv-st-name{color:var(--gold-light);font-weight:900}
-.tv-srow td{padding:10px 16px}
-.tv-st-rank{color:var(--dim);font-size:12px;width:36px;font-weight:700}
-.tv-srow.champion .tv-st-rank{color:var(--gold)}
-.tv-st-name{font-size:15px}
-.tv-st-w{text-align:center;color:#86efac;font-weight:700;font-size:15px}
-.tv-st-l{text-align:center;color:#fca5a5;font-weight:700;font-size:15px}
-.tv-st-badge{font-size:11px;padding:3px 10px;border-radius:12px;white-space:nowrap}
-.tv-st-badge.wb{background:rgba(26,107,60,.3);color:#86efac}
-.tv-st-badge.lb{background:rgba(59,130,246,.15);color:#93c5fd}
-.tv-st-badge.elim{background:rgba(122,26,26,.2);color:var(--dim)}
-.tv-st-badge.champion{background:rgba(212,160,23,.2);color:var(--gold-light)}
-.tv-st-badge.waiting{background:var(--gray3);color:var(--dim)}
-
-/* TV V3: Scorers */
-.tv-scorers-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;padding:16px;flex:1;overflow:hidden;align-content:start}
-.tv-scorer-card{background:var(--gray2);border:1px solid var(--gray3);border-radius:10px;padding:14px}
-.tv-scorer-card.is-live{border-color:var(--live)}
-.tv-scorer-hdr{font-size:11px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
-.tv-scorer-score{font-size:22px;font-weight:900;text-align:center;margin-bottom:10px}
-.tv-scorer-score em{color:var(--gold);font-style:normal}
-.tv-event-line{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px}
-.tv-event-line:last-child{border:none}
-.tv-event-icon{font-size:14px;flex-shrink:0}
-.tv-event-min{font-size:10px;color:var(--dim);min-width:26px;font-weight:700}
-.tv-event-name{flex:1;font-weight:600}
-.tv-event-tag{font-size:10px;color:var(--dim);white-space:nowrap}
-.tv-no-events{color:var(--dim);font-size:12px;text-align:center;padding:14px;font-style:italic}
-
-/* TV V4: Upcoming */
-.tv-upcoming-view{flex:1;display:flex;flex-direction:column;padding:16px 24px;gap:12px;overflow:hidden}
-.tv-countdown-box{text-align:center;padding:14px;background:rgba(212,160,23,.07);border:1px solid rgba(212,160,23,.2);border-radius:12px;flex-shrink:0}
-.tv-countdown-label{font-size:11px;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
-.tv-countdown-time{font-size:50px;font-weight:900;color:var(--gold);font-variant-numeric:tabular-nums;line-height:1;margin:4px 0}
-.tv-countdown-desc{font-size:13px;color:var(--text)}
-.tv-upcoming-list{flex:1;overflow:hidden;display:flex;flex-direction:column;gap:7px}
-.tv-upcoming-row{display:flex;align-items:center;gap:14px;padding:10px 16px;background:var(--gray2);border:1px solid var(--gray3);border-radius:8px;font-size:13px}
-.tv-upcoming-row.next-up{border-color:var(--gold);background:rgba(212,160,23,.07)}
-.tv-upcoming-time{font-weight:700;color:var(--gold);min-width:75px;font-size:14px}
-.tv-upcoming-sport{font-size:18px;flex-shrink:0}
-.tv-upcoming-court{font-size:11px;color:var(--dim);min-width:110px}
-.tv-upcoming-teams{flex:1;font-weight:600}
-.tv-upcoming-round{font-size:10px;color:var(--dim)}
-@media(max-width:900px){.tv-live-grid{grid-template-columns:repeat(2,1fr)}.tv-bracket-cols{grid-template-columns:1fr 1fr}}
-
-/* ══════════════════════════════════════════════════════════════
-   LIVE CONTROL VIEW
-══════════════════════════════════════════════════════════════ */
-.lc-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 16px;background:var(--gray2);border-bottom:2px solid var(--gray3);position:sticky;top:0;z-index:20}
-.lc-sport-btns{display:flex;gap:6px;flex-wrap:wrap}
-.lc-sport-btn{padding:7px 16px;border-radius:20px;border:1px solid var(--gray3);background:var(--navy);color:var(--dim);cursor:pointer;font-size:13px;font-weight:700;transition:all .15s;white-space:nowrap}
-.lc-sport-btn.active{background:var(--gold);color:var(--navy);border-color:var(--gold)}
-.lc-action-group{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
-.lc-act-btn{padding:8px 14px;border-radius:7px;border:none;cursor:pointer;font-size:12px;font-weight:700;transition:all .2s;white-space:nowrap}
-.lc-act-btn.start-all{background:linear-gradient(135deg,#14532d,#166534);border:2px solid #22c55e;color:#fff}
-.lc-act-btn.start-all:hover{background:linear-gradient(135deg,#15803d,#16a34a)}
-.lc-act-btn.pause-all{background:rgba(212,160,23,.15);border:2px solid var(--gold);color:var(--gold)}
-.lc-act-btn.end-all{background:rgba(26,107,60,.15);border:2px solid #22c55e;color:#86efac}
-.lc-act-btn.reset-all{background:var(--gray3);border:2px solid var(--gray3);color:var(--dim)}
-.lc-round-info{font-size:11px;color:var(--dim);margin-left:8px}
-
-.lc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;padding:16px}
-
-.lc-card{background:var(--gray2);border:2px solid var(--gray3);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px;transition:border-color .2s}
-.lc-card.is-live{border-color:var(--live);box-shadow:0 0 16px rgba(224,80,80,.15)}
-.lc-card.is-final{border-color:var(--gray3);opacity:.65}
-.lc-card.is-paused{border-color:var(--gold)}
-
-.lc-card-hdr{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.lc-card-name{font-size:11px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:1.5px}
-.lc-card-round{font-size:10px;color:var(--dim);margin-top:2px}
-
-.lc-timer-block{text-align:center;padding:8px;background:var(--navy);border-radius:10px}
-.lc-timer-num{font-size:36px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:2px;line-height:1;transition:color .3s}
-.lc-timer-num.running{color:#22c55e}
-.lc-timer-num.paused{color:var(--gold)}
-.lc-timer-num.done{color:var(--live);animation:pulse 1s infinite}
-.lc-timer-num.idle{color:var(--dim)}
-.lc-timer-label{font-size:10px;color:var(--dim);letter-spacing:1px;text-transform:uppercase;margin-top:3px}
-.lc-timer-controls{display:flex;gap:6px;justify-content:center;margin-top:8px;flex-wrap:wrap}
-.lc-tc-btn{padding:6px 14px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:700;transition:all .15s}
-.lc-tc-start{background:linear-gradient(135deg,#14532d,#166534);border:1px solid #22c55e;color:#fff}
-.lc-tc-start:hover{background:linear-gradient(135deg,#15803d,#16a34a)}
-.lc-tc-pause{background:rgba(212,160,23,.15);border:1px solid var(--gold);color:var(--gold)}
-.lc-tc-pause:hover{background:rgba(212,160,23,.25)}
-.lc-tc-reset{background:var(--gray3);border:1px solid var(--gray3);color:var(--dim)}
-.lc-tc-reset:hover{border-color:var(--live);color:var(--live)}
-.lc-tc-end{background:rgba(26,107,60,.2);border:1px solid #22c55e;color:#86efac}
-.lc-tc-end:hover{background:rgba(26,107,60,.35)}
-
-.lc-teams-row{display:grid;grid-template-columns:1fr 30px 1fr;gap:6px;align-items:center}
-.lc-team-col{display:flex;flex-direction:column;align-items:center;gap:6px}
-.lc-team-name-display{font-size:13px;font-weight:700;text-align:center;cursor:text;border-radius:5px;padding:3px 6px;min-width:80px;word-break:break-word;border:1px solid transparent;transition:border-color .15s;line-height:1.3}
-.lc-team-name-display:hover{border-color:var(--gray3);background:var(--navy)}
-.lc-team-name-display:focus{outline:none;border-color:var(--gold);background:var(--navy);color:var(--text)}
-.lc-score-big{font-size:52px;font-weight:900;color:var(--gold);line-height:1;text-align:center}
-.lc-score-btns{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
-.lc-sc-btn{padding:5px 10px;border-radius:5px;border:none;cursor:pointer;font-size:12px;font-weight:700;transition:all .15s;background:var(--gray3);color:var(--text)}
-.lc-sc-btn:hover{background:var(--gold);color:var(--navy)}
-.lc-sc-btn.neg:hover{background:var(--live);color:#fff}
-.lc-vs-label{text-align:center;font-size:14px;font-weight:900;color:var(--dim)}
-
-.lc-event-entry{display:flex;flex-direction:column;gap:8px;padding:10px;background:var(--navy);border-radius:8px}
-.lc-evt-title{font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:1px}
-.lc-evt-name-row{display:flex;gap:6px;align-items:center}
-.lc-evt-name-row input{flex:1;background:var(--gray2);border:1px solid var(--gray3);color:var(--text);padding:6px 9px;border-radius:6px;font-size:12px}
-.lc-evt-name-row input:focus{outline:none;border-color:var(--gold)}
-.lc-evt-type-row{display:flex;gap:5px;flex-wrap:wrap}
-.lc-et-btn{padding:5px 10px;border-radius:5px;border:1px solid var(--gray3);background:var(--gray2);color:var(--dim);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap}
-.lc-et-btn:hover{border-color:var(--gold);color:var(--gold)}
-.lc-et-btn.goal-t1,.lc-et-btn.goal-t2{border-color:#22c55e;color:#86efac;background:rgba(34,197,94,.1)}
-.lc-et-btn.goal-t1:hover,.lc-et-btn.goal-t2:hover{background:rgba(34,197,94,.25)}
-.lc-et-btn.yellow{border-color:#ca8a04;color:#fde047}
-.lc-et-btn.red-card{border-color:var(--live);color:#fca5a5}
-.lc-et-btn.foul{border-color:var(--dim)}
-/* per-team event blocks */
-.lc-evt-teams{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.lc-evt-team-block{background:var(--gray2);border:1px solid var(--gray3);border-radius:7px;padding:8px;display:flex;flex-direction:column;gap:5px}
-.lc-evt-team-hdr{font-size:11px;font-weight:800;text-align:center;color:var(--gold-light);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-bottom:4px;border-bottom:1px solid var(--gray3)}
-.lc-evt-team-block .lc-et-btn{width:100%;text-align:center;padding:6px 4px;font-size:12px}
-.lc-evt-goal-btn{padding:8px 4px!important;font-size:13px!important;font-weight:800!important;border-color:#22c55e!important;color:#fff!important;background:linear-gradient(135deg,rgba(20,83,45,.6),rgba(22,101,52,.6))!important}
-.lc-evt-goal-btn:hover{background:linear-gradient(135deg,#15803d,#16a34a)!important}
-
-.lc-event-list{display:flex;flex-direction:column;gap:3px;max-height:160px;overflow-y:auto}
-.lc-event-list-hdr{font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;display:flex;align-items:center;gap:6px}
-.lc-event-list-hdr .live-dot{width:7px;height:7px;border-radius:50%;background:var(--live);animation:pulse 1.2s infinite}
-.lc-event-row.newest{background:rgba(212,160,23,.12);border:1px solid rgba(212,160,23,.3)}
-.lc-event-row{display:flex;align-items:center;gap:7px;font-size:11px;padding:4px 6px;background:var(--gray2);border-radius:4px}
-.lc-er-icon{font-size:12px;flex-shrink:0}
-.lc-er-min{color:var(--dim);font-size:10px;font-weight:700;min-width:20px}
-.lc-er-player{flex:1;font-weight:600}
-.lc-er-team{font-size:9px;color:var(--dim)}
-.lc-er-del{background:none;border:none;color:var(--gray3);cursor:pointer;font-size:11px;padding:0 2px}
-.lc-er-del:hover{color:var(--live)}
-
-@media(max-width:600px){
-  .lc-grid{grid-template-columns:1fr}
-  .lc-score-big{font-size:42px}
-  .lc-timer-num{font-size:28px}
-}
 </style>
 </head>
 <body>
@@ -508,100 +264,19 @@ body.tv-on .header,.tv-on .sport-tabs,.tv-on #liveBanner,.tv-on .view{display:no
       <div class="tv-logo">🏆 KHALSA OLYMPICS 2026</div>
       <div class="tv-sub">July 25–26 · Paramount Fine Foods Centre, Brampton</div>
     </div>
-    <div style="display:flex;align-items:center;gap:18px">
-      <div class="tv-time" id="tvClock"></div>
-      <button class="btn btn-outline" style="font-size:12px;padding:6px 14px;opacity:.5" onclick="exitTV()" title="ESC to exit">✕ Exit</button>
-    </div>
+    <div class="tv-time" id="tvClock"></div>
   </div>
-  <div class="tv-views-container">
-    <div class="tv-view active" id="tv-view-0">
-      <div class="tv-live-grid" id="tvLiveGrid"></div>
-    </div>
-    <div class="tv-view" id="tv-view-1">
-      <div class="tv-bracket-view" id="tvBracketView"></div>
-    </div>
-    <div class="tv-view" id="tv-view-2">
-      <div class="tv-scorers-grid" id="tvScorersGrid"></div>
-    </div>
-    <div class="tv-view" id="tv-view-3">
-      <div class="tv-upcoming-view" id="tvUpcomingView"></div>
-    </div>
+  <div class="tv-courts" id="tvCourts" style="flex:1;overflow:auto"></div>
+  <div class="tv-carousel-bar">
+    <button class="tv-nav-btn" onclick="tvPrev()">◀</button>
+    <div style="display:flex;gap:6px;align-items:center" id="tvDots"></div>
+    <button class="tv-nav-btn" onclick="tvNext()">▶</button>
+    <span class="tv-panel-label" id="tvPanelLabel"></span>
+    <button class="tv-pause-btn" id="tvPauseBtn" onclick="tvTogglePause()">⏸ Pause</button>
   </div>
-  <div class="tv-indicator">
-    <button class="tv-nav-btn" onclick="tvNav(-1)">◀</button>
-    <div class="tv-dot active" onclick="switchTVView(0)" id="tvdot0" title="Live Scores"></div>
-    <div class="tv-dot" onclick="switchTVView(1)" id="tvdot1" title="Bracket Progress"></div>
-    <div class="tv-dot" onclick="switchTVView(2)" id="tvdot2" title="Scorers & Cards"></div>
-    <div class="tv-dot" onclick="switchTVView(3)" id="tvdot3" title="Upcoming Games"></div>
-    <button class="tv-nav-btn" onclick="tvNav(1)">▶</button>
-    <span class="tv-view-label" id="tvViewLabel">LIVE SCORES</span>
-    <button class="tv-pause-btn" id="tvPauseBtn" onclick="toggleTVRotate()">⏸ Pause</button>
-  </div>
+  <button class="btn btn-outline tv-exit-btn" onclick="exitTV()">✕ Exit (ESC)</button>
 </div>
 
-<!-- ── CASCADE MODAL ── -->
-<div class="modal-overlay" id="cascadeModal">
-  <div class="modal">
-    <h2 id="cmTitle">⏱ Schedule Cascade</h2>
-    <p id="cmBody"></p>
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeCascade(false)">Keep Original Times</button>
-      <button class="btn btn-gold" id="cmConfirm" onclick="closeCascade(true)">Cascade Times ✓</button>
-    </div>
-  </div>
-</div>
-
-<!-- ── DQ MODAL ── -->
-<div class="modal-overlay" id="dqModal">
-  <div class="modal">
-    <h2>🚫 Disqualify / Forfeit</h2>
-    <p id="dqBody">Choose the team being disqualified. Their opponent advances automatically.</p>
-    <div class="modal-actions" id="dqActions"></div>
-  </div>
-</div>
-
-<!-- ── SETUP MODAL ── -->
-<div class="modal-overlay" id="setupModal">
-  <div class="modal">
-    <h2>⚙️ Team Setup</h2>
-    <div class="setup-tabs" style="margin-bottom:8px">
-      <button class="btn btn-gold" onclick="switchSetupMode('names')" id="smode-names">✏️ Team Names</button>
-      <button class="btn btn-outline" onclick="switchSetupMode('players')" id="smode-players">👥 Players (Rosters)</button>
-    </div>
-    <div class="setup-tabs" id="setupTabs">
-      <button class="btn btn-gold" onclick="switchSetupSport('soccer')" id="sst-soccer">⚽ Soccer</button>
-      <button class="btn btn-outline" onclick="switchSetupSport('basketball')" id="sst-basketball">🏀 Basketball</button>
-      <button class="btn btn-outline" onclick="switchSetupSport('volleyball')" id="sst-volleyball">🏐 Volleyball</button>
-    </div>
-    <div id="setupBody"></div>
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeModal('setupModal')">Cancel</button>
-      <button class="btn btn-gold" onclick="saveSetup()">💾 Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- ── NOW PLAYING MODAL ── -->
-<div class="modal-overlay" id="nowPlayingModal">
-  <div class="modal">
-    <h2>🎯 Now Playing</h2>
-    <p>Choose which fields/courts are in play. TV Mode &amp; Live displays show only these — everything else is hidden.</p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
-      <button class="btn btn-gold" onclick="npPreset('soccer')">⚽ Soccer Session (4 fields)</button>
-      <button class="btn btn-gold" onclick="npPreset('bbvb')">🏀🏐 Basketball + Volleyball</button>
-    </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">
-      <button class="btn btn-outline" onclick="npPreset('auto')">🤖 Auto (follow schedule)</button>
-      <button class="btn btn-outline" onclick="npPreset('all')">Show All</button>
-      <button class="btn btn-outline" onclick="npPreset('none')">Clear</button>
-    </div>
-    <div id="npCourtList"></div>
-    <div class="modal-actions">
-      <button class="btn btn-outline" onclick="closeModal('nowPlayingModal')">Cancel</button>
-      <button class="btn btn-gold" onclick="saveNowPlaying()">Apply</button>
-    </div>
-  </div>
-</div>
 
 <!-- ── HEADER ── -->
 <div class="header">
@@ -610,10 +285,6 @@ body.tv-on .header,.tv-on .sport-tabs,.tv-on #liveBanner,.tv-on .view{display:no
   <div class="header-nav">
     <button class="nav-btn active" onclick="showView('dashboard')" id="nav-dashboard">📊 Brackets</button>
     <button class="nav-btn" onclick="showView('schedule')" id="nav-schedule">📅 Schedule</button>
-    <button class="nav-btn" onclick="showView('scorer')" id="nav-scorer">⌨️ Score Entry</button>
-    <button class="nav-btn" onclick="openModal('setupModal');setupMode='names';switchSetupMode('names');switchSetupSport('soccer')">⚙️ Setup</button>
-    <button class="nav-btn" onclick="openNowPlaying()" id="nav-nowplaying">🎯 Now Playing</button>
-    <button class="nav-btn" onclick="showView('livecontrol')" id="nav-livecontrol">🎮 Live Control</button>
     <button class="nav-btn" onclick="enterTV()">📺 TV Mode</button>
   </div>
 </div>
@@ -634,150 +305,9 @@ body.tv-on .header,.tv-on .sport-tabs,.tv-on #liveBanner,.tv-on .view{display:no
 
 <!-- ── SCHEDULE VIEW ── -->
 <div class="view" id="view-schedule">
-  <!-- Sim bar for testing -->
-  <div class="sim-bar">
-    <label>⏰ Simulate Time (for testing):</label>
-    <input type="datetime-local" id="simTime" onchange="setSimTime(this.value)">
-    <button class="btn btn-outline" style="font-size:11px;padding:5px 10px" onclick="clearSim()">Use Real Time</button>
-    <span style="color:var(--dim)">Set to event date/time to preview live banner</span>
-  </div>
-
-  <!-- Delay controls -->
-  <div class="delay-strip">
-    <span class="delay-label">⏱ Adjust court delay:</span>
-    <select class="delay-court-select" id="delayCourt">
-      <option value="Soccer Field A">Soccer Field A</option>
-      <option value="Soccer Field B">Soccer Field B</option>
-      <option value="Soccer Field C">Soccer Field C</option>
-      <option value="Soccer Field D">Soccer Field D</option>
-      <option value="Basketball Court 1">Basketball Court 1</option>
-      <option value="Basketball Court 2">Basketball Court 2</option>
-      <option value="Volleyball Court">Volleyball Court</option>
-    </select>
-    <div class="delay-btns">
-      <button class="delay-btn neg" onclick="applyDelay(-15)">-15 min</button>
-      <button class="delay-btn neg" onclick="applyDelay(-10)">-10</button>
-      <button class="delay-btn neg" onclick="applyDelay(-5)">-5</button>
-      <button class="delay-btn" onclick="applyDelay(5)">+5</button>
-      <button class="delay-btn" onclick="applyDelay(10)">+10</button>
-      <button class="delay-btn" onclick="applyDelay(15)">+15</button>
-    </div>
-    <span class="delay-current" id="delayCurrentLabel">0 min</span>
-    <button class="btn btn-outline" style="font-size:11px;padding:4px 10px" onclick="resetDelay()">Reset</button>
-  </div>
-
   <div id="scheduleContent"></div>
 </div>
 
-<!-- ── SCORE ENTRY VIEW ── -->
-<div class="view" id="view-scorer">
-  <div class="scorer-wrap">
-    <div class="card">
-      <h3>Score Entry</h3>
-      <div class="frow">
-        <div class="fg">
-          <label>Sport</label>
-          <select id="se-sport" onchange="seUpdateSport()">
-            <option value="soccer">⚽ Soccer</option>
-            <option value="basketball">🏀 Basketball</option>
-            <option value="volleyball">🏐 Volleyball</option>
-          </select>
-        </div>
-        <div class="fg">
-          <label>Game</label>
-          <select id="se-game" onchange="seLoadGame()"></select>
-        </div>
-      </div>
-      <div id="se-time-info" style="font-size:11px;color:var(--gold);margin-bottom:10px;min-height:16px"></div>
-      <button class="start-game-btn" id="start-game-btn" onclick="seStartGame()">▶ Start Game</button>
-      <div class="score-grid">
-        <div class="score-team">
-          <div class="score-team-label">Home</div>
-          <div class="score-team-name" id="se-t1name">—</div>
-          <input type="number" class="score-inp" id="se-s1" value="0" min="0" max="200">
-          <div class="quick-adj">
-            <button class="qa" onclick="qa('se-s1',-2)">-2</button>
-            <button class="qa" onclick="qa('se-s1',-1)">-1</button>
-            <button class="qa" onclick="qa('se-s1',1)">+1</button>
-            <button class="qa" onclick="qa('se-s1',2)">+2</button>
-            <button class="qa" onclick="qa('se-s1',3)">+3</button>
-          </div>
-        </div>
-        <div class="vs-div">VS</div>
-        <div class="score-team">
-          <div class="score-team-label">Away</div>
-          <div class="score-team-name" id="se-t2name">—</div>
-          <input type="number" class="score-inp" id="se-s2" value="0" min="0" max="200">
-          <div class="quick-adj">
-            <button class="qa" onclick="qa('se-s2',-2)">-2</button>
-            <button class="qa" onclick="qa('se-s2',-1)">-1</button>
-            <button class="qa" onclick="qa('se-s2',1)">+1</button>
-            <button class="qa" onclick="qa('se-s2',2)">+2</button>
-            <button class="qa" onclick="qa('se-s2',3)">+3</button>
-          </div>
-        </div>
-      </div>
-      <div class="frow">
-        <div class="fg">
-          <label>Status</label>
-          <select id="se-status">
-            <option value="live">🔴 Live (In Progress)</option>
-            <option value="final">✅ Final</option>
-            <option value="upcoming">⏳ Upcoming</option>
-          </select>
-        </div>
-      </div>
-      <div class="dq-row">
-        <span class="dq-label">DQ / Forfeit:</span>
-        <button class="btn btn-red" id="dq-t1-btn" onclick="openDQ('t1')">DQ Home</button>
-        <button class="btn btn-red" id="dq-t2-btn" onclick="openDQ('t2')">DQ Away</button>
-      </div>
-      <div class="submit-row">
-        <button class="btn btn-outline" onclick="seReset()">Reset</button>
-        <button class="btn btn-gold" onclick="seSubmit()">Submit Score</button>
-      </div>
-    </div>
-
-    <!-- Event tracking -->
-    <div class="card event-section" id="eventCard">
-      <h3>Log Event (Goal / Card / Foul)</h3>
-      <div id="evt-sport-label" style="font-size:11px;color:var(--dim);margin-bottom:10px">Select a game above first</div>
-      <div class="evt-type-row" id="evtTypeRow"></div>
-      <div class="evt-team-row" id="evtTeamRow">
-        <button class="evt-team-btn" id="evtT1Btn" onclick="evtSelectTeam('team1')">Home</button>
-        <button class="evt-team-btn" id="evtT2Btn" onclick="evtSelectTeam('team2')">Away</button>
-      </div>
-      <div class="evt-player-row">
-        <input type="text" id="evtPlayer" placeholder="Player name (optional)">
-        <input type="number" id="evtMinute" placeholder="Min" min="0" max="120" value="">
-        <button class="evt-log-btn" onclick="submitEvent()">Log</button>
-      </div>
-      <div class="event-log" id="eventLog"></div>
-    </div>
-
-    <div class="card">
-      <h3>Recent Results</h3>
-      <div id="seRecentResults" class="results-list"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ── LIVE CONTROL VIEW ── -->
-<div class="view" id="view-livecontrol">
-  <div class="lc-toolbar">
-    <div class="lc-sport-btns">
-      <button class="lc-sport-btn active" id="lcbtn-soccer"    onclick="lcSetSport('soccer')">⚽ Soccer (4 Fields)</button>
-      <button class="lc-sport-btn"        id="lcbtn-basketball" onclick="lcSetSport('basketball')">🏀 Basketball (2 Courts)</button>
-      <button class="lc-sport-btn"        id="lcbtn-volleyball" onclick="lcSetSport('volleyball')">🏐 Volleyball (1 Court)</button>
-    </div>
-    <div class="lc-action-group">
-      <button class="lc-act-btn start-all" onclick="lcStartAll()">🚀 Start All</button>
-      <button class="lc-act-btn pause-all" onclick="lcPauseAll()">⏸ Pause All</button>
-      <button class="lc-act-btn end-all"   onclick="lcEndAll()">✅ End All</button>
-    </div>
-  </div>
-  <div class="lc-grid" id="lcGrid"></div>
-</div>
 
 <script>
 // ══════════════════════════════════════════════════════════════
@@ -926,31 +456,13 @@ const VB_SLOTS = [
 // ══════════════════════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════════════════════
-const SK = 'ko2026_v4';
+const SK = 'ko2026_v3';
 
 function defaultTeams() {
   return {
-    soccer: [
-      'Khalsa Lions','Babbar Ballers','Commando Force','Gulab Janama FC',
-      'Chardikala Champions','Singh Strikers','Sher-e-Punjab','Golden Temple FC',
-      'Waheguru Warriors','Amritsar Ajax','Patiala Panthers','Damdami Tigers',
-      'Sahibzade United','Akali Angels','Hola Mohalla Heroes','Nihangs FC',
-      'Guru Nanak Grit','Anandpur Arrows','Punjab Power','Khalsa United',
-    ],
-    basketball: [
-      'Khalsa Ballers','Babbar Hoops','Singh Dunkers','Golden Temple Nets',
-      'Patiala Slammers','Chardikala Crew','Sikh Squad','Amrit Shots',
-      'Punjab Pistons','Waheguru Wolves','Nihangs Nets','Anandpur Aces',
-      'Guru Nanak Grizzlies','Akali Dunks','Hola Mohalla Hoops','Khalsa Kings',
-      'Damdami Dribblers','Sahibzade Stars','Commando Cagers','Sher Shooters',
-    ],
-    volleyball: [
-      'Khalsa Spikes','Babbar Blockers','Singh Servers','Golden Temple Setters',
-      'Patiala Power','Chardikala Smashers','Sikh Spikers','Amrit Aces',
-      'Punjab Prowlers','Waheguru Wings','Nihangs Net','Anandpur Attackers',
-      'Guru Nanak Giants','Akali Aces','Hola Mohalla Hit','Khalsa Kings VB',
-      'Damdami Diggers','Sahibzade Serve','Commando Court','Sher Spikers',
-    ],
+    soccer: Array.from({length:20},(_,i)=>`Soccer T${i+1}`),
+    basketball: Array.from({length:20},(_,i)=>`BB Team ${i+1}`),
+    volleyball: Array.from({length:20},(_,i)=>`VB Team ${i+1}`),
   };
 }
 
@@ -960,67 +472,13 @@ function defaultState() {
     games: {},          // gameId -> game
     courtDelays: {},    // courtName -> delayMinutes
     simTime: null,      // null = real time
-    events: {},         // gameId -> [{id,type,team,player,minute,ts}]
-    timers: {},         // gameId -> {startedAt,accumulated,running,duration}
-    activeCourts: null, // null = AUTO (follow schedule); [] / [names] = manual
-    rosters: { soccer:{}, basketball:{}, volleyball:{} }, // sport -> teamIdx -> [players]
   };
   buildAllGames(s);
   return s;
 }
 
-// Re-resolve any "T#" placeholder team names from the roster of names.
-// The game's `desc` (e.g. "T17 vs T18") is the source of truth for which
-// seed index each side is, so this self-heals old/Firebase data that still
-// shows raw T-refs instead of real team names.
-function normalizeTeamNames(s) {
-  if (!s || !s.games) return s;
-  if (!s.rosters) s.rosters = { soccer:{}, basketball:{}, volleyball:{} };
-
-  // Firebase can return arrays as objects ({0:..,1:..}) or drop them entirely.
-  // Coerce each sport's team list back to a proper array and backfill any
-  // missing slots from the Khalsa defaults so seed lookups never fail.
-  const fb = defaultTeams();
-  if (!s.teams) s.teams = {};
-  ['soccer','basketball','volleyball'].forEach(sp => {
-    let list = s.teams[sp];
-    if (list && !Array.isArray(list)) list = Object.values(list);   // object -> array
-    if (!Array.isArray(list)) list = [];
-    for (let i = 0; i < 20; i++) {
-      if (!list[i] || !String(list[i]).trim()) list[i] = fb[sp][i];  // backfill blanks
-    }
-    s.teams[sp] = list;
-  });
-
-  // Resolve "T#" seed refs to real names. For first-round games the seed IS
-  // the source of truth, so always overwrite.
-  Object.values(s.games).forEach(g => {
-    const parts = (g.desc || '').split(' vs ');
-    const list = s.teams[g.sport] || fb[g.sport];
-    [['team1', 0], ['team2', 1]].forEach(([key, i]) => {
-      const raw = (parts[i] || '').trim();
-      const m = raw.match(/^T(\d+)$/);
-      if (m) {
-        const idx = parseInt(m[1]) - 1;
-        g[key + 'Idx'] = idx;
-        g[key] = list[idx] || fb[g.sport][idx] || raw;
-      }
-    });
-  });
-
-  // Clamp any runaway court delays (a stray cascade in test mode could push
-  // these to absurd values like -46698m). Real delays live within ±3 hours.
-  if (s.courtDelays) {
-    Object.keys(s.courtDelays).forEach(c => {
-      const v = s.courtDelays[c];
-      if (typeof v !== 'number' || !isFinite(v) || Math.abs(v) > 180) s.courtDelays[c] = 0;
-    });
-  }
-  return s;
-}
-
 let state = (() => {
-  try { const r = JSON.parse(localStorage.getItem(SK)); if (r?.games) return normalizeTeamNames(r); } catch(e) {}
+  try { const r = JSON.parse(localStorage.getItem(SK)); if (r?.games) return r; } catch(e) {}
   return defaultState();
 })();
 
@@ -1033,6 +491,7 @@ function save() {
 // GAME BUILDING FROM SLOTS
 // ══════════════════════════════════════════════════════════════
 function buildAllGames(s) {
+  let idx = 0;
   const addGames = (slotArr, sport, slotMin) => {
     const courtOrder = {};
     slotArr.forEach(slot => {
@@ -1040,32 +499,15 @@ function buildAllGames(s) {
         const courtIdx = (courtOrder[row.court] = (courtOrder[row.court]||0));
         courtOrder[row.court]++;
         const id = `${sport}_${row.court.replace(/\s+/g,'_')}_${courtIdx}`;
-
-        // Resolve T1/T2/… refs into real team names
-        const parts = row.desc.split(' vs ');
-        const t1raw = (parts[0]||'TBD').trim();
-        const t2raw = (parts[1]||'TBD').trim();
-        const m1 = t1raw.match(/^T(\d+)$/), m2 = t2raw.match(/^T(\d+)$/);
-        const t1Idx = m1 ? parseInt(m1[1]) - 1 : null;
-        const t2Idx = m2 ? parseInt(m2[1]) - 1 : null;
-        const teamList = (s.teams||{})[sport] || [];
-        const t1 = t1Idx !== null ? (teamList[t1Idx] || t1raw) : t1raw;
-        const t2 = t2Idx !== null ? (teamList[t2Idx] || t2raw) : t2raw;
-
-        // Preserve any existing score / status data — never wipe it
-        const ex = s.games[id];
         s.games[id] = {
-          id, sport, court: row.court, phase: row.phase, round: row.round,
-          desc: row.desc, scheduledStart: slot.start, slotMin,
-          team1: t1, team2: t2, team1Idx: t1Idx, team2Idx: t2Idx,
-          score1:  ex?.score1  ?? 0,
-          score2:  ex?.score2  ?? 0,
-          status:  ex?.status  ?? 'upcoming',
-          winner:  ex?.winner  ?? null,
-          loser:   ex?.loser   ?? null,
-          dq:      ex?.dq      ?? null,
-          ts:      ex?.ts      ?? null,
+          id, sport, court:row.court, phase:row.phase, round:row.round,
+          desc:row.desc, scheduledStart:slot.start, slotMin,
+          team1:row.desc.split(' vs ')[0]||'TBD',
+          team2:row.desc.split(' vs ')[1]||'TBD',
+          score1:0, score2:0, status:'upcoming',
+          winner:null, loser:null, dq:null, ts:null,
         };
+        idx++;
       });
     });
   };
@@ -1100,8 +542,18 @@ function isUpcomingByTime(game) {
   return now() < effectiveStart(game);
 }
 
+function elapsedSec(game) {
+  const timer = state.timers && state.timers[game.id];
+  if (timer) {
+    let sec = timer.accumulated || 0;
+    if (timer.running && timer.startedAt) sec += (Date.now() - timer.startedAt) / 1000;
+    return Math.max(0, sec);
+  }
+  return Math.max(0, (now() - effectiveStart(game)) / 1000);
+}
+
 function elapsedMin(game) {
-  return Math.max(0, Math.floor((now() - effectiveStart(game)) / 60000));
+  return Math.floor(elapsedSec(game) / 60);
 }
 
 function getCourtGamesOrdered(courtName, sport) {
@@ -1150,13 +602,24 @@ function renderBanner() {
   const cards = liveGames.map(g => {
     const t1lead = g.score1 >= g.score2;
     const elap = g.status === 'live' ? elapsedMin(g) : null;
+    const eSec = g.status === 'live' ? elapsedSec(g) : null;
+    const durSec = (g.slotMin || 25) * 60;
+    const remSec = eSec !== null ? Math.max(0, durSec - eSec) : null;
+    const remFmt = remSec !== null
+      ? `${Math.floor(remSec/60)}:${String(Math.floor(remSec%60)).padStart(2,'0')}`
+      : null;
     const nextGame = Object.values(state.games)
       .filter(x => x.court === g.court && x.status === 'upcoming' && effectiveStart(x) > effectiveStart(g))
       .sort((a,b) => effectiveStart(a)-effectiveStart(b))[0];
-    return `<div class="lb-card" onclick="showView('scorer');seSelectGame('${g.id}')">
+    return `<div class="lb-card">
       <div class="lb-card-sport">
         <span>${SPORT_ICON[g.sport]} ${g.sport.toUpperCase()} · ${g.court} · ${g.round}</span>
-        ${elap !== null ? `<span class="elapsed">${elap}'</span>` : '<span class="elapsed">LIVE</span>'}
+        ${elap !== null
+          ? `<span class="elapsed" style="display:flex;flex-direction:column;align-items:flex-end;gap:1px">
+               <span>${elap}'</span>
+               <span style="font-size:9px;color:#4cbb7f;letter-spacing:0;animation:none">${remFmt} left</span>
+             </span>`
+          : '<span class="elapsed">LIVE</span>'}
       </div>
       <div class="lb-team ${t1lead?'leader':''}">
         <span class="lb-team-name">${g.team1}${g.dq==='team1'?' 🚫':''}</span>
@@ -1177,28 +640,20 @@ function renderBanner() {
 // SCHEDULE VIEW
 // ══════════════════════════════════════════════════════════════
 function renderSchedule() {
-  const n = now();
   let html = '';
-
-  // Soccer
-  html += renderScheduleTable('soccer', SOCCER_SLOTS, SOC_SLOT,
-    ['Soccer Field A','Soccer Field B','Soccer Field C','Soccer Field D'],
-    '⚽ Soccer — 4 Fields · 25-min slots · July 25 + Day 2 Grand Final');
-
-  html += '<hr class="sep">';
-
-  // Basketball
-  html += renderScheduleTable('basketball', BB_SLOTS, BB_SLOT,
-    ['Basketball Court 1','Basketball Court 2'],
-    '🏀 Basketball — 2 Courts · 25-min slots · July 25 Eve + July 26');
-
-  html += '<hr class="sep">';
-
-  // Volleyball
-  html += renderScheduleTable('volleyball', VB_SLOTS, VB_SLOT,
-    ['Volleyball Court'],
-    '🏐 Volleyball — 1 Court · 20-min slots · July 25 Evening');
-
+  if (currentSport === 'soccer') {
+    html = renderScheduleTable('soccer', SOCCER_SLOTS, SOC_SLOT,
+      ['Soccer Field A','Soccer Field B','Soccer Field C','Soccer Field D'],
+      '⚽ Soccer — 4 Fields · 25-min slots');
+  } else if (currentSport === 'basketball') {
+    html = renderScheduleTable('basketball', BB_SLOTS, BB_SLOT,
+      ['Basketball Court 1','Basketball Court 2'],
+      '🏀 Basketball — 2 Courts · 25-min slots');
+  } else if (currentSport === 'volleyball') {
+    html = renderScheduleTable('volleyball', VB_SLOTS, VB_SLOT,
+      ['Volleyball Court'],
+      '🏐 Volleyball — 1 Court · 20-min slots');
+  }
   document.getElementById('scheduleContent').innerHTML = html;
   updateDelayLabel();
 }
@@ -1210,11 +665,16 @@ function renderScheduleTable(sport, slots, slotMin, courts, title) {
 
   // Build map: scheduledStart -> {court -> game}
   const slotMap = {};
-  Object.values(state.games).filter(g => g.sport === sport).forEach(g => {
+  const sportGames = Object.values(state.games).filter(g => g.sport === sport);
+  sportGames.forEach(g => {
     const key = g.scheduledStart;
     if (!slotMap[key]) slotMap[key] = {};
     slotMap[key][g.court] = g;
   });
+
+  // Derive start times from actual game data so rescheduled dates (admin may shift to today) still match
+  const fromGames = [...new Set(sportGames.map(g => g.scheduledStart))].sort((a,b) => a-b);
+  const allStarts = fromGames.length ? fromGames : [...new Set(slots.map(s => s.start))].sort((a,b) => a-b);
 
   let lastDay = null;
   let html = `<div class="sec-title">${title}</div>`;
@@ -1222,31 +682,25 @@ function renderScheduleTable(sport, slots, slotMin, courts, title) {
   html += `<div class="sg-header">Time</div>`;
   courts.forEach(c => { html += `<div class="sg-header">${c.replace(/^(Soccer |Basketball |)/,'')}</div>`; });
 
-  // Breaks
-  const breaks = {
-    [D1(12,0)]: '🍽 Lunch — 12:00–12:30 PM',
-    [D1(5*60*60*1000)]: null,
-  };
-
-  const allStarts = [...new Set(slots.map(s => s.start))].sort((a,b)=>a-b);
-
   let prevStart = null;
   allStarts.forEach(startMs => {
-    // Day separator
+    // Day separator — compare calendar date, works regardless of what year/month games are rescheduled to
     const d = new Date(startMs);
-    const dayLabel = d.getDate() === 25 ? 'DAY 1 — Saturday July 25, 2026' : 'DAY 2 — Sunday July 26, 2026';
-    if (dayLabel !== lastDay) {
-      lastDay = dayLabel;
+    const dayKey = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+    const dayLabel = d.toLocaleDateString('en-CA', {weekday:'long', month:'long', day:'numeric', year:'numeric'});
+    if (dayKey !== lastDay) {
+      lastDay = dayKey;
       html += `<div class="day-bar">${dayLabel}</div>`;
     }
 
-    // Lunch break for soccer
-    if (sport === 'soccer' && prevStart && prevStart < D1(12,0) && startMs >= D1(12,30)) {
-      html += `<div class="sg-time" style="grid-column:1">12:00–12:30</div>`;
-      html += `<div class="sg-cell break-cell" style="grid-column:2/-1"><span>🍽 Lunch Break — 30 minutes</span></div>`;
-    }
-    if (sport === 'basketball' && d.getDate() === 26 && prevStart && new Date(prevStart).getDate() === 25) {
-      html += `<div class="day-bar">DAY 2 — Sunday July 26, 2026</div>`;
+    // Lunch break for soccer: detect gap spanning noon by time-of-day (not absolute timestamp)
+    if (sport === 'soccer' && prevStart !== null) {
+      const prevTod = new Date(prevStart).getHours() * 60 + new Date(prevStart).getMinutes();
+      const curTod  = d.getHours() * 60 + d.getMinutes();
+      if (prevTod < 12*60 && curTod >= 12*60+30) {
+        html += `<div class="sg-time" style="grid-column:1">12:00–12:30</div>`;
+        html += `<div class="sg-cell break-cell" style="grid-column:2/-1"><span>🍽 Lunch Break — 30 minutes</span></div>`;
+      }
     }
 
     prevStart = startMs;
@@ -1283,9 +737,9 @@ function renderScheduleTable(sport, slots, slotMin, courts, title) {
       const delayMins = state.courtDelays[court] || 0;
       const delayStr = delayMins !== 0 ? `<span style="font-size:9px;color:${delayMins>0?'#e05050':'var(--green)'}"> (${delayMins>0?'+':''}${delayMins}m)</span>` : '';
 
-      html += `<div class="sg-cell ${cellClass}" onclick="seSelectGameById('${g.id}');showView('scorer')">
+      html += `<div class="sg-cell ${cellClass}">
         <div class="sg-game">
-          <div class="sg-teams ${isPlaceholderName(g.team1)&&isPlaceholderName(g.team2)?'tbd':''}">${g.team1} vs ${g.team2}${delayStr}</div>
+          <div class="sg-teams ${g.team1==='TBD'||g.team1.startsWith('T')?'tbd':''}">${g.team1} vs ${g.team2}${delayStr}</div>
           ${isDone||isLive ? `<div class="sg-score">${g.score1} – ${g.score2}</div>` : ''}
           <div class="sg-phase">${g.round}</div>
           <div class="sg-status ${isDone?'done':isLive?'live':'upcoming'}">${isDone?'✓ Final':isLive?'● LIVE':'Upcoming'}</div>
@@ -1400,37 +854,29 @@ function confirmDQ(side) {
 let currentSport = 'soccer';
 let currentView = 'dashboard';
 
-function showView(v, pushState = true) {
+function showView(v) {
   document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
   document.getElementById(`view-${v}`).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
   document.getElementById(`nav-${v}`)?.classList.add('active');
   currentView = v;
   if (v === 'schedule') renderSchedule();
-  if (v === 'scorer') { seUpdateSport(); seLoadRecentResults(); renderEventLog(); }
+  if (v === 'scorer') { seUpdateSport(); seLoadRecentResults(); }
   if (v === 'dashboard') renderDashboard();
-  if (v === 'livecontrol') renderLCGrid();
-  if (pushState && history.pushState) {
-    history.pushState({ view: v, sport: currentSport }, '', '#' + v);
-  }
 }
 
-function showSport(sp, pushState = true) {
+function showSport(sp) {
   currentSport = sp;
   ['soccer','basketball','volleyball'].forEach(s => {
     document.getElementById(`tab-${s}`).classList.toggle('active', s === sp);
     document.getElementById(`panel-${s}`).style.display = s === sp ? 'block' : 'none';
   });
-  renderDashboard();
-  if (pushState && history.pushState) {
-    history.pushState({ view: currentView, sport: sp }, '', '#' + currentView + '-' + sp);
+  if (currentView === 'schedule') {
+    renderSchedule();
+  } else {
+    renderDashboard();
   }
 }
-
-window.addEventListener('popstate', e => {
-  if (e.state?.view) showView(e.state.view, false);
-  if (e.state?.sport) showSport(e.state.sport, false);
-});
 
 function renderDashboard() {
   renderSoccerBracket();
@@ -1515,7 +961,7 @@ function buildScheduleGrid(sport) {
   return `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
     ${items.map(g => {
       const isLv = isLiveByTime(g) && g.status !== 'final';
-      return `<div style="background:${isLv?'rgba(224,80,80,.12)':'var(--gray2)'};border:1px solid ${isLv?'var(--live)':'var(--gray3)'};border-radius:7px;padding:7px 10px;font-size:11px;cursor:pointer" onclick="seSelectGameById('${g.id}');showView('scorer')">
+      return `<div style="background:${isLv?'rgba(224,80,80,.12)':'var(--gray2)'};border:1px solid ${isLv?'var(--live)':'var(--gray3)'};border-radius:7px;padding:7px 10px;font-size:11px">
         <div style="color:var(--dim);margin-bottom:3px">${g.court} · ${fmtTime(effectiveStart(g))}${isLv?` <span style="color:var(--live);animation:pulse 1s infinite">● LIVE</span>`:''}</div>
         <div style="font-weight:600">${g.team1} <span style="color:var(--dim)">vs</span> ${g.team2}</div>
         ${isLv||g.status==='live' ? `<div style="color:var(--gold);font-weight:700;font-size:14px;text-align:center;margin-top:3px">${g.score1} – ${g.score2}</div>` : ''}
@@ -1525,38 +971,26 @@ function buildScheduleGrid(sport) {
   </div>`;
 }
 
-// Assign a stable G# to every game of a sport, in schedule order
-function gameNumbers(sport) {
-  const map = {};
-  Object.values(state.games)
-    .filter(g => g.sport === sport)
-    .sort((a,b) => a.scheduledStart - b.scheduledStart || (a.court<b.court?-1:1))
-    .forEach((g,i) => { map[g.id] = i + 1; });
-  return map;
-}
-
 function buildBracketSection(sport, phase, label) {
   const games = Object.values(state.games)
     .filter(g => g.sport === sport && (g.phase === phase || g.phase.startsWith(phase)))
     .sort((a,b) => effectiveStart(a)-effectiveStart(b));
   if (!games.length) return '';
 
-  // Group by round (preserve schedule order of rounds)
+  // Group by round
   const roundMap = {};
-  const roundOrder = [];
   games.forEach(g => {
-    if (!roundMap[g.round]) { roundMap[g.round] = []; roundOrder.push(g.round); }
+    if (!roundMap[g.round]) roundMap[g.round] = [];
     roundMap[g.round].push(g);
   });
-
-  const gnums = gameNumbers(sport);
+  const rounds = Object.keys(roundMap);
 
   let html = `<div style="font-size:13px;font-weight:700;color:var(--dim);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px">${label}</div>
     <div class="bracket-wrap"><div class="bracket">`;
 
-  roundOrder.forEach(r => {
+  rounds.forEach(r => {
     html += `<div class="br-round"><div class="br-round-hdr">${r}</div><div class="br-games">`;
-    roundMap[r].forEach(g => { html += matchupCard(g, gnums[g.id]); });
+    roundMap[r].forEach(g => { html += matchupCard(g); });
     html += '</div></div>';
   });
 
@@ -1564,38 +998,27 @@ function buildBracketSection(sport, phase, label) {
   return html;
 }
 
-// Is this a real, resolved team name (vs a seed/placeholder ref like T1, L2, WBW3)?
-function isPlaceholderName(name) {
-  return !name || name === 'TBD' || /^(T|L|W|WB|LB|WBW|WBL|LBW|QF|SF)\d/i.test(name) || /Winner|Loser/i.test(name);
-}
-
-function matchupCard(g, gnum) {
+function matchupCard(g) {
+  const n = now();
   const isLv = (isLiveByTime(g) && g.status !== 'final') || g.status === 'live';
   const isDone = g.status === 'final';
   const t1w = isDone && g.score1 > g.score2;
   const t2w = isDone && g.score2 > g.score1;
   const dly = state.courtDelays[g.court]||0;
-  const seed1 = g.team1Idx != null ? g.team1Idx + 1 : '';
-  const seed2 = g.team2Idx != null ? g.team2Idx + 1 : '';
-  const tbd1 = isPlaceholderName(g.team1), tbd2 = isPlaceholderName(g.team2);
-  const dlyStr = dly!==0?` <span style="color:${dly>0?'var(--live)':'var(--green)'}">${dly>0?'+':''}${dly}m</span>`:'';
-  const dateStr = new Date(effectiveStart(g)).toLocaleDateString('en-CA',{weekday:'short',month:'short',day:'numeric'});
+  const timeStr = fmtTime(effectiveStart(g)) + (dly!==0?` <span style="color:${dly>0?'var(--live)':'var(--green)'};font-size:9px">${dly>0?'+':''}${dly}m</span>`:'');
 
-  return `<div class="bm-wrap">
-    <div class="bm-badge">G${gnum||'?'}</div>
-    <div class="matchup ${isLv?'is-live':''}" onclick="seSelectGameById('${g.id}');showView('scorer')">
-      <div class="tr ${t1w?'won':''} ${!t1w&&isDone?'lost':''} ${g.dq==='team1'?'dq-row':''}">
-        <span class="tr-seed">${seed1}</span>
-        <span class="tr-name ${tbd1?'tbd':''}">${g.team1}${g.dq==='team1'?' 🚫':''}</span>
-        <span class="tr-score">${isDone||isLv?g.score1:''}</span>
-      </div>
-      <div class="tr ${t2w?'won':''} ${!t2w&&isDone?'lost':''} ${g.dq==='team2'?'dq-row':''}">
-        <span class="tr-seed">${seed2}</span>
-        <span class="tr-name ${tbd2?'tbd':''}">${g.team2}${g.dq==='team2'?' 🚫':''}</span>
-        <span class="tr-score">${isDone||isLv?g.score2:''}</span>
-      </div>
+  return `<div class="matchup ${isLv?'is-live':''}">
+    <div class="match-time">${timeStr} · ${g.court}</div>
+    <div class="tr ${t1w?'won':''} ${!t1w&&isDone?'lost':''} ${g.dq==='team1'?'dq-row':''}">
+      <span class="tr-seed"></span>
+      <span class="tr-name ${g.team1.startsWith('T')||g.team1==='TBD'?'tbd':''}">${g.team1}${g.dq==='team1'?' 🚫':''}</span>
+      <span class="tr-score">${isDone||isLv?g.score1:''}</span>
     </div>
-    <div class="bm-time">${dateStr} · ${fmtTime(effectiveStart(g))}${dlyStr} · ${g.court.replace(/^(Soccer |Basketball |)/,'')}</div>
+    <div class="tr ${t2w?'won':''} ${!t2w&&isDone?'lost':''} ${g.dq==='team2'?'dq-row':''}">
+      <span class="tr-seed"></span>
+      <span class="tr-name ${g.team2.startsWith('T')||g.team2==='TBD'?'tbd':''}">${g.team2}${g.dq==='team2'?' 🚫':''}</span>
+      <span class="tr-score">${isDone||isLv?g.score2:''}</span>
+    </div>
   </div>`;
 }
 
@@ -1653,8 +1076,6 @@ function seLoadGame() {
     `⏰ ${fmtTime(adjStart)} → ${fmtTime(adjEnd)} · ${g.court}` +
     (dly !== 0 ? ` <span style="color:${dly>0?'var(--live)':'var(--green)'}">(${dly>0?'+':''}${dly}m adjusted)</span>` : '') +
     (isLiveByTime(g) && g.status !== 'final' ? ` <span style="color:var(--live);font-weight:700">● LIVE NOW — ${elapsedMin(g)}'</span>` : '');
-  updateStartGameBtn(g);
-  renderEventLog();
 }
 
 function seSubmit() {
@@ -1674,13 +1095,11 @@ function seSubmit() {
     g.loser  = s1 >= s2 ? g.team2 : g.team1;
     if (!g.ts) g.ts = now();
 
-    // Check if ended early or late vs schedule. Only prompt for realistic
-    // differences (≤90 min) so testing far from the event date — when "now"
-    // is months off — can't push an absurd delay onto the court.
+    // Check if ended early or late vs schedule
     const n = now();
     const scheduledEnd = effectiveEnd(g);
     const diffMin = Math.round((n - scheduledEnd) / 60000);
-    if (Math.abs(diffMin) >= 3 && Math.abs(diffMin) <= 90) promptCascade(g, diffMin);
+    if (Math.abs(diffMin) >= 3) promptCascade(g, diffMin);
   }
 
   save();
@@ -1697,170 +1116,9 @@ function seReset() {
   document.getElementById('se-status').value = 'upcoming';
 }
 
-function seStartGame() {
-  const id = document.getElementById('se-game').value;
-  const g = state.games[id];
-  if (!g) return;
-  if (g.status === 'final') return;
-  if (g.status === 'live') {
-    // Already live — offer to mark final
-    document.getElementById('se-status').value = 'final';
-    seSubmit();
-    return;
-  }
-  g.status = 'live';
-  if (!g.ts) g.ts = now();
-  save();
-  flash(`▶ ${g.team1} vs ${g.team2} — GAME STARTED`);
-  seLoadGame();
-  renderAll();
-  updateStartGameBtn(g);
-}
-
-function updateStartGameBtn(g) {
-  const btn = document.getElementById('start-game-btn');
-  if (!btn || !g) return;
-  if (g.status === 'final') {
-    btn.textContent = '✅ Game Final';
-    btn.className = 'start-game-btn is-final';
-  } else if (g.status === 'live') {
-    btn.textContent = '⏹ Mark as Final';
-    btn.className = 'start-game-btn is-live';
-  } else {
-    btn.textContent = '▶ Start Game';
-    btn.className = 'start-game-btn';
-  }
-}
-
 function qa(id, delta) {
   const el = document.getElementById(id);
-  const newVal = Math.max(0, parseInt(el.value||0) + delta);
-  el.value = newVal;
-  // Animate the score input
-  el.classList.remove('score-anim');
-  void el.offsetWidth;
-  el.classList.add('score-anim');
-  setTimeout(() => el.classList.remove('score-anim'), 400);
-}
-
-// ══════════════════════════════════════════════════════════════
-// EVENT TRACKING (Goals, Cards, Fouls)
-// ══════════════════════════════════════════════════════════════
-const EVT_TYPES = {
-  soccer:     [{key:'goal',icon:'⚽',label:'Goal',cls:'goal'},{key:'yellow',icon:'🟡',label:'Yellow Card',cls:'yellow'},{key:'red',icon:'🔴',label:'Red Card',cls:'red'},{key:'foul',icon:'⚠️',label:'Foul',cls:''}],
-  basketball: [{key:'foul',icon:'✋',label:'Foul',cls:''},{key:'travel',icon:'🚶',label:'Travel',cls:''},{key:'technical',icon:'⚡',label:'Technical',cls:'red'},{key:'flagrant',icon:'🚨',label:'Flagrant',cls:'red'},{key:'timeout',icon:'⏱',label:'Timeout',cls:''}],
-  volleyball: [{key:'sanction',icon:'⚠️',label:'Sanction',cls:'yellow'},{key:'red',icon:'🔴',label:'Red Card',cls:'red'},{key:'timeout',icon:'⏱',label:'Timeout',cls:''}],
-};
-
-let evtSelectedType = null;
-let evtSelectedTeam = null;
-
-function renderEvtTypeButtons(sport) {
-  const types = EVT_TYPES[sport] || [];
-  document.getElementById('evtTypeRow').innerHTML = types.map(t =>
-    `<button class="evt-btn ${t.cls}" id="evtType-${t.key}" onclick="evtSelectType('${t.key}')">${t.icon} ${t.label}</button>`
-  ).join('');
-  evtSelectedType = null;
-  evtSelectedTeam = null;
-}
-
-function evtSelectType(key) {
-  evtSelectedType = key;
-  document.querySelectorAll('#evtTypeRow .evt-btn').forEach(b => b.classList.remove('active'));
-  const btn = document.getElementById(`evtType-${key}`);
-  if (btn) btn.classList.add('active');
-}
-
-function evtSelectTeam(side) {
-  evtSelectedTeam = side;
-  document.getElementById('evtT1Btn').classList.toggle('active', side === 'team1');
-  document.getElementById('evtT2Btn').classList.toggle('active', side === 'team2');
-}
-
-function submitEvent() {
-  const id = document.getElementById('se-game').value;
-  const g = state.games[id];
-  if (!g) return flash('Select a game first', true);
-  if (!evtSelectedType) return flash('Select an event type', true);
-  if (!evtSelectedTeam) return flash('Select Home or Away team', true);
-
-  const player = document.getElementById('evtPlayer').value.trim();
-  const minute = parseInt(document.getElementById('evtMinute').value)||0;
-
-  if (!state.events) state.events = {};
-  if (!state.events[id]) state.events[id] = [];
-  state.events[id].push({
-    id: Date.now() + '_' + Math.floor(Math.random()*9999),
-    gameId: id,
-    type: evtSelectedType,
-    team: evtSelectedTeam,
-    player: player || '',
-    minute,
-    ts: now(),
-  });
-
-  save();
-  const icon = (EVT_TYPES[g.sport]||[]).find(t => t.key === evtSelectedType)?.icon || '📋';
-  const teamName = evtSelectedTeam === 'team1' ? g.team1 : g.team2;
-  flash(`${icon} ${evtSelectedType} logged${player ? ' — ' + player : ''} (${teamName})`);
-
-  // Reset player / minute
-  document.getElementById('evtPlayer').value = '';
-  document.getElementById('evtMinute').value = '';
-
-  renderEventLog();
-  renderAll();
-}
-
-function getGameEvents(gameId) {
-  return ((state.events||{})[gameId]||[]).sort((a,b) => a.minute - b.minute || a.ts - b.ts);
-}
-
-function evtIcon(sport, type) {
-  return (EVT_TYPES[sport]||[]).find(t => t.key === type)?.icon || '📋';
-}
-
-function deleteEvent(gameId, evtId) {
-  if (!state.events?.[gameId]) return;
-  state.events[gameId] = state.events[gameId].filter(e => e.id !== evtId);
-  save();
-  renderEventLog();
-  renderAll();
-}
-
-function renderEventLog() {
-  const id = document.getElementById('se-game')?.value;
-  const g = id ? state.games[id] : null;
-  const logEl = document.getElementById('eventLog');
-  const sportLabel = document.getElementById('evt-sport-label');
-  if (!logEl) return;
-
-  if (!g) {
-    if (sportLabel) sportLabel.textContent = 'Select a game above first';
-    logEl.innerHTML = '';
-    renderEvtTypeButtons('soccer');
-    return;
-  }
-
-  if (sportLabel) sportLabel.textContent = `${SPORT_ICON[g.sport]} ${g.team1} vs ${g.team2} — ${g.court}`;
-  renderEvtTypeButtons(g.sport);
-  document.getElementById('evtT1Btn').textContent = g.team1.length > 14 ? g.team1.slice(0,14)+'…' : g.team1;
-  document.getElementById('evtT2Btn').textContent = g.team2.length > 14 ? g.team2.slice(0,14)+'…' : g.team2;
-
-  const evts = getGameEvents(id);
-  if (!evts.length) { logEl.innerHTML = '<div style="color:var(--dim);font-size:12px;text-align:center;padding:10px">No events logged yet</div>'; return; }
-
-  logEl.innerHTML = evts.map(e => {
-    const icon = evtIcon(g.sport, e.type);
-    const teamName = e.team === 'team1' ? g.team1 : g.team2;
-    return `<div class="event-log-item">
-      <span class="eli-icon">${icon}</span>
-      <span class="eli-min">${e.minute}'</span>
-      <span class="eli-player">${e.player || e.type}</span>
-      <span class="eli-team">${teamName.length>10?teamName.slice(0,10)+'…':teamName}</span>
-      <button class="eli-del" onclick="deleteEvent('${id}','${e.id}')" title="Remove">✕</button>
-    </div>`;
-  }).join('');
+  el.value = Math.max(0, parseInt(el.value||0) + delta);
 }
 
 function seLoadRecentResults() {
@@ -1889,965 +1147,201 @@ function seLoadRecentResults() {
 }
 
 // ══════════════════════════════════════════════════════════════
-// LIVE CONTROL — per-court timer, inline name edit, quick score
-// ══════════════════════════════════════════════════════════════
-const LC_COURTS = {
-  soccer:     ['Soccer Field A','Soccer Field B','Soccer Field C','Soccer Field D'],
-  basketball: ['Basketball Court 1','Basketball Court 2'],
-  volleyball: ['Volleyball Court'],
-};
-// Sport default durations in seconds
-const SPORT_DURATION = { soccer: 1200, basketball: 1500, volleyball: 1200 };
-
-let lcSport = 'soccer';
-
-// ── Timer helpers ──
-function timerGet(gameId) {
-  if (!state.timers) state.timers = {};
-  if (!state.timers[gameId]) {
-    const g = state.games[gameId];
-    state.timers[gameId] = {
-      startedAt: null, accumulated: 0, running: false,
-      duration: g ? SPORT_DURATION[g.sport] || 1200 : 1200,
-    };
-  }
-  return state.timers[gameId];
-}
-
-function timerRemaining(gameId) {
-  const t = timerGet(gameId);
-  let elapsed = t.accumulated || 0;
-  if (t.running && t.startedAt) elapsed += (now() - t.startedAt) / 1000;
-  return Math.max(0, t.duration - elapsed);
-}
-
-function timerElapsed(gameId) {
-  const t = timerGet(gameId);
-  let elapsed = t.accumulated || 0;
-  if (t.running && t.startedAt) elapsed += (now() - t.startedAt) / 1000;
-  return Math.min(elapsed, t.duration);
-}
-
-function fmtTimer(secs) {
-  const m = Math.floor(secs / 60);
-  const s = Math.floor(secs % 60);
-  return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-}
-
-function lcStartTimer(gameId) {
-  const t = timerGet(gameId);
-  if (t.running) return;
-  if (timerRemaining(gameId) <= 0) return; // already done
-  t.running = true;
-  t.startedAt = now();
-  // Also set game status to live
-  const g = state.games[gameId];
-  if (g && g.status !== 'final') g.status = 'live';
-  save();
-  lcRefreshCard(gameId);
-  renderAll();
-}
-
-function lcPauseTimer(gameId) {
-  const t = timerGet(gameId);
-  if (!t.running) return;
-  t.accumulated += (now() - t.startedAt) / 1000;
-  t.running = false;
-  t.startedAt = null;
-  save();
-  lcRefreshCard(gameId);
-}
-
-function lcResetTimer(gameId) {
-  const t = timerGet(gameId);
-  t.running = false;
-  t.startedAt = null;
-  t.accumulated = 0;
-  save();
-  lcRefreshCard(gameId);
-}
-
-function lcEndGame(gameId) {
-  lcPauseTimer(gameId);
-  const g = state.games[gameId];
-  if (!g) return;
-  const s1 = g.score1, s2 = g.score2;
-  g.status = 'final';
-  g.winner = s1 >= s2 ? g.team1 : g.team2;
-  g.loser  = s1 >= s2 ? g.team2 : g.team1;
-  if (!g.ts) g.ts = now();
-  save();
-  flash(`✅ ${g.team1} ${s1}–${s2} ${g.team2} — FINAL`);
-  renderAll();
-  renderLCGrid();
-}
-
-// ── Score ──
-function lcScore(gameId, team, delta) {
-  const g = state.games[gameId];
-  if (!g || g.status === 'final') return;
-  if (team === 'team1') g.score1 = Math.max(0, g.score1 + delta);
-  else                  g.score2 = Math.max(0, g.score2 + delta);
-  save();
-  // Animate score
-  const el = document.getElementById(`lc-score-${gameId}-${team}`);
-  if (el) { el.textContent = team === 'team1' ? g.score1 : g.score2; el.classList.remove('score-anim'); void el.offsetWidth; el.classList.add('score-anim'); }
-  renderAll();
-}
-
-// ── Inline team name editing ──
-function lcSaveTeamName(gameId, teamKey, el) {
-  const name = (el.textContent || '').trim();
-  if (!name) { el.textContent = state.games[gameId]?.[teamKey] || 'TBD'; return; }
-  const g = state.games[gameId];
-  if (!g) return;
-  g[teamKey] = name;
-  // Write back to the master team list by seed index, and propagate to every
-  // game that references the same seed, so the rename sticks everywhere.
-  const idx = g[teamKey + 'Idx'];
-  if (idx != null && state.teams[g.sport]) {
-    state.teams[g.sport][idx] = name;
-    Object.values(state.games).filter(x => x.sport === g.sport).forEach(x => {
-      if (x.team1Idx === idx) x.team1 = name;
-      if (x.team2Idx === idx) x.team2 = name;
-    });
-  }
-  save();
-  renderAll();
-  const otherEl = document.getElementById(`lc-name-${gameId}-${teamKey}`);
-  if (otherEl && otherEl !== el) otherEl.textContent = name;
-}
-
-// ── Quick event entry ──
-function lcLogEvent(gameId, team, type) {
-  const g = state.games[gameId];
-  if (!g) return;
-  const playerEl = document.getElementById(`lc-player-${gameId}`);
-  const player = playerEl ? playerEl.value.trim() : '';
-  const elapsed = Math.floor(timerElapsed(gameId) / 60);
-
-  if (!state.events) state.events = {};
-  if (!state.events[gameId]) state.events[gameId] = [];
-  state.events[gameId].push({
-    id: Date.now() + '_' + Math.floor(Math.random()*9999),
-    gameId, type, team, player, minute: elapsed, ts: now(),
-  });
-
-  // If it's a goal, increment score
-  if (type === 'goal') {
-    if (team === 'team1') g.score1++;
-    else g.score2++;
-    flash(`⚽ GOAL! ${player ? player + ' — ' : ''}${team==='team1'?g.team1:g.team2} · ${g.score1}–${g.score2}`);
-  } else {
-    const icon = evtIcon(g.sport, type);
-    flash(`${icon} ${type} — ${player||'player'} (${team==='team1'?g.team1:g.team2})`);
-  }
-
-  if (playerEl) playerEl.value = '';
-  save();
-  lcRefreshCard(gameId);
-  renderAll();
-}
-
-// ── Start / Pause / End All ──
-function lcGetCurrentGame(court) {
-  const games = Object.values(state.games)
-    .filter(g => g.court === court && g.sport === lcSport)
-    .sort((a,b) => effectiveStart(a)-effectiveStart(b));
-  const live = games.find(g => g.status === 'live' || (isLiveByTime(g) && g.status !== 'final'));
-  if (live) return live;
-  const next = games.find(g => g.status !== 'final');
-  if (next) return next;
-  return games.filter(g=>g.status==='final').sort((a,b)=>b.ts-a.ts)[0] || null;
-}
-
-function lcStartAll() {
-  LC_COURTS[lcSport].forEach(court => {
-    const g = lcGetCurrentGame(court);
-    if (g && g.status !== 'final') lcStartTimer(g.id);
-  });
-  flash(`🚀 All ${lcSport} games started!`);
-  renderLCGrid();
-}
-
-function lcPauseAll() {
-  LC_COURTS[lcSport].forEach(court => {
-    const g = lcGetCurrentGame(court);
-    if (g) lcPauseTimer(g.id);
-  });
-  flash(`⏸ All ${lcSport} games paused`);
-  renderLCGrid();
-}
-
-function lcEndAll() {
-  if (!confirm(`Mark ALL ${lcSport} games as FINAL?`)) return;
-  LC_COURTS[lcSport].forEach(court => {
-    const g = lcGetCurrentGame(court);
-    if (g && g.status !== 'final') lcEndGame(g.id);
-  });
-  flash(`✅ All ${lcSport} games marked final`);
-  renderLCGrid();
-}
-
-// ── Render ──
-function lcSetSport(sp) {
-  lcSport = sp;
-  ['soccer','basketball','volleyball'].forEach(s => {
-    document.getElementById(`lcbtn-${s}`)?.classList.toggle('active', s === sp);
-  });
-  renderLCGrid();
-}
-
-// Per-sport event button definitions: {type, icon, label, cls}
-// `goal` is the score-incrementing primary action.
-const LC_EVT_DEFS = {
-  soccer: [
-    {type:'goal',     icon:'⚽', label:'GOAL',   primary:true},
-    {type:'yellow',   icon:'🟡', label:'Yellow', cls:'yellow'},
-    {type:'red',      icon:'🔴', label:'Red',    cls:'red-card'},
-    {type:'foul',     icon:'⚠️', label:'Foul',   cls:'foul'},
-  ],
-  basketball: [
-    {type:'goal',     icon:'🏀', label:'SCORE',  primary:true},
-    {type:'foul',     icon:'✋', label:'Foul',   cls:'foul'},
-    {type:'travel',   icon:'🚶', label:'Travel', cls:'yellow'},
-    {type:'technical',icon:'⚡', label:'Tech',   cls:'red-card'},
-  ],
-  volleyball: [
-    {type:'goal',     icon:'🏐', label:'POINT',  primary:true},
-    {type:'sanction', icon:'⚠️', label:'Sanction',cls:'yellow'},
-    {type:'red',      icon:'🔴', label:'Red',    cls:'red-card'},
-  ],
-};
-
-// Buttons for ONE team — makes it obvious which team a card/goal applies to
-function lcTeamEventButtons(g, teamKey) {
-  return (LC_EVT_DEFS[g.sport] || []).map(d =>
-    `<button class="lc-et-btn ${d.primary?'lc-evt-goal-btn':(d.cls||'')}" onclick="lcLogEvent('${g.id}','${teamKey}','${d.type}')">${d.icon} ${d.label}</button>`
-  ).join('');
-}
-
-// Combined player roster (both teams) for autocomplete in this game's card
-function lcGameRoster(g) {
-  const r = (state.rosters && state.rosters[g.sport]) || {};
-  const a = (g.team1Idx != null ? (r[g.team1Idx]||[]) : []);
-  const b = (g.team2Idx != null ? (r[g.team2Idx]||[]) : []);
-  return [...a, ...b];
-}
-
-// Event rows for a card — NEWEST FIRST so latest goals/cards show at top
-function lcEventRowsHtml(g) {
-  const evts = getGameEvents(g.id).slice().reverse();
-  if (!evts.length) return '<div style="color:var(--dim);font-size:11px;text-align:center;padding:6px">No events yet</div>';
-  return evts.map((e,i) => `<div class="lc-event-row ${i===0?'newest':''}">
-      <span class="lc-er-icon">${evtIcon(g.sport,e.type)}</span>
-      <span class="lc-er-min">${e.minute}'</span>
-      <span class="lc-er-player">${e.player||e.type}</span>
-      <span class="lc-er-team">${(e.team==='team1'?g.team1:g.team2).slice(0,10)}</span>
-      <button class="lc-er-del" onclick="deleteEvent('${g.id}','${e.id}');lcRefreshCard('${g.id}')">✕</button>
-    </div>`).join('');
-}
-
-function buildLCCard(court) {
-  const g = lcGetCurrentGame(court);
-  if (!g) return `<div class="lc-card"><div class="lc-card-hdr"><div class="lc-card-name">${court.replace(/Soccer |Basketball |/,'')}</div></div><div style="color:var(--dim);text-align:center;padding:20px;font-size:13px">No games scheduled</div></div>`;
-
-  const t = timerGet(g.id);
-  const rem = timerRemaining(g.id);
-  const isDone = rem <= 0 || g.status === 'final';
-  const isRunning = t.running;
-  const isPaused = !isRunning && t.accumulated > 0 && !isDone;
-
-  let timerClass = 'idle';
-  if (isDone) timerClass = 'done';
-  else if (isRunning) timerClass = 'running';
-  else if (isPaused) timerClass = 'paused';
-
-  const cardClass = g.status==='final' ? 'is-final' : isRunning ? 'is-live' : isPaused ? 'is-paused' : '';
-
-  return `<div class="lc-card ${cardClass}" id="lccard-${g.id}">
-    <div class="lc-card-hdr">
-      <div>
-        <div class="lc-card-name">${SPORT_ICON[g.sport]} ${court.replace(/Soccer |Basketball |/,'')}</div>
-        <div class="lc-card-round">${g.round} · ${fmtTime(effectiveStart(g))}</div>
-      </div>
-      <div class="lc-timer-block">
-        <div class="lc-timer-num ${timerClass}" id="lctimer-${g.id}">${fmtTimer(rem)}</div>
-        <div class="lc-timer-label">${isDone ? '⏰ TIME' : isRunning ? '▶ RUNNING' : isPaused ? '⏸ PAUSED' : '⏱ READY'}</div>
-      </div>
-    </div>
-    <div class="lc-timer-controls">
-      ${!isDone ? `<button class="lc-tc-btn lc-tc-start" onclick="lcStartTimer('${g.id}')">▶ Start</button>` : ''}
-      ${isRunning ? `<button class="lc-tc-btn lc-tc-pause" onclick="lcPauseTimer('${g.id}')">⏸ Pause</button>` : ''}
-      <button class="lc-tc-btn lc-tc-reset" onclick="lcResetTimer('${g.id}')">↺ Reset</button>
-      ${g.status !== 'final' ? `<button class="lc-tc-btn lc-tc-end" onclick="lcEndGame('${g.id}')">✅ End Game</button>` : '<span style="color:#86efac;font-size:11px;font-weight:700;padding:6px">✅ FINAL</span>'}
-    </div>
-    <div class="lc-teams-row">
-      <div class="lc-team-col">
-        <span class="lc-team-name-display" id="lc-name-${g.id}-team1" contenteditable="true"
-          onblur="lcSaveTeamName('${g.id}','team1',this)"
-          onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}"
-          >${g.team1}</span>
-        <div class="lc-score-big score-anim-wrap" id="lc-score-${g.id}-team1">${g.score1}</div>
-        <div class="lc-score-btns">
-          <button class="lc-sc-btn neg" onclick="lcScore('${g.id}','team1',-1)">−1</button>
-          <button class="lc-sc-btn" onclick="lcScore('${g.id}','team1',1)">+1</button>
-          <button class="lc-sc-btn" onclick="lcScore('${g.id}','team1',2)">+2</button>
-          <button class="lc-sc-btn" onclick="lcScore('${g.id}','team1',3)">+3</button>
-        </div>
-      </div>
-      <div class="lc-vs-label">VS</div>
-      <div class="lc-team-col">
-        <span class="lc-team-name-display" id="lc-name-${g.id}-team2" contenteditable="true"
-          onblur="lcSaveTeamName('${g.id}','team2',this)"
-          onkeydown="if(event.key==='Enter'){event.preventDefault();this.blur()}"
-          >${g.team2}</span>
-        <div class="lc-score-big score-anim-wrap" id="lc-score-${g.id}-team2">${g.score2}</div>
-        <div class="lc-score-btns">
-          <button class="lc-sc-btn neg" onclick="lcScore('${g.id}','team2',-1)">−1</button>
-          <button class="lc-sc-btn" onclick="lcScore('${g.id}','team2',1)">+1</button>
-          <button class="lc-sc-btn" onclick="lcScore('${g.id}','team2',2)">+2</button>
-          <button class="lc-sc-btn" onclick="lcScore('${g.id}','team2',3)">+3</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Live event log — newest at top, always visible -->
-    <div class="lc-event-list-hdr">${getGameEvents(g.id).length?'<span class="live-dot"></span>':''}Match Events (latest first)</div>
-    <div class="lc-event-list" id="lc-evtlog-${g.id}">${lcEventRowsHtml(g)}</div>
-
-    <!-- Quick event entry — pick the TEAM column, then the action -->
-    <div class="lc-event-entry">
-      <div class="lc-evt-title">Log Event — type player, then tap under the right team</div>
-      <div class="lc-evt-name-row">
-        <input type="text" id="lc-player-${g.id}" list="roster-${g.id}" placeholder="Player name (optional)" autocomplete="off">
-        <datalist id="roster-${g.id}">${lcGameRoster(g).map(p=>`<option value="${p}">`).join('')}</datalist>
-      </div>
-      <div class="lc-evt-teams">
-        <div class="lc-evt-team-block">
-          <div class="lc-evt-team-hdr">${g.team1}</div>
-          ${lcTeamEventButtons(g,'team1')}
-        </div>
-        <div class="lc-evt-team-block">
-          <div class="lc-evt-team-hdr">${g.team2}</div>
-          ${lcTeamEventButtons(g,'team2')}
-        </div>
-      </div>
-    </div>
-  </div>`;
-}
-
-function renderLCGrid() {
-  const courts = LC_COURTS[lcSport] || [];
-  document.getElementById('lcGrid').innerHTML = courts.map(buildLCCard).join('');
-}
-
-// Refresh just the timer number without full re-render (prevents contenteditable reset)
-function lcRefreshCard(gameId) {
-  const t = timerGet(gameId);
-  const rem = timerRemaining(gameId);
-  const isDone = rem <= 0 || state.games[gameId]?.status === 'final';
-  const isRunning = t.running;
-  const isPaused = !isRunning && t.accumulated > 0 && !isDone;
-
-  const timerEl = document.getElementById(`lctimer-${gameId}`);
-  if (timerEl) {
-    timerEl.textContent = fmtTimer(rem);
-    timerEl.className = `lc-timer-num ${isDone?'done':isRunning?'running':isPaused?'paused':'idle'}`;
-  }
-
-  // Update card border class
-  const card = document.getElementById(`lccard-${gameId}`);
-  if (card) {
-    card.classList.remove('is-live','is-final','is-paused');
-    if (state.games[gameId]?.status === 'final') card.classList.add('is-final');
-    else if (isRunning) card.classList.add('is-live');
-    else if (isPaused) card.classList.add('is-paused');
-  }
-
-  // Update event log (newest first) + score numbers without full re-render
-  const logEl = document.getElementById(`lc-evtlog-${gameId}`);
-  const g = state.games[gameId];
-  if (logEl && g) logEl.innerHTML = lcEventRowsHtml(g);
-  if (g) {
-    const s1 = document.getElementById(`lc-score-${gameId}-team1`);
-    const s2 = document.getElementById(`lc-score-${gameId}-team2`);
-    if (s1) s1.textContent = g.score1;
-    if (s2) s2.textContent = g.score2;
-  }
-}
-
-// Tick timers every second when in LC view
-setInterval(() => {
-  if (currentView !== 'livecontrol') return;
-  LC_COURTS[lcSport]?.forEach(court => {
-    const g = lcGetCurrentGame(court);
-    if (!g) return;
-    const t = timerGet(g.id);
-    if (!t.running) return;
-    const rem = timerRemaining(g.id);
-    const timerEl = document.getElementById(`lctimer-${g.id}`);
-    if (timerEl) {
-      timerEl.textContent = fmtTimer(rem);
-      if (rem <= 0) {
-        timerEl.className = 'lc-timer-num done';
-        // Auto-pause when time runs out
-        lcPauseTimer(g.id);
-        flash(`⏰ TIME UP — ${g.court}`, false);
-      }
-    }
-    // Also update elapsed in TV scorers
-    if (document.body.classList.contains('tv-on') && tvCurrentView === 0) renderTV1();
-  });
-}, 1000);
-
-// ══════════════════════════════════════════════════════════════
-// TV MODE — 4 rotating views
+// TV MODE — multi-panel carousel
 // ══════════════════════════════════════════════════════════════
 const COURTS_TV = [
   {name:'⚽ Soccer Field A', court:'Soccer Field A', sport:'soccer'},
   {name:'⚽ Soccer Field B', court:'Soccer Field B', sport:'soccer'},
   {name:'⚽ Soccer Field C', court:'Soccer Field C', sport:'soccer'},
-  {name:'⚽ Soccer Field D', court:'Soccer Field D', sport:'soccer'},
   {name:'🏀 Basketball Court 1', court:'Basketball Court 1', sport:'basketball'},
   {name:'🏀 Basketball Court 2', court:'Basketball Court 2', sport:'basketball'},
   {name:'🏐 Volleyball Court', court:'Volleyball Court', sport:'volleyball'},
 ];
-// Returns the courts to display, honoring the Now Playing selection.
-// activeCourts === null → AUTO: courts with a live game or one starting within 90 min.
-function getActiveTVCourts() {
-  const ac = state.activeCourts;
-  if (Array.isArray(ac)) {
-    return COURTS_TV.filter(c => ac.includes(c.court));
-  }
-  // AUTO mode
-  const WINDOW = 90 * 60000;
-  const n = now();
-  const auto = COURTS_TV.filter(c => {
-    const cGames = Object.values(state.games).filter(g => g.court === c.court);
-    const hasLive = cGames.some(g => (isLiveByTime(g) && g.status !== 'final') || g.status === 'live');
-    const startingSoon = cGames.some(g => g.status !== 'final' && effectiveStart(g) - n > 0 && effectiveStart(g) - n <= WINDOW);
-    const recentFinal = cGames.some(g => g.status === 'final' && g.ts && (n - g.ts) <= WINDOW);
-    return hasLive || startingSoon || recentFinal;
-  });
-  // Fall back to all courts if nothing matches (e.g. before event / testing)
-  return auto.length ? auto : COURTS_TV;
-}
 
-const TV_VIEW_NAMES = ['LIVE SCORES','BRACKET PROGRESS','SCORERS & CARDS','UPCOMING GAMES'];
-const TV_ROTATE_MS = 25000;
-let tvCurrentView = 0;
-let tvRotating = true;
-let tvRotateTimer = null;
-let tvBracketSport = 'soccer';
-
-function switchTVView(idx) {
-  tvCurrentView = idx;
-  document.querySelectorAll('.tv-view').forEach((el,i) => el.classList.toggle('active', i === idx));
-  document.querySelectorAll('.tv-dot').forEach((el,i) => el.classList.toggle('active', i === idx));
-  document.getElementById('tvViewLabel').textContent = TV_VIEW_NAMES[idx];
-  renderTVCurrentView();
-}
-
-function tvNav(dir) {
-  switchTVView((tvCurrentView + dir + 4) % 4);
-  if (tvRotating) resetTVTimer();
-}
-
-function startTVRotate() {
-  stopTVRotate();
-  tvRotating = true;
-  const btn = document.getElementById('tvPauseBtn');
-  if (btn) { btn.textContent = '⏸ Pause'; btn.classList.remove('paused'); }
-  resetTVTimer();
-}
-
-function stopTVRotate() {
-  if (tvRotateTimer) clearInterval(tvRotateTimer);
-  tvRotateTimer = null;
-}
-
-function resetTVTimer() {
-  stopTVRotate();
-  tvRotateTimer = setInterval(() => {
-    tvCurrentView = (tvCurrentView + 1) % 4;
-    switchTVView(tvCurrentView);
-  }, TV_ROTATE_MS);
-}
-
-function toggleTVRotate() {
-  tvRotating = !tvRotating;
-  const btn = document.getElementById('tvPauseBtn');
-  if (tvRotating) {
-    startTVRotate();
-  } else {
-    stopTVRotate();
-    if (btn) { btn.textContent = '▶ Resume'; btn.classList.add('paused'); }
-  }
-}
-
-function renderTVCurrentView() {
-  if (tvCurrentView === 0) renderTV1();
-  else if (tvCurrentView === 1) renderTV2();
-  else if (tvCurrentView === 2) renderTV3();
-  else renderTV4();
-}
-
-// View 1: Live Scores
-function renderTV1() {
-  const el = document.getElementById('tvLiveGrid');
-  if (!el) return;
-  const courts = getActiveTVCourts();
-  // Choose a column count that fills the screen for the number of courts shown
-  const n = courts.length;
-  let cols = n <= 1 ? 1 : n === 2 ? 2 : n <= 4 ? 2 : n <= 6 ? 3 : 4;
-  if (window.innerWidth < 900) cols = Math.min(cols, 2);  // phones
-  el.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-  el.innerHTML = courts.map(c => {
-    const cGames = Object.values(state.games).filter(g => g.court === c.court).sort((a,b) => effectiveStart(a)-effectiveStart(b));
-    const live = cGames.find(g => (isLiveByTime(g) && g.status !== 'final') || g.status === 'live');
-    const last = !live && cGames.filter(g => g.status === 'final').sort((a,b)=>b.ts-a.ts)[0];
-    const next = cGames.find(g => g.status !== 'final' && now() < effectiveStart(g));
-    const g = live || last;
-    if (!g) {
-      return `<div class="tv-live-card">
-        <div class="tv-lc-sport">${c.name}</div>
-        <div style="flex:1;display:flex;align-items:center;justify-content:center;color:var(--dim);font-size:14px">
-          ${next ? `Next: <strong style="color:var(--text);margin-left:6px">${next.team1} vs ${next.team2}</strong><br><span style="color:var(--gold)">${fmtTime(effectiveStart(next))}</span>` : 'Standby'}
-        </div>
-      </div>`;
-    }
-    const evts = getGameEvents(g.id).slice(-3);
-    const evtHtml = evts.length ? `<div class="tv-lc-events">${evts.map(e => `<div class="tv-lc-event">${evtIcon(g.sport,e.type)} ${e.minute}' ${e.player||e.type}${e.team?' ('+( e.team==='team1'?g.team1:g.team2).slice(0,10)+')':''}</div>`).join('')}</div>` : '';
-    return `<div class="tv-live-card ${live?'is-live':''}">
-      <div class="tv-lc-sport">${c.name} ${live?'<span style="color:var(--live);animation:pulse 1.5s infinite">● LIVE</span>':last?'<span style="color:var(--dim)">FINAL</span>':''}</div>
-      <div class="tv-lc-team">
-        <span class="tv-lc-name">${g.team1}${g.dq==='team1'?' 🚫':''}</span>
-        <span class="tv-lc-score">${g.score1}</span>
-      </div>
-      <div class="tv-lc-vs">VS</div>
-      <div class="tv-lc-team">
-        <span class="tv-lc-name">${g.team2}${g.dq==='team2'?' 🚫':''}</span>
-        <span class="tv-lc-score">${g.score2}</span>
-      </div>
-      <div class="tv-lc-status ${live?'live':last?'done':''}">${live?(()=>{const rem=timerRemaining(g.id);const t=timerGet(g.id);return t.accumulated>0||t.running?`● ${fmtTimer(rem)} left`:`● ${elapsedMin(g)}' elapsed`;})():last?`FINAL · ${g.round}`:next?`Next @ ${fmtTime(effectiveStart(next))}`:'Standby'}</div>
-      ${evtHtml}
-    </div>`;
-  }).join('');
-}
-
-// View 2: Bracket Standings Table
-function renderTV2() {
-  const el = document.getElementById('tvBracketView');
-  if (!el) return;
-  const sp = tvBracketSport;
-
-  const tabsHtml = ['soccer','basketball','volleyball'].map(s =>
-    `<button class="tv-sport-tab ${s===sp?'active':''}" onclick="tvBracketSport='${s}';renderTV2()">${SPORT_ICON[s]} ${s.charAt(0).toUpperCase()+s.slice(1)}</button>`
-  ).join('');
-
-  const games = Object.values(state.games).filter(g => g.sport === sp);
-  const completed = games.filter(g => g.status === 'final').length;
-  const liveGames = games.filter(g => g.status === 'live' || (isLiveByTime(g) && g.status !== 'final'));
-
-  // Build W/L record for every known team
-  const records = {};
-  const ensure = name => { if (!records[name]) records[name] = { wins:0, losses:0 }; };
-
-  // Seed from team list so all teams appear even if no games played yet
-  (state.teams[sp] || []).forEach(name => ensure(name));
-
-  games.filter(g => g.status === 'final').forEach(g => {
-    if (g.winner) { ensure(g.winner); records[g.winner].wins++; }
-    if (g.loser)  { ensure(g.loser);  records[g.loser].losses++; }
-  });
-
-  // Determine grand-final winner
-  const gfGame = games.find(g => g.phase === 'gf' && g.status === 'final' && g.winner);
-
-  const sorted = Object.entries(records)
-    .map(([name, r]) => {
-      const isChamp = gfGame?.winner === name;
-      let cls, badge, badgeCls;
-      if (isChamp)        { cls='champion'; badge='🏆 Champion';        badgeCls='champion'; }
-      else if (r.losses >= 2) { cls='elim'; badge='❌ Eliminated';      badgeCls='elim'; }
-      else if (r.losses === 1){ cls='lb';   badge='🔵 Losers Bracket';  badgeCls='lb'; }
-      else if (r.wins > 0)    { cls='wb';   badge='🏆 Winners Bracket'; badgeCls='wb'; }
-      else                    { cls='wb';   badge='⏳ Not Started';      badgeCls='waiting'; }
-      return { name, wins:r.wins, losses:r.losses, cls, badge, badgeCls, isChamp };
-    })
-    .sort((a,b) => {
-      // Champion first, then sort by losses asc, wins desc
-      if (a.isChamp) return -1; if (b.isChamp) return 1;
-      if (a.losses !== b.losses) return a.losses - b.losses;
-      return b.wins - a.wins;
-    });
-
-  let rank = 0;
-  const rows = sorted.map(t => {
-    const inContention = t.losses < 2 && !t.isChamp;
-    if (inContention || t.isChamp) rank++;
-    return `<tr class="tv-srow ${t.cls}">
-      <td class="tv-st-rank">${t.isChamp ? '🥇' : inContention ? rank : '—'}</td>
-      <td class="tv-st-name">${t.name}</td>
-      <td class="tv-st-w">${t.wins}</td>
-      <td class="tv-st-l">${t.losses}</td>
-      <td><span class="tv-st-badge ${t.badgeCls}">${t.badge}</span></td>
-    </tr>`;
-  }).join('');
-
-  const livePills = liveGames.map(g =>
-    `<span class="tv-live-pill">● ${g.team1} vs ${g.team2}</span>`
-  ).join('');
-
-  el.innerHTML = `
-    <div class="tv-sport-tabs">${tabsHtml}</div>
-    <div class="tv-standings-meta">
-      <span class="tv-standings-stat">Games: <strong>${completed}/${games.length}</strong></span>
-      <span class="tv-standings-stat">Eliminated: <strong>${sorted.filter(t=>t.losses>=2).length}</strong></span>
-      ${livePills}
-    </div>
-    <div class="tv-standings-wrap">
-      <table class="tv-standings-tbl">
-        <thead><tr><th>#</th><th>Team</th><th>W</th><th>L</th><th>Status</th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>`;
-}
-
-// View 3: Scorers & Cards
-function renderTV3() {
-  const el = document.getElementById('tvScorersGrid');
-  if (!el) return;
-  // Among the active courts, show those that are live or have events
-  const courts = getActiveTVCourts().filter(c => {
-    const cGames = Object.values(state.games).filter(g => g.court === c.court);
-    const hasLive = cGames.some(g => (isLiveByTime(g)&&g.status!=='final')||g.status==='live');
-    const hasEvents = cGames.some(g => (state.events?.[g.id]||[]).length > 0);
-    return hasLive || hasEvents;
-  });
-
-  if (!courts.length) {
-    el.innerHTML = `<div class="tv-no-events" style="grid-column:1/-1;font-size:18px;margin-top:40px">No events logged yet.<br><span style="font-size:14px">Goals, cards and fouls appear here as they're recorded.</span></div>`;
-    return;
-  }
-
-  el.innerHTML = courts.map(c => {
-    const cGames = Object.values(state.games).filter(g => g.court === c.court).sort((a,b)=>effectiveStart(a)-effectiveStart(b));
-    const live = cGames.find(g => (isLiveByTime(g)&&g.status!=='final')||g.status==='live');
-    const last = !live && cGames.filter(g=>g.status==='final').sort((a,b)=>b.ts-a.ts)[0];
-    const g = live || last;
-    if (!g) return '';
-    const evts = getGameEvents(g.id);
-    const evtHtml = evts.length
-      ? evts.map(e => `<div class="tv-event-line">
-          <span class="tv-event-icon">${evtIcon(g.sport,e.type)}</span>
-          <span class="tv-event-min">${e.minute}'</span>
-          <span class="tv-event-name">${e.player||e.type}</span>
-          <span class="tv-event-tag">${(e.team==='team1'?g.team1:g.team2).slice(0,12)}</span>
-        </div>`).join('')
-      : `<div class="tv-no-events">No events logged</div>`;
-    return `<div class="tv-scorer-card ${live?'is-live':''}">
-      <div class="tv-scorer-hdr">${c.name} ${live?'<span style="color:var(--live)">● LIVE</span>':''}</div>
-      <div class="tv-scorer-score">${g.team1.slice(0,12)} <em>${g.score1}</em> – <em>${g.score2}</em> ${g.team2.slice(0,12)}</div>
-      ${evtHtml}
-    </div>`;
-  }).join('');
-}
-
-// View 4: Upcoming Games
-function renderTV4() {
-  const el = document.getElementById('tvUpcomingView');
-  if (!el) return;
-  const activeCourtNames = getActiveTVCourts().map(c => c.court);
-  const upcoming = Object.values(state.games)
-    .filter(g => g.status !== 'final' && !((isLiveByTime(g)&&g.status!=='final')||g.status==='live'))
-    .filter(g => activeCourtNames.includes(g.court))
-    .sort((a,b) => effectiveStart(a)-effectiveStart(b))
-    .slice(0,8);
-
-  const nextGame = upcoming[0];
-  let countdownHtml = '';
-  if (nextGame) {
-    const msLeft = Math.max(0, effectiveStart(nextGame) - now());
-    const mins = Math.floor(msLeft/60000);
-    const secs = Math.floor((msLeft%60000)/1000);
-    const pad = n => String(n).padStart(2,'0');
-    countdownHtml = `<div class="tv-countdown-box">
-      <div class="tv-countdown-label">Next Game In</div>
-      <div class="tv-countdown-time">${pad(mins)}:${pad(secs)}</div>
-      <div class="tv-countdown-desc">${SPORT_ICON[nextGame.sport]} ${nextGame.team1} vs ${nextGame.team2} · ${nextGame.court}</div>
-    </div>`;
-  } else {
-    countdownHtml = `<div class="tv-countdown-box"><div class="tv-countdown-label">No upcoming games</div></div>`;
-  }
-
-  const rowsHtml = upcoming.map((g,i) => `<div class="tv-upcoming-row ${i===0?'next-up':''}">
-    <span class="tv-upcoming-time">${fmtTime(effectiveStart(g))}</span>
-    <span class="tv-upcoming-sport">${SPORT_ICON[g.sport]}</span>
-    <span class="tv-upcoming-court">${g.court.replace(/^(Soccer |Basketball |)/,'')}</span>
-    <span class="tv-upcoming-teams">${g.team1} <span style="color:var(--dim)">vs</span> ${g.team2}</span>
-    <span class="tv-upcoming-round">${g.round}</span>
-  </div>`).join('');
-
-  el.innerHTML = `${countdownHtml}<div class="tv-upcoming-list">${rowsHtml||'<div style="color:var(--dim);text-align:center;padding:20px">All games complete!</div>'}</div>`;
-}
+const TV_PANELS = [
+  {label:'LIVE SCORES'},
+  {label:'UPCOMING GAMES'},
+  {label:'RESULTS'},
+];
+const TV_CYCLE_MS = 8000;
+let tvCurrentPanel = 0;
+let tvPaused = false;
+let tvAutoInterval = null;
 
 function renderTV() {
-  const n = now();
   document.getElementById('tvClock').textContent =
-    new Date(n).toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
-  renderTVCurrentView();
+    new Date(now()).toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
+
+  // Carousel nav
+  document.getElementById('tvDots').innerHTML = TV_PANELS.map((p,i) =>
+    `<div class="tv-dot${i===tvCurrentPanel?' active':''}" onclick="tvGoTo(${i})"></div>`
+  ).join('');
+  document.getElementById('tvPanelLabel').textContent = TV_PANELS[tvCurrentPanel].label;
+  document.getElementById('tvPauseBtn').textContent = tvPaused ? '▶ Resume' : '⏸ Pause';
+
+  if (tvCurrentPanel === 0) renderTVLiveScores();
+  else if (tvCurrentPanel === 1) renderTVUpcoming();
+  else renderTVResults();
+}
+
+function renderTVLiveScores() {
+  const el = document.getElementById('tvCourts');
+  el.className = 'tv-courts';
+  el.style.padding = '';
+  el.innerHTML = COURTS_TV.map(c => {
+    const courtGames = Object.values(state.games)
+      .filter(g => g.court === c.court)
+      .sort((a,b) => effectiveStart(a)-effectiveStart(b));
+    const live = courtGames.find(g => (isLiveByTime(g) && g.status !== 'final') || g.status === 'live');
+    const last = !live && courtGames.filter(g => g.status === 'final').sort((a,b)=>b.ts-a.ts)[0];
+    const next = courtGames.find(g => g.status !== 'final' && now() < effectiveStart(g));
+    const g = live || last;
+    let body = '';
+    if (g) {
+      const t1lead = g.score1 >= g.score2;
+      body = `
+        <div class="tv-team" style="${t1lead&&live?'border:1px solid rgba(212,160,23,.3)':''}">
+          <span class="tv-team-name">${g.team1}${g.dq==='team1'?' 🚫':''}</span>
+          <span class="tv-team-score">${g.score1}</span>
+        </div>
+        <div class="tv-vs">VS</div>
+        <div class="tv-team" style="${!t1lead&&live?'border:1px solid rgba(212,160,23,.3)':''}">
+          <span class="tv-team-name">${g.team2}${g.dq==='team2'?' 🚫':''}</span>
+          <span class="tv-team-score">${g.score2}</span>
+        </div>
+        <div class="tv-status ${live?'live':g.status==='final'?'done':'up'}">
+          ${live?`● IN PROGRESS · ${elapsedMin(g)}' of ${g.slotMin}'`:g.status==='final'?`FINAL — ${g.round}`:''}
+        </div>
+        ${next?`<div class="tv-next-up">Next: ${next.team1} vs ${next.team2} @ ${fmtTime(effectiveStart(next))}</div>`:''}`;
+    } else {
+      body = `<div style="text-align:center;color:var(--dim);padding:30px;font-size:18px">
+        ${next?`Next game:<br><strong style="color:var(--text)">${next.team1} vs ${next.team2}</strong><br><span style="color:var(--gold);font-size:22px">${fmtTime(effectiveStart(next))}</span>`:'Standby'}
+      </div>`;
+    }
+    return `<div class="tv-court ${live?'is-live':last?'is-done':''}">
+      <div class="tv-court-name">${c.name}</div>${body}</div>`;
+  }).join('');
+}
+
+function renderTVUpcoming() {
+  const el = document.getElementById('tvCourts');
+  el.className = '';
+  el.style.padding = '20px';
+  const upcoming = Object.values(state.games)
+    .filter(g => g.status !== 'final')
+    .sort((a,b) => effectiveStart(a)-effectiveStart(b))
+    .slice(0, 12);
+  if (!upcoming.length) {
+    el.innerHTML = '<div style="text-align:center;color:var(--dim);padding:60px;font-size:20px">All games complete</div>';
+    return;
+  }
+  el.innerHTML = `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+    ${upcoming.map(g => {
+      const isLv = g.status==='live' || isLiveByTime(g);
+      return `<div style="background:var(--gray2);border:1px solid ${isLv?'var(--live)':'var(--gray3)'};border-radius:12px;padding:16px">
+        <div style="font-size:11px;color:var(--dim);margin-bottom:8px;letter-spacing:1px">${SPORT_ICON[g.sport]} ${g.court} · ${g.round}</div>
+        <div style="font-size:18px;font-weight:700;margin-bottom:3px">${g.team1}</div>
+        <div style="font-size:12px;color:var(--dim);margin-bottom:3px">vs</div>
+        <div style="font-size:18px;font-weight:700;margin-bottom:10px">${g.team2}</div>
+        <div style="font-size:14px;color:var(--gold);font-weight:700">${isLv?'🔴 LIVE NOW':fmtTime(effectiveStart(g))}</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function renderTVResults() {
+  const el = document.getElementById('tvCourts');
+  el.className = '';
+  el.style.padding = '20px';
+  const results = Object.values(state.games)
+    .filter(g => g.status==='final' && g.ts)
+    .sort((a,b) => b.ts-a.ts)
+    .slice(0, 12);
+  if (!results.length) {
+    el.innerHTML = '<div style="text-align:center;color:var(--dim);padding:60px;font-size:20px">No results yet</div>';
+    return;
+  }
+  el.innerHTML = `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+    ${results.map(g => {
+      const t1w = g.score1>g.score2, t2w = g.score2>g.score1;
+      return `<div style="background:var(--gray2);border:1px solid var(--gray3);border-radius:12px;padding:16px">
+        <div style="font-size:11px;color:var(--dim);margin-bottom:8px;letter-spacing:1px">${SPORT_ICON[g.sport]} ${g.round} · FINAL</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.06)">
+          <span style="font-size:16px;font-weight:${t1w?800:400};color:${t1w?'var(--gold-light)':'var(--dim)'}">${g.team1}${g.dq==='team1'?' 🚫':''}</span>
+          <span style="font-size:22px;font-weight:900;color:${t1w?'var(--gold-light)':'var(--dim)'}">${g.score1}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0">
+          <span style="font-size:16px;font-weight:${t2w?800:400};color:${t2w?'var(--gold-light)':'var(--dim)'}">${g.team2}${g.dq==='team2'?' 🚫':''}</span>
+          <span style="font-size:22px;font-weight:900;color:${t2w?'var(--gold-light)':'var(--dim)'}">${g.score2}</span>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function tvGoTo(idx) { tvCurrentPanel = idx; renderTV(); }
+function tvNext() { tvCurrentPanel = (tvCurrentPanel+1) % TV_PANELS.length; renderTV(); }
+function tvPrev() { tvCurrentPanel = (tvCurrentPanel-1+TV_PANELS.length) % TV_PANELS.length; renderTV(); }
+
+function tvTogglePause() {
+  tvPaused = !tvPaused;
+  if (tvPaused) { clearInterval(tvAutoInterval); tvAutoInterval = null; }
+  else { tvAutoInterval = setInterval(tvNext, TV_CYCLE_MS); }
+  document.getElementById('tvPauseBtn').textContent = tvPaused ? '▶ Resume' : '⏸ Pause';
 }
 
 function enterTV() {
+  tvCurrentPanel = 0; tvPaused = false;
   document.body.classList.add('tv-on');
-  tvCurrentView = 0;
-  switchTVView(0);
-  startTVRotate();
+  renderTV();
+  tvAutoInterval = setInterval(tvNext, TV_CYCLE_MS);
   document.addEventListener('keydown', tvKeyHandler);
 }
 
 function exitTV() {
   document.body.classList.remove('tv-on');
-  stopTVRotate();
+  clearInterval(tvAutoInterval); tvAutoInterval = null;
   document.removeEventListener('keydown', tvKeyHandler);
 }
 
 function tvKeyHandler(e) {
-  if (e.key === 'Escape') exitTV();
-  if (e.key === 'ArrowRight') tvNav(1);
-  if (e.key === 'ArrowLeft') tvNav(-1);
-  if (e.key === ' ') { e.preventDefault(); toggleTVRotate(); }
+  if (e.key==='Escape') exitTV();
+  else if (e.key==='ArrowRight') tvNext();
+  else if (e.key==='ArrowLeft') tvPrev();
+  else if (e.key===' ') { e.preventDefault(); tvTogglePause(); }
 }
 
 // ══════════════════════════════════════════════════════════════
-// SETUP — team names + player rosters (manual & import)
+// SETUP
 // ══════════════════════════════════════════════════════════════
 let setupSport = 'soccer';
-let setupMode = 'names';          // 'names' | 'players'
-let rosterTeamIdx = 0;            // which team's roster is being edited
-
-function switchSetupMode(mode) {
-  setupMode = mode;
-  document.getElementById('smode-names').className   = mode==='names'?'btn btn-gold':'btn btn-outline';
-  document.getElementById('smode-players').className = mode==='players'?'btn btn-gold':'btn btn-outline';
-  switchSetupSport(setupSport);
-}
 
 function switchSetupSport(sp) {
   setupSport = sp;
   ['soccer','basketball','volleyball'].forEach(s => {
     document.getElementById(`sst-${s}`).className = s===sp?'btn btn-gold':'btn btn-outline';
   });
-  if (setupMode === 'names') renderNamesEditor(sp);
-  else renderRostersEditor(sp);
-}
-
-function renderNamesEditor(sp) {
   const teams = state.teams[sp];
   document.getElementById('setupBody').innerHTML =
-    `<p style="font-size:12px;color:var(--dim);margin-bottom:10px">Enter team names. Changes apply live to brackets, schedule &amp; displays.</p>
-     <div class="team-grid">${teams.map((t,i) =>
-      `<input type="text" id="st-${sp}-${i}" placeholder="Team ${i+1}" value="${t.replace(/"/g,'&quot;')}">`
+    `<div class="team-grid">${teams.map((t,i) =>
+      `<input type="text" id="st-${sp}-${i}" placeholder="Team ${i+1}" value="${t}">`
     ).join('')}</div>`;
 }
 
-function renderRostersEditor(sp) {
-  if (!state.rosters) state.rosters = { soccer:{}, basketball:{}, volleyball:{} };
-  if (!state.rosters[sp]) state.rosters[sp] = {};
-  const teams = state.teams[sp];
-  if (rosterTeamIdx >= teams.length) rosterTeamIdx = 0;
-  const players = state.rosters[sp][rosterTeamIdx] || [];
-
-  document.getElementById('setupBody').innerHTML = `
-    <div class="roster-import">
-      <h4>📥 Import all rosters (Excel / CSV)</h4>
-      <p>File or paste below. Format: <strong>one row per team</strong> — first cell = team name, remaining cells = players.<br>
-      Or one row per player: <strong>Team Name, Player Name</strong>. Team names are matched to the list above.</p>
-      <input type="file" id="rosterFile" accept=".csv,.xlsx,.xls,.tsv,.txt" onchange="importRosterFile(this,'${sp}')">
-      <textarea id="rosterPaste" placeholder="Khalsa Lions, Gagan Singh, Harkirat, Manvir&#10;Babbar Ballers, Sidak, Arjan, Jaspreet"></textarea>
-      <div style="margin-top:8px"><button class="btn btn-gold" style="font-size:12px;padding:6px 14px" onclick="importRosterPaste('${sp}')">Import pasted text</button></div>
-    </div>
-
-    <div class="roster-team-sel">
-      <select id="rosterTeamSel" onchange="rosterSelectTeam(this.value,'${sp}')">
-        ${teams.map((t,i)=>`<option value="${i}" ${i===rosterTeamIdx?'selected':''}>${t}${(state.rosters[sp][i]||[]).length?` (${state.rosters[sp][i].length})`:''}</option>`).join('')}
-      </select>
-      <span class="roster-count" id="rosterCount">${players.length} player${players.length===1?'':'s'}</span>
-    </div>
-    <div class="roster-hint">One player per line for <strong>${teams[rosterTeamIdx]}</strong>:</div>
-    <textarea id="rosterTextarea" placeholder="One player name per line">${players.join('\n')}</textarea>
-  `;
-}
-
-function rosterSelectTeam(idx, sp) {
-  // Save current textarea before switching
-  saveRosterTextarea(sp);
-  rosterTeamIdx = parseInt(idx);
-  renderRostersEditor(sp);
-}
-
-function saveRosterTextarea(sp) {
-  const ta = document.getElementById('rosterTextarea');
-  if (!ta) return;
-  const players = ta.value.split('\n').map(s=>s.trim()).filter(Boolean);
-  if (!state.rosters[sp]) state.rosters[sp] = {};
-  state.rosters[sp][rosterTeamIdx] = players;
-}
-
-// Parse CSV / TSV text into rows of cells
-function parseDelimited(text) {
-  return text.split(/\r?\n/).map(line => line.trim()).filter(Boolean).map(line => {
-    const delim = line.includes('\t') ? '\t' : ',';
-    return line.split(delim).map(c => c.trim().replace(/^"|"$/g,'')).filter(c => c.length);
-  }).filter(r => r.length);
-}
-
-// Apply parsed rows to rosters for a sport. Rule: cell[0] = team, rest = players (accumulates)
-function applyRosterRows(rows, sp) {
-  if (!state.rosters[sp]) state.rosters[sp] = {};
-  const teams = state.teams[sp].map(t => t.toLowerCase());
-  let matched = 0, unmatched = [];
-  rows.forEach(cells => {
-    if (cells.length < 2) return;
-    const teamName = cells[0];
-    const idx = teams.indexOf(teamName.toLowerCase());
-    if (idx === -1) { unmatched.push(teamName); return; }
-    const players = cells.slice(1);
-    const existing = state.rosters[sp][idx] || [];
-    // Merge, avoiding duplicates
-    players.forEach(p => { if (!existing.includes(p)) existing.push(p); });
-    state.rosters[sp][idx] = existing;
-    matched++;
-  });
-  save();
-  renderRostersEditor(sp);
-  if (unmatched.length) {
-    flash(`⚠️ ${matched} team(s) imported. Unmatched: ${[...new Set(unmatched)].slice(0,3).join(', ')}${unmatched.length>3?'…':''}`, true);
-  } else {
-    flash(`✅ Rosters imported for ${matched} team(s)`);
-  }
-}
-
-function importRosterPaste(sp) {
-  const ta = document.getElementById('rosterPaste');
-  if (!ta || !ta.value.trim()) return flash('Paste some rows first', true);
-  applyRosterRows(parseDelimited(ta.value), sp);
-}
-
-function importRosterFile(input, sp) {
-  const file = input.files && input.files[0];
-  if (!file) return;
-  const name = file.name.toLowerCase();
-  const isExcel = name.endsWith('.xlsx') || name.endsWith('.xls');
-
-  if (isExcel) {
-    if (!window.XLSX) return flash('Excel library still loading — try again in a moment, or save as CSV', true);
-    const reader = new FileReader();
-    reader.onload = e => {
-      try {
-        const wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
-        const sheet = wb.Sheets[wb.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(sheet, {header:1})
-          .map(r => r.map(c => String(c).trim()).filter(Boolean))
-          .filter(r => r.length);
-        applyRosterRows(rows, sp);
-      } catch(err) { flash('Could not read Excel file: '+err.message, true); }
-    };
-    reader.readAsArrayBuffer(file);
-  } else {
-    const reader = new FileReader();
-    reader.onload = e => applyRosterRows(parseDelimited(e.target.result), sp);
-    reader.readAsText(file);
-  }
-  input.value = '';
-}
-
 function saveSetup() {
-  if (setupMode === 'names') {
-    ['soccer','basketball','volleyball'].forEach(sp => {
-      // Only read inputs for the sport currently shown; others keep their values
-      state.teams[sp] = state.teams[sp].map((old, i) => {
-        const el = document.getElementById(`st-${sp}-${i}`);
-        const v = el?.value?.trim();
-        return v || old;
-      });
-      Object.values(state.games).filter(g => g.sport === sp).forEach(g => {
-        if (g.team1Idx != null) g.team1 = state.teams[sp][g.team1Idx] || g.team1;
-        if (g.team2Idx != null) g.team2 = state.teams[sp][g.team2Idx] || g.team2;
-      });
+  ['soccer','basketball','volleyball'].forEach(sp => {
+    state.teams[sp] = state.teams[sp].map((_,i) => {
+      const v = document.getElementById(`st-${sp}-${i}`)?.value?.trim();
+      return v || `${sp} T${i+1}`;
     });
-    flash('✅ Team names updated live');
-  } else {
-    saveRosterTextarea(setupSport);
-    flash('✅ Rosters saved');
-  }
+  });
+  // Rebuild games preserving scores
+  buildAllGames(state);
   save();
   closeModal('setupModal');
+  flash('✅ Teams saved — brackets updated');
   renderAll();
-  if (currentView === 'livecontrol') renderLCGrid();
   seUpdateSport();
-}
-
-// ══════════════════════════════════════════════════════════════
-// NOW PLAYING — choose active courts/fields
-// ══════════════════════════════════════════════════════════════
-let npSelection = null; // working copy while modal is open
-
-function openNowPlaying() {
-  // Start from current state (null = AUTO → represent as all-off + auto flag)
-  npSelection = Array.isArray(state.activeCourts) ? [...state.activeCourts] : null;
-  renderNowPlaying();
-  openModal('nowPlayingModal');
-}
-
-function npPreset(kind) {
-  if (kind === 'soccer')      npSelection = COURTS_TV.filter(c => c.sport === 'soccer').map(c => c.court);
-  else if (kind === 'bbvb')   npSelection = COURTS_TV.filter(c => c.sport === 'basketball' || c.sport === 'volleyball').map(c => c.court);
-  else if (kind === 'all')    npSelection = COURTS_TV.map(c => c.court);
-  else if (kind === 'none')   npSelection = [];
-  else if (kind === 'auto')   npSelection = null;
-  renderNowPlaying();
-}
-
-function npToggle(court) {
-  if (!Array.isArray(npSelection)) npSelection = []; // leaving auto
-  if (npSelection.includes(court)) npSelection = npSelection.filter(c => c !== court);
-  else npSelection = [...npSelection, court];
-  renderNowPlaying();
-}
-
-function renderNowPlaying() {
-  const isAuto = !Array.isArray(npSelection);
-  const modeTag = isAuto
-    ? '🤖 AUTO mode — courts appear automatically based on the schedule'
-    : `✋ MANUAL mode — ${npSelection.length} court${npSelection.length===1?'':'s'} selected`;
-
-  const rows = COURTS_TV.map(c => {
-    const on = !isAuto && npSelection.includes(c.court);
-    const cGames = Object.values(state.games).filter(g => g.court === c.court);
-    const live = cGames.some(g => (isLiveByTime(g)&&g.status!=='final')||g.status==='live');
-    return `<div class="np-court-row ${on?'on':''}" onclick="npToggle('${c.court}')">
-      <input type="checkbox" ${on?'checked':''} onclick="event.stopPropagation();npToggle('${c.court}')">
-      <span class="np-court-label">${c.name}</span>
-      <span class="np-court-status ${live?'live':''}">${live?'● LIVE':''}</span>
-    </div>`;
-  }).join('');
-
-  document.getElementById('npCourtList').innerHTML =
-    `<div class="np-mode-tag">${modeTag}</div>${rows}`;
-}
-
-function saveNowPlaying() {
-  state.activeCourts = Array.isArray(npSelection) ? npSelection : null;
-  save();
-  closeModal('nowPlayingModal');
-  const label = Array.isArray(state.activeCourts)
-    ? `Showing ${state.activeCourts.length} court(s)`
-    : 'Auto mode (follow schedule)';
-  flash(`🎯 Now Playing: ${label}`);
-  renderAll();
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -2895,54 +1389,40 @@ function renderAll() {
   renderBanner();
   if (currentView === 'dashboard') renderDashboard();
   if (currentView === 'schedule') renderSchedule();
-  if (currentView === 'livecontrol') renderLCGrid();
   if (document.body.classList.contains('tv-on')) renderTV();
   updateBadges();
 }
 
 // Tick every 30 seconds (banner + TV auto-refresh)
 setInterval(renderAll, 30000);
-// Clock ticks every second for TV
+// Clock ticks every second — also refreshes the live banner so elapsed minutes stay current
 setInterval(() => {
   const d = new Date(now());
   const t = d.toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
   document.getElementById('lbClock').textContent = t;
   if (document.getElementById('tvClock')) document.getElementById('tvClock').textContent = t;
+  renderBanner();
 }, 1000);
 
 // Firebase handles real-time sync across devices
 window.applyFirebaseState = (data) => {
   if (!window._appReady) return;
+  // Merge with defaults to ensure all required fields exist
   state = Object.assign({}, defaultState(), data, {
     courtDelays: data.courtDelays || {},
     teams: data.teams || defaultTeams(),
     games: data.games || {},
-    simTime: data.simTime || null,
-    events: data.events || {},
     timers: data.timers || {},
-    activeCourts: data.activeCourts !== undefined ? data.activeCourts : null,
-    rosters: data.rosters || { soccer:{}, basketball:{}, volleyball:{} },
+    simTime: data.simTime || null
   });
-  normalizeTeamNames(state);
   renderAll();
-  if (currentView === 'scorer') { seLoadGame(); renderEventLog(); }
-  if (currentView === 'livecontrol') renderLCGrid();
 };
-
 // ── INIT ──
-normalizeTeamNames(state);   // ensure local state is clean before first paint
 renderBanner();
 renderDashboard();
-seUpdateSport();
-showSport('soccer', false);
-// Push initial history state so back button works from the start
-if (history.pushState) history.pushState({ view: 'dashboard', sport: 'soccer' }, '', '#dashboard');
+showSport('soccer');
 window._appReady = true;
-// Heal any corrupted data (raw team refs, runaway delays) back to storage + Firebase
-save();
 </script>
-<!-- SheetJS (for Excel roster import; CSV works without it) -->
-<script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
@@ -2964,7 +1444,7 @@ save();
     try { db.ref('ko2026').set(state); } catch(e) { console.warn('Firebase save failed:', e.message); }
   };
 
-  db.ref('ko2026').on('value', (snapshot) => {
+  function applySnapshot(snapshot) {
     try {
       const data = snapshot.val();
       if (data && data.games && window._appReady) {
@@ -2974,7 +1454,16 @@ save();
     } catch(e) {
       console.log('Firebase sync skipped:', e.message);
     }
-  });
+  }
+
+  // Real-time listener — fires instantly on any write from admin
+  db.ref('ko2026').on('value', applySnapshot);
+
+  // Polling fallback every 10 seconds — catches missed updates if the
+  // real-time connection lapses or reconnects without re-firing
+  setInterval(() => {
+    db.ref('ko2026').once('value').then(applySnapshot).catch(() => {});
+  }, 10000);
 </script>
 </body>
 </html>

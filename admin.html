@@ -583,6 +583,27 @@ select:focus, input[type="text"]:focus {
   color: var(--text); border-radius: 8px; font-family: inherit; font-size: 13px;
 }
 #evt-player:focus, #evt-minute:focus { outline: 2px solid var(--gold); outline-offset: -2px; }
+
+/* ===== BRACKET PANEL ===== */
+#bracket-panel { padding: 0 0 20px 0; }
+.bracket-wrap { overflow-x: auto; padding-bottom: 8px; }
+.bracket { display: flex; align-items: flex-start; gap: 0; }
+.br-round { display: flex; flex-direction: column; min-width: 185px; }
+.br-round-hdr { text-align: center; font-size: 10px; font-weight: 700; color: var(--dim); letter-spacing: 1px; text-transform: uppercase; padding: 5px 10px; background: var(--surface); border-bottom: 1px solid var(--border); }
+.br-games { display: flex; flex-direction: column; justify-content: space-around; padding: 6px; gap: 6px; flex: 1; }
+.matchup-card { background: var(--card); border: 1px solid var(--border); border-radius: 7px; overflow: hidden; }
+.matchup-card.is-live { border-color: var(--gold); }
+.match-time-line { font-size: 9px; color: var(--dim); text-align: center; padding: 2px 4px; background: rgba(0,0,0,0.2); }
+.tr-row { display: flex; align-items: center; padding: 7px 8px; gap: 7px; border-bottom: 1px solid var(--border); }
+.tr-row:last-child { border-bottom: none; }
+.tr-row.won { background: rgba(22,163,74,0.15); }
+.tr-row.lost { background: rgba(220,38,38,0.1); opacity: 0.7; }
+.tr-row.dq-row { opacity: 0.4; text-decoration: line-through; }
+.tr-name { flex: 1; font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tr-name.tbd { color: var(--dim); font-weight: 400; font-style: italic; }
+.tr-score { font-size: 14px; font-weight: 700; min-width: 20px; text-align: right; color: var(--gold); }
+.bracket-section-label { font-size: 12px; font-weight: 700; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; padding: 10px 0 6px 0; border-top: 1px solid var(--border); margin-top: 10px; }
+.bracket-section-label:first-child { border-top: none; margin-top: 0; }
 </style>
 </head>
 <body>
@@ -633,6 +654,7 @@ select:focus, input[type="text"]:focus {
   <button class="sport-tab active" data-sport="soccer">⚽ Soccer</button>
   <button class="sport-tab" data-sport="basketball">🏀 Basketball</button>
   <button class="sport-tab" data-sport="volleyball">🏐 Volleyball</button>
+  <button class="sport-tab" id="tab-brackets" onclick="showBrackets()">📊 Brackets</button>
 </div>
 
 <!-- ===== TEST MODE BAR ===== -->
@@ -786,6 +808,9 @@ select:focus, input[type="text"]:focus {
 
 </div><!-- /main -->
 
+<!-- ===== BRACKET PANEL ===== -->
+<div id="bracket-panel" style="display:none; max-width:100%; overflow-x:auto; padding: 16px;"></div>
+
 <!-- ===== SETUP MODAL ===== -->
 <div id="modal-overlay">
   <div id="modal-box">
@@ -830,109 +855,214 @@ const DEFAULT_TEAMS = {
   volleyball: ['Aces VB','Spikes VB','Sets VB','Blocks VB','Serves VB','Digs VB','Kills VB','Passes VB','Lifts VB','Floats VB','Rolls VB','Tips VB','Dumps VB','Swings VB','Cuts VB','Drives VB','Jumps VB','Slides VB','Spins VB','Dives VB']
 };
 
+// ===== DATE/TIME HELPERS =====
+const D1 = (h,m) => new Date(2026,6,25,h,m,0).getTime();
+const D2 = (h,m) => new Date(2026,6,26,h,m,0).getTime();
+const fmtTime = ms => {
+  const d = new Date(ms);
+  return d.toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit',hour12:true});
+};
+
+// ===== SLOT DEFINITIONS (must match index.html exactly) =====
+const SOC_SLOT = 25, BB_SLOT = 25, VB_SLOT = 20;
+
+const SOCCER_SLOTS = [
+  { start: D1(10,20), rows:[
+    {court:'Soccer Field A', phase:'wb', round:'WB R1', desc:'T1 vs T2',   winnerSlot:'WBW1',  loserSlot:'L1'},
+    {court:'Soccer Field B', phase:'wb', round:'WB R1', desc:'T3 vs T4',   winnerSlot:'WBW2',  loserSlot:'L2'},
+    {court:'Soccer Field C', phase:'wb', round:'WB R1', desc:'T5 vs T6',   winnerSlot:'WBW3',  loserSlot:'L3'},
+    {court:'Soccer Field D', phase:'wb', round:'WB R1', desc:'T7 vs T8',   winnerSlot:'WBW4',  loserSlot:'L4'},
+  ]},
+  { start: D1(10,45), rows:[
+    {court:'Soccer Field A', phase:'wb', round:'WB R1', desc:'T9 vs T10',  winnerSlot:'WBW5',  loserSlot:'L5'},
+    {court:'Soccer Field B', phase:'wb', round:'WB R1', desc:'T11 vs T12', winnerSlot:'WBW6',  loserSlot:'L6'},
+    {court:'Soccer Field C', phase:'wb', round:'WB R1', desc:'T13 vs T14', winnerSlot:'WBW7',  loserSlot:'L7'},
+    {court:'Soccer Field D', phase:'wb', round:'WB R1', desc:'T15 vs T16', winnerSlot:'WBW8',  loserSlot:'L8'},
+  ]},
+  { start: D1(11,10), rows:[
+    {court:'Soccer Field A', phase:'wb', round:'WB R1', desc:'T17 vs T18', winnerSlot:'WBW9',  loserSlot:'L9'},
+    {court:'Soccer Field B', phase:'wb', round:'WB R1', desc:'T19 vs T20', winnerSlot:'WBW10', loserSlot:'L10'},
+    {court:'Soccer Field C', phase:'lb', round:'LB R1', desc:'L1 vs L2',   winnerSlot:'LBW1',  loserSlot:null},
+    {court:'Soccer Field D', phase:'lb', round:'LB R1', desc:'L3 vs L4',   winnerSlot:'LBW2',  loserSlot:null},
+  ]},
+  { start: D1(11,35), rows:[
+    {court:'Soccer Field A', phase:'wb', round:'WB R2', desc:'WBW1 vs WBW2',  winnerSlot:'WBW11', loserSlot:'WBL1'},
+    {court:'Soccer Field B', phase:'wb', round:'WB R2', desc:'WBW3 vs WBW4',  winnerSlot:'WBW12', loserSlot:'WBL2'},
+    {court:'Soccer Field C', phase:'wb', round:'WB R2', desc:'WBW5 vs WBW6',  winnerSlot:'WBW13', loserSlot:'WBL3'},
+    {court:'Soccer Field D', phase:'lb', round:'LB R1', desc:'L5 vs L6',      winnerSlot:'LBW3',  loserSlot:null},
+  ]},
+  { start: D1(12,30), rows:[
+    {court:'Soccer Field A', phase:'wb', round:'WB R2', desc:'WBW7 vs WBW8',  winnerSlot:'WBW14', loserSlot:'WBL4'},
+    {court:'Soccer Field B', phase:'wb', round:'WB R2', desc:'WBW9 vs WBW10', winnerSlot:'WBW15', loserSlot:'WBL5'},
+    {court:'Soccer Field C', phase:'lb', round:'LB R2', desc:'LBW1 vs LBW2',  winnerSlot:'LBW4',  loserSlot:null},
+    {court:'Soccer Field D', phase:'lb', round:'LB R2', desc:'LBW3 vs LBW4',  winnerSlot:'LBW5',  loserSlot:null},
+  ]},
+  { start: D1(12,55), rows:[
+    {court:'Soccer Field A', phase:'wb', round:'WB R3', desc:'WBW11 vs WBW12', winnerSlot:'WBW16', loserSlot:'WBL6'},
+    {court:'Soccer Field B', phase:'wb', round:'WB R3', desc:'WBW13 vs WBW14', winnerSlot:'WBW17', loserSlot:'WBL7'},
+    {court:'Soccer Field C', phase:'lb', round:'LB R2', desc:'LBW5 vs WBL1',   winnerSlot:'LBW6',  loserSlot:null},
+    {court:'Soccer Field D', phase:'lb', round:'LB R2', desc:'LBW6 vs WBL2',   winnerSlot:'LBW7',  loserSlot:null},
+  ]},
+  { start: D1(13,20), rows:[
+    {court:'Soccer Field A', phase:'wb', round:'WB R3', desc:'WBW15 vs WBW16', winnerSlot:'WBW18', loserSlot:'WBL8'},
+    {court:'Soccer Field B', phase:'lb', round:'LB R3', desc:'LBW7 vs WBL3',   winnerSlot:'LBW8',  loserSlot:null},
+    {court:'Soccer Field C', phase:'lb', round:'LB R3', desc:'LBW8 vs WBL4',   winnerSlot:'LBW9',  loserSlot:null},
+    {court:'Soccer Field D', phase:'lb', round:'LB R3', desc:'LBW9 vs WBL5',   winnerSlot:'LBW10', loserSlot:null},
+  ]},
+  { start: D1(13,45), rows:[
+    {court:'Soccer Field A', phase:'wb', round:'WB R4', desc:'WB Semifinal 1', winnerSlot:'WBW19', loserSlot:'WBL9'},
+    {court:'Soccer Field B', phase:'wb', round:'WB R4', desc:'WB Semifinal 2', winnerSlot:'WBW20', loserSlot:'WBL10'},
+    {court:'Soccer Field C', phase:'lb', round:'LB R4', desc:'LBW10 vs WBL6',  winnerSlot:'LBW11', loserSlot:null},
+    {court:'Soccer Field D', phase:'lb', round:'LB SF', desc:'LBW11 vs LBW12', winnerSlot:'LBW12', loserSlot:null},
+  ]},
+  { start: D1(14,10), rows:[
+    {court:'Soccer Field A', phase:'wb', round:'WB SF',    desc:'WB Semifinal',  winnerSlot:'WBW21', loserSlot:'WBL11'},
+    {court:'Soccer Field B', phase:'wb', round:'WB Final', desc:'WB Final',      winnerSlot:'WBW22', loserSlot:'WBL12'},
+    {court:'Soccer Field C', phase:'lb', round:'LB Final', desc:'LB Final',      winnerSlot:'LBW13', loserSlot:null},
+  ]},
+  { start: D2(13,0), rows:[
+    {court:'Soccer Field A', phase:'gf', round:'Grand Final', desc:'WB Winner vs LB Winner', winnerSlot:'Champion', loserSlot:null},
+  ]},
+  { start: D2(13,25), rows:[
+    {court:'Soccer Field A', phase:'gf', round:'GF Reset', desc:'Reset Game (if needed)', winnerSlot:'Champion', loserSlot:null},
+  ]},
+];
+
+const BB_SLOTS = [
+  ...[
+    [D1(17,15), 'T1 vs T2',       'T3 vs T4',       'BW1',  'BL1',  'BW2',  'BL2'],
+    [D1(17,40), 'T5 vs T6',       'T7 vs T8',       'BW3',  'BL3',  'BW4',  'BL4'],
+    [D1(18, 5), 'T9 vs T10',      'T11 vs T12',     'BW5',  'BL5',  'BW6',  'BL6'],
+    [D1(18,30), 'T13 vs T14',     'T15 vs T16',     'BW7',  'BL7',  'BW8',  'BL8'],
+    [D1(18,55), 'T17 vs T18',     'T19 vs T20',     'BW9',  'BL9',  'BW10', 'BL10'],
+    [D1(19,20), 'WBW1 vs WBW2',   'L1 vs L2',       'BW11', 'BBL1', 'BLW1', null],
+    [D1(19,45), 'WBW3 vs WBW4',   'L3 vs L4',       'BW12', 'BBL2', 'BLW2', null],
+    [D1(20,10), 'WBW5 vs WBW6',   'L5 vs L6',       'BW13', 'BBL3', 'BLW3', null],
+    [D1(20,35), 'WBW7 vs WBW8',   'LBW1 vs LBW2',   'BW14', 'BBL4', 'BLW4', null],
+    [D1(21, 0), 'WBW9 vs WBW10',  'LBW3 vs LBW4',   'BW15', 'BBL5', 'BLW5', null],
+    [D1(21,25), 'WB R3 Game 1',   'LBW5 vs WBL1',   'BW16', 'BBL6', 'BLW6', null],
+    [D1(21,50), 'WB R3 Game 2',   'LBW6 vs WBL2',   'BW17', 'BBL7', 'BLW7', null],
+    [D1(22,15), 'WB R3 Game 3',   'LBW7 vs WBL3',   'BW18', 'BBL8', 'BLW8', null],
+  ].map(([s,c1,c2,ws1,ls1,ws2,ls2],i) => ({
+    start:s,
+    rows:[
+      {court:'Basketball Court 1', phase: i<5?'wb':i<8?'wb_r2':'wb_r3', round: i<5?'WB R1':i<8?'WB R2':'WB R3', desc:c1, winnerSlot:ws1, loserSlot:ls1},
+      {court:'Basketball Court 2', phase: i<5?'wb':i<8?'lb_r1':'lb_r2', round: i<5?'WB R1':i<8?'LB R1':'LB R2', desc:c2, winnerSlot:ws2, loserSlot:ls2},
+    ]
+  })),
+  {start:D2(15,30), rows:[{court:'Basketball Court 1',phase:'wb_r4',round:'WB R4',desc:'WBW1 vs WBW2',winnerSlot:'BW19',loserSlot:'BBL9'},{court:'Basketball Court 2',phase:'lb_r3',round:'LB R3',desc:'LBW8 vs WBL4',winnerSlot:'BLW9',loserSlot:null}]},
+  {start:D2(15,55), rows:[{court:'Basketball Court 1',phase:'wb_r4',round:'WB R4',desc:'WBW3 vs WBW4',winnerSlot:'BW20',loserSlot:'BBL10'},{court:'Basketball Court 2',phase:'lb_r4',round:'LB R4',desc:'LBW9 vs WBL5',winnerSlot:'BLW10',loserSlot:null}]},
+  {start:D2(16,20), rows:[{court:'Basketball Court 1',phase:'wb_sf',round:'WB SF',desc:'WB Semifinal',winnerSlot:'BW21',loserSlot:'BBL11'},{court:'Basketball Court 2',phase:'lb_sf',round:'LB SF',desc:'LBW10 vs LBW11',winnerSlot:'BLW11',loserSlot:null}]},
+  {start:D2(16,45), rows:[{court:'Basketball Court 1',phase:'wb_f',round:'WB Final',desc:'WB Final',winnerSlot:'BW22',loserSlot:'BBL12'},{court:'Basketball Court 2',phase:'lb_f',round:'LB Final',desc:'LB Final',winnerSlot:'BLW12',loserSlot:null}]},
+  {start:D2(17,10), rows:[{court:'Basketball Court 1',phase:'gf',round:'Grand Final',desc:'WB Winner vs LB Winner',winnerSlot:'BB Champion',loserSlot:null}]},
+  {start:D2(17,35), rows:[{court:'Basketball Court 1',phase:'gf',round:'GF Reset',desc:'Reset Game (if needed)',winnerSlot:'BB Champion',loserSlot:null}]},
+];
+
+const VB_SLOTS = [
+  [D1(17,10),'R1 Game 1','T1 vs T2'],
+  [D1(17,30),'R1 Game 2','T3 vs T4'],
+  [D1(17,50),'R1 Game 3','T5 vs T6'],
+  [D1(18,10),'R1 Game 4','T7 vs T8'],
+  [D1(18,30),'R1 Game 5','T9 vs T10'],
+  [D1(18,50),'R1 Game 6','T11 vs T12'],
+  [D1(19,10),'R1 Game 7','T13 vs T14'],
+  [D1(19,30),'R1 Game 8','T15 vs T16'],
+  [D1(19,50),'R1 Game 9','T17 vs T18'],
+  [D1(20,10),'R1 Game 10','T19 vs T20'],
+  [D1(20,30),'Quarterfinal 1','W1 vs W2'],
+  [D1(20,50),'Quarterfinal 2','W3 vs W4'],
+  [D1(21,10),'Quarterfinal 3','W5 vs W6'],
+  [D1(21,30),'Quarterfinal 4','W7 vs W8'],
+  [D1(21,50),'Semifinal 1','QF1W vs QF2W'],
+  [D1(22,10),'Semifinal 2','QF3W vs QF4W'],
+  [D1(22,30),'3rd Place','SF1L vs SF2L'],
+  [D1(22,50),'Grand Final','SF1W vs SF2W'],
+].map(([s,round,desc],i) => ({
+  start:s,
+  rows:[{
+    court:'Volleyball Court',
+    phase:round.includes('Grand')?'gf':round.includes('Semi')?'sf':round.includes('QF')||round.includes('Quarter')?'qf':round.includes('3rd')?'3rd':'r1',
+    round, desc,
+    winnerSlot: i<10 ? `VW${i+1}` : round.includes('Grand')?'VB Champion':round.includes('3rd')?'VB 3rd':round.includes('Semi')?`VSF${i-13}W`:`VQF${i-9}W`,
+    loserSlot: i<10 ? null : round.includes('Semi') ? `VSF${i-13}L` : null
+  }]
+}));
+
 // ===== SCHEDULE GENERATION =====
-function makeId(sport, court, idx) {
-  return `${sport}_${court.replace(/ /g,'_')}_${idx}`;
-}
-
-function getRoundLabel(sport, slotIdx) {
-  if (sport === 'volleyball') {
-    if (slotIdx <= 9) return 'Pool Play';
-    if (slotIdx <= 12) return 'Quarterfinal';
-    if (slotIdx === 13) return 'Semifinal';
-    return 'Final';
-  } else {
-    if (slotIdx <= 5) return 'Pool Play';
-    if (slotIdx <= 7) return 'Quarterfinal';
-    if (slotIdx === 8) return 'Semifinal';
-    return 'Final';
-  }
-}
-
 function buildSchedule(teams) {
   const games = {};
+  const seedRe = /\bT(\d+)\b/g;
 
-  const D1 = (h,m) => new Date(2026,6,25,h,m,0).getTime();
-  const D2 = (h,m) => new Date(2026,6,26,h,m,0).getTime();
+  function resolveDesc(desc, sportTeams) {
+    return desc.replace(seedRe, (_, n) => {
+      const idx = parseInt(n) - 1;
+      return (sportTeams && sportTeams[idx]) ? sportTeams[idx] : `T${n}`;
+    });
+  }
 
-  const soccerSlots1 = [[8,0],[8,30],[9,0],[9,30],[10,0],[10,30],[11,0],[11,30],[12,0],[12,30]];
-  const soccerSlots2 = soccerSlots1;
-  const soccerFields = ['Soccer Field A','Soccer Field B','Soccer Field C','Soccer Field D'];
-  const soccerTeams = teams.soccer;
+  function resolveTeam(token, sportTeams) {
+    const m = token.match(/^T(\d+)$/);
+    if (m) {
+      const idx = parseInt(m[1]) - 1;
+      return (sportTeams && sportTeams[idx]) ? sportTeams[idx] : token;
+    }
+    return token;
+  }
 
-  let soccerGlobalIdx = 0;
-  soccerFields.forEach(field => {
-    [soccerSlots1, soccerSlots2].forEach((slots, dayIdx) => {
-      const dfn = dayIdx === 0 ? D1 : D2;
-      slots.forEach(([h,m], slotIdx) => {
-        const id = makeId('soccer', field, soccerGlobalIdx);
-        const t1 = soccerGlobalIdx % soccerTeams.length;
-        const t2 = (soccerGlobalIdx + 1) % soccerTeams.length;
+  const courtOrder = {};
+  function addSlots(slotArr, sport, slotMin, sportTeams) {
+    slotArr.forEach(slot => {
+      slot.rows.forEach(row => {
+        const courtKey = row.court;
+        const courtIdx = (courtOrder[courtKey] = (courtOrder[courtKey] || 0));
+        courtOrder[courtKey]++;
+        const id = `${sport}_${courtKey.replace(/\s+/g,'_')}_${courtIdx}`;
+        const resolvedDesc = resolveDesc(row.desc, sportTeams);
+        const rawParts = row.desc.split(' vs ');
         games[id] = {
-          id, sport:'soccer', court:field,
-          phase: dayIdx === 0 ? 'Day 1' : 'Day 2',
-          round: getRoundLabel('soccer', slotIdx),
-          desc: `${soccerTeams[t1]} vs ${soccerTeams[t2]}`,
-          scheduledStart: dfn(h,m), slotMin:25,
-          team1: soccerTeams[t1], team2: soccerTeams[t2],
-          score1:0, score2:0,
-          status:'upcoming', winner:null, loser:null, dq:null, ts: Date.now()
+          id, sport, court: row.court,
+          phase: row.phase, round: row.round,
+          desc: resolvedDesc,
+          scheduledStart: slot.start, slotMin,
+          team1: resolveTeam(rawParts[0] || 'TBD', sportTeams),
+          team2: resolveTeam(rawParts[1] || 'TBD', sportTeams),
+          score1: 0, score2: 0,
+          status: 'upcoming', winner: null, loser: null, dq: null, ts: null,
+          winnerSlot: row.winnerSlot || null,
+          loserSlot: row.loserSlot || null,
         };
-        soccerGlobalIdx++;
       });
     });
-  });
+  }
 
-  const bbSlots1 = [[8,0],[8,30],[9,0],[9,30],[10,0],[10,30],[11,0],[11,30],[12,0],[12,30]];
-  const bbCourts = ['Basketball Court A','Basketball Court B'];
-  const bbTeams = teams.basketball;
-  let bbGlobalIdx = 0;
-  bbCourts.forEach(court => {
-    [bbSlots1, bbSlots1].forEach((slots, dayIdx) => {
-      const dfn = dayIdx === 0 ? D1 : D2;
-      slots.forEach(([h,m], slotIdx) => {
-        const id = makeId('basketball', court, bbGlobalIdx);
-        const t1 = bbGlobalIdx % bbTeams.length;
-        const t2 = (bbGlobalIdx + 1) % bbTeams.length;
-        games[id] = {
-          id, sport:'basketball', court,
-          phase: dayIdx === 0 ? 'Day 1' : 'Day 2',
-          round: getRoundLabel('basketball', slotIdx),
-          desc: `${bbTeams[t1]} vs ${bbTeams[t2]}`,
-          scheduledStart: dfn(h,m), slotMin:25,
-          team1: bbTeams[t1], team2: bbTeams[t2],
-          score1:0, score2:0,
-          status:'upcoming', winner:null, loser:null, dq:null, ts: Date.now()
-        };
-        bbGlobalIdx++;
-      });
-    });
-  });
-
-  const vbSlots = [[8,0],[8,20],[8,40],[9,0],[9,20],[9,40],[10,0],[10,20],[10,40],[11,0],[11,20],[11,40],[12,0],[12,20],[12,40]];
-  const vbTeams = teams.volleyball;
-  let vbGlobalIdx = 0;
-  [vbSlots, vbSlots].forEach((slots, dayIdx) => {
-    const dfn = dayIdx === 0 ? D1 : D2;
-    slots.forEach(([h,m], slotIdx) => {
-      const id = makeId('volleyball', 'Volleyball Court', vbGlobalIdx);
-      const t1 = vbGlobalIdx % vbTeams.length;
-      const t2 = (vbGlobalIdx + 1) % vbTeams.length;
-      games[id] = {
-        id, sport:'volleyball', court:'Volleyball Court',
-        phase: dayIdx === 0 ? 'Day 1' : 'Day 2',
-        round: getRoundLabel('volleyball', slotIdx),
-        desc: `${vbTeams[t1]} vs ${vbTeams[t2]}`,
-        scheduledStart: dfn(h,m), slotMin:20,
-        team1: vbTeams[t1], team2: vbTeams[t2],
-        score1:0, score2:0,
-        status:'upcoming', winner:null, loser:null, dq:null, ts: Date.now()
-      };
-      vbGlobalIdx++;
-    });
-  });
+  addSlots(SOCCER_SLOTS, 'soccer', SOC_SLOT, teams.soccer);
+  addSlots(BB_SLOTS, 'basketball', BB_SLOT, teams.basketball);
+  addSlots(VB_SLOTS, 'volleyball', VB_SLOT, teams.volleyball);
 
   return games;
+}
+
+// ===== BRACKET PROPAGATION =====
+function propagateResult(gameId) {
+  const g = state.games[gameId];
+  if (!g || g.status !== 'final') return;
+  const winner = g.winner;
+  const loser  = g.loser;
+  if (!winner) return;
+  const wSlot = g.winnerSlot;
+  const lSlot = g.loserSlot;
+  Object.values(state.games).forEach(other => {
+    if (other.id === gameId) return;
+    if (other.status === 'final') return;
+    if (wSlot) {
+      if (other.team1 === wSlot) { other.team1 = winner; other.desc = other.desc.replace(wSlot, winner); }
+      if (other.team2 === wSlot) { other.team2 = winner; other.desc = other.desc.replace(wSlot, winner); }
+    }
+    if (lSlot && loser) {
+      if (other.team1 === lSlot) { other.team1 = loser;  other.desc = other.desc.replace(lSlot, loser); }
+      if (other.team2 === lSlot) { other.team2 = loser;  other.desc = other.desc.replace(lSlot, loser); }
+    }
+  });
 }
 
 function shiftGamesToToday(games) {
@@ -961,7 +1091,10 @@ function shiftGamesToToday(games) {
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   if (window.fbDb) {
-    try { window.fbDb.ref('ko2026').set(state); } catch(e) {}
+    // Strip simTime before writing to Firebase — it's a local admin-only flag
+    // and must not propagate back to overwrite the exit decision
+    const { simTime, ...fbState } = state;
+    try { window.fbDb.ref('ko2026').set(fbState); } catch(e) {}
   }
 }
 
@@ -1358,6 +1491,7 @@ function refresh() {
   renderTimerButtons();
   renderTestModeBar();
   renderEventLog();
+  renderBracketPanel();
 }
 
 // ===== EVENT HANDLERS =====
@@ -1466,6 +1600,7 @@ document.querySelectorAll('.btn-status').forEach(btn => {
         else if (g.score2 > g.score1) { g.winner = g.team2; g.loser = g.team1; }
         else { g.winner = null; g.loser = null; }
       }
+      propagateResult(currentGameId);
     }
 
     saveState();
@@ -1494,6 +1629,7 @@ document.getElementById('btn-dq1').addEventListener('click', () => {
     g.status = 'final';
     g.ts = Date.now();
     if (state.timers[currentGameId]) pauseTimer(currentGameId);
+    propagateResult(currentGameId);
     saveState();
     refresh();
   });
@@ -1510,6 +1646,7 @@ document.getElementById('btn-dq2').addEventListener('click', () => {
     g.status = 'final';
     g.ts = Date.now();
     if (state.timers[currentGameId]) pauseTimer(currentGameId);
+    propagateResult(currentGameId);
     saveState();
     refresh();
   });
@@ -1639,20 +1776,21 @@ document.getElementById('btn-test-mode').addEventListener('click', () => {
   if (state.simTime) {
     // Exit test mode — rebuild with original times
     state.simTime = null;
-    const newGames = buildSchedule(state.teams);
-    // Merge statuses
-    Object.keys(newGames).forEach(id => {
-      if (state.games[id]) {
-        const old = state.games[id];
-        newGames[id].score1 = old.score1;
-        newGames[id].score2 = old.score2;
-        newGames[id].status = old.status;
-        newGames[id].winner = old.winner;
-        newGames[id].loser = old.loser;
-        newGames[id].dq = old.dq;
-      }
-    });
-    state.games = newGames;
+    try {
+      const newGames = buildSchedule(state.teams || JSON.parse(JSON.stringify(DEFAULT_TEAMS)));
+      Object.keys(newGames).forEach(id => {
+        if (state.games[id]) {
+          const old = state.games[id];
+          newGames[id].score1 = old.score1;
+          newGames[id].score2 = old.score2;
+          newGames[id].status = old.status;
+          newGames[id].winner = old.winner;
+          newGames[id].loser = old.loser;
+          newGames[id].dq = old.dq;
+        }
+      });
+      state.games = newGames;
+    } catch(e) { console.warn('buildSchedule failed on exit:', e); }
   } else {
     state.simTime = Date.now();
     shiftGamesToToday(state.games);
@@ -1665,23 +1803,110 @@ document.getElementById('btn-test-mode').addEventListener('click', () => {
 
 document.getElementById('btn-exit-test').addEventListener('click', () => {
   state.simTime = null;
-  const newGames = buildSchedule(state.teams);
-  Object.keys(newGames).forEach(id => {
-    if (state.games[id]) {
-      const old = state.games[id];
-      newGames[id].score1 = old.score1;
-      newGames[id].score2 = old.score2;
-      newGames[id].status = old.status;
-      newGames[id].winner = old.winner;
-      newGames[id].loser = old.loser;
-      newGames[id].dq = old.dq;
-    }
-  });
-  state.games = newGames;
+  try {
+    const newGames = buildSchedule(state.teams || JSON.parse(JSON.stringify(DEFAULT_TEAMS)));
+    Object.keys(newGames).forEach(id => {
+      if (state.games[id]) {
+        const old = state.games[id];
+        newGames[id].score1 = old.score1;
+        newGames[id].score2 = old.score2;
+        newGames[id].status = old.status;
+        newGames[id].winner = old.winner;
+        newGames[id].loser = old.loser;
+        newGames[id].dq = old.dq;
+      }
+    });
+    state.games = newGames;
+  } catch(e) { console.warn('buildSchedule failed on exit:', e); }
   saveState();
   currentGameId = null;
   refresh();
 });
+
+// ===== BRACKET PANEL =====
+let bracketVisible = false;
+
+function showBrackets() {
+  bracketVisible = !bracketVisible;
+  const panel = document.getElementById('bracket-panel');
+  const tab = document.getElementById('tab-brackets');
+  if (bracketVisible) {
+    panel.style.display = 'block';
+    tab.classList.add('active');
+    renderBracketPanel();
+  } else {
+    panel.style.display = 'none';
+    tab.classList.remove('active');
+  }
+}
+
+function renderBracketPanel() {
+  if (!bracketVisible) return;
+  const panel = document.getElementById('bracket-panel');
+  const sport = currentSport;
+  let html = '';
+  if (sport === 'soccer') {
+    html += `<div class="bracket-section-label">Winners Bracket</div>` + adminBuildBracketSection('soccer','wb');
+    html += `<div class="bracket-section-label">Losers Bracket</div>` + adminBuildBracketSection('soccer','lb');
+    html += `<div class="bracket-section-label">Grand Final</div>` + adminBuildBracketSection('soccer','gf');
+  } else if (sport === 'basketball') {
+    html += `<div class="bracket-section-label">Winners Bracket</div>` + adminBuildBracketSection('basketball','wb');
+    html += `<div class="bracket-section-label">Losers Bracket</div>` + adminBuildBracketSection('basketball','lb');
+    html += `<div class="bracket-section-label">Grand Final</div>` + adminBuildBracketSection('basketball','gf');
+  } else {
+    html += `<div class="bracket-section-label">Round 1</div>` + adminBuildBracketSection('volleyball','r1');
+    html += `<div class="bracket-section-label">Quarterfinals</div>` + adminBuildBracketSection('volleyball','qf');
+    html += `<div class="bracket-section-label">Semifinals</div>` + adminBuildBracketSection('volleyball','sf');
+    html += `<div class="bracket-section-label">Grand Final</div>` + adminBuildBracketSection('volleyball','gf');
+  }
+  panel.innerHTML = html;
+}
+
+function adminBuildBracketSection(sport, phase) {
+  const games = Object.values(state.games)
+    .filter(g => g.sport === sport && (g.phase === phase || g.phase.startsWith(phase)))
+    .sort((a,b) => a.scheduledStart - b.scheduledStart);
+  if (!games.length) return '<div style="color:var(--dim);font-size:12px;padding:8px">No games in this phase yet</div>';
+
+  const roundMap = {};
+  games.forEach(g => {
+    if (!roundMap[g.round]) roundMap[g.round] = [];
+    roundMap[g.round].push(g);
+  });
+
+  let html = '<div class="bracket-wrap"><div class="bracket">';
+  Object.keys(roundMap).forEach(r => {
+    html += `<div class="br-round"><div class="br-round-hdr">${r}</div><div class="br-games">`;
+    roundMap[r].forEach(g => { html += adminMatchupCard(g); });
+    html += '</div></div>';
+  });
+  html += '</div></div>';
+  return html;
+}
+
+function adminMatchupCard(g) {
+  const n = Date.now();
+  const eff = getEffectiveStart(g);
+  const effEnd = eff + (g.slotMin || 25) * 60000;
+  const isLv = (n >= eff && n <= effEnd && g.status !== 'final') || g.status === 'live';
+  const isDone = g.status === 'final';
+  const t1w = isDone && g.score1 > g.score2;
+  const t2w = isDone && g.score2 > g.score1;
+  const timeStr = formatTs(eff);
+  const isTbd1 = !isDone && (g.team1 === 'TBD' || /^(T\d+|WBW\d+|LBW?\d+|L\d+|WBL\d+|BW\d+|BLW\d+|BL\d+|BBL\d+|VW\d+|VSF\d+[WL]|VQF\d+W|WB (Winner|Semifinal)|LB Winner|W\d+|QF\d+W|SF\d+[WL])$/.test(g.team1));
+  const isTbd2 = !isDone && (g.team2 === 'TBD' || /^(T\d+|WBW\d+|LBW?\d+|L\d+|WBL\d+|BW\d+|BLW\d+|BL\d+|BBL\d+|VW\d+|VSF\d+[WL]|VQF\d+W|WB (Winner|Semifinal)|LB Winner|W\d+|QF\d+W|SF\d+[WL])$/.test(g.team2));
+  return `<div class="matchup-card ${isLv?'is-live':''}">
+    <div class="match-time-line">${timeStr} · ${g.court}</div>
+    <div class="tr-row ${t1w?'won':''} ${!t1w&&isDone?'lost':''} ${g.dq==='team1'?'dq-row':''}">
+      <span class="tr-name ${isTbd1?'tbd':''}">${g.team1}${g.dq==='team1'?' 🚫':''}</span>
+      <span class="tr-score">${isDone||isLv?g.score1:''}</span>
+    </div>
+    <div class="tr-row ${t2w?'won':''} ${!t2w&&isDone?'lost':''} ${g.dq==='team2'?'dq-row':''}">
+      <span class="tr-name ${isTbd2?'tbd':''}">${g.team2}${g.dq==='team2'?' 🚫':''}</span>
+      <span class="tr-score">${isDone||isLv?g.score2:''}</span>
+    </div>
+  </div>`;
+}
 
 // ===== PIN LOCK =====
 const ADMIN_PIN = '2026';
@@ -1799,7 +2024,9 @@ window.fbDb.ref('ko2026').once('value', snapshot => {
   try {
     const data = snapshot.val();
     if (data && data.games) {
+      const localSimTime = state.simTime; // preserve whatever the user set locally
       state = data;
+      state.simTime = localSimTime;       // never let Firebase override test-mode state
       if (!state.teams) state.teams = JSON.parse(JSON.stringify(DEFAULT_TEAMS));
       if (!state.courtDelays) state.courtDelays = {};
       if (!state.timers) state.timers = {};
