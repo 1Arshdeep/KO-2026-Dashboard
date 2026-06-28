@@ -481,14 +481,14 @@ function defaultState() {
   return s;
 }
 
-let state = (() => {
-  try { const r = JSON.parse(localStorage.getItem(SK)); if (r?.games) return r; } catch(e) {}
-  return defaultState();
-})();
+// Public view always starts from defaultState and waits for Firebase.
+// Never bootstrap from localStorage — admin's simTime/simulated live statuses
+// would flash briefly then disappear when Firebase corrects the real state.
+let state = defaultState();
 
 function save() {
-  localStorage.setItem(SK, JSON.stringify(state));
-  if (window.firebaseSave) window.firebaseSave(state);
+  // Public view is read-only — do not write to Firebase or localStorage.
+  // State is managed by admin.html and pushed here via Firebase onValue.
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -1420,17 +1420,15 @@ setInterval(() => {
   renderBanner();
 }, 1000);
 
-// Firebase handles real-time sync across devices
+// Firebase is the single source of truth for the public view.
+// simTime is always null here — admin strips it before saving to Firebase.
 window.applyFirebaseState = (data) => {
   if (!window._appReady) return;
-  // Merge with defaults to ensure all required fields exist
-  state = Object.assign({}, defaultState(), data, {
-    courtDelays: data.courtDelays || {},
-    teams: data.teams || defaultTeams(),
-    games: data.games || {},
-    timers: data.timers || {},
-    simTime: data.simTime || null
-  });
+  state.courtDelays = data.courtDelays || {};
+  state.teams       = data.teams       || defaultTeams();
+  state.games       = data.games       || {};
+  state.timers      = data.timers      || {};
+  state.simTime     = null; // public view always uses real clock
   renderAll();
 };
 // ── INIT ──
