@@ -585,26 +585,29 @@ select:focus, input[type="text"]:focus {
 #evt-player:focus, #evt-minute:focus { outline: 2px solid var(--gold); outline-offset: -2px; }
 
 /* ===== BRACKET PANEL ===== */
-#bracket-view { padding: 0 16px 32px 16px; max-width: 100%; }
-.bracket-wrap { overflow-x: auto; padding-bottom: 8px; }
-.bracket { display: flex; align-items: flex-start; gap: 0; }
-.br-round { display: flex; flex-direction: column; min-width: 185px; }
-.br-round-hdr { text-align: center; font-size: 10px; font-weight: 700; color: var(--dim); letter-spacing: 1px; text-transform: uppercase; padding: 5px 10px; background: var(--surface); border-bottom: 1px solid var(--border); }
+#bracket-view { padding: 0 20px 32px 20px; max-width: 100%; }
+.bracket-wrap { overflow-x: auto; padding-bottom: 8px; width: 100%; }
+.bracket { display: flex; align-items: flex-start; gap: 0; width: 100%; }
+.br-round { display: flex; flex-direction: column; flex: 1; min-width: 150px; }
+.br-round-hdr { text-align: center; font-size: 11px; font-weight: 700; color: var(--dim); letter-spacing: 1px; text-transform: uppercase; padding: 6px 10px; background: var(--surface); border-bottom: 1px solid var(--border); }
 .br-games { display: flex; flex-direction: column; justify-content: space-around; padding: 6px; gap: 6px; flex: 1; }
-.matchup-card { background: var(--card); border: 1px solid var(--border); border-radius: 7px; overflow: hidden; transition: border-color 0.15s, box-shadow 0.15s; }
+.matchup-card { position: relative; background: var(--card); border: 1px solid var(--border); border-radius: 7px; overflow: hidden; transition: border-color 0.15s, box-shadow 0.15s; max-width: 300px; margin-left: auto; margin-right: auto; width: 100%; }
 .matchup-card:hover { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
 .matchup-card.is-live { border-color: var(--gold); }
-.match-time-line { font-size: 9px; color: var(--dim); text-align: center; padding: 2px 4px; background: rgba(0,0,0,0.2); }
-.tr-row { display: flex; align-items: center; padding: 7px 8px; gap: 7px; border-bottom: 1px solid var(--border); }
+.match-time-line { font-size: 10px; color: var(--dim); text-align: center; padding: 3px 6px; background: rgba(0,0,0,0.2); }
+.tr-row { display: flex; align-items: center; padding: 8px 10px; gap: 8px; border-bottom: 1px solid var(--border); }
 .tr-row:last-child { border-bottom: none; }
 .tr-row.won { background: rgba(22,163,74,0.15); }
 .tr-row.lost { background: rgba(220,38,38,0.1); opacity: 0.7; }
 .tr-row.dq-row { opacity: 0.4; text-decoration: line-through; }
-.tr-name { flex: 1; font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tr-name { flex: 1; font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tr-name.tbd { color: var(--dim); font-weight: 400; font-style: italic; }
-.tr-score { font-size: 14px; font-weight: 700; min-width: 20px; text-align: right; color: var(--gold); }
-.bracket-section-label { font-size: 12px; font-weight: 700; color: var(--dim); text-transform: uppercase; letter-spacing: 1px; padding: 10px 0 6px 0; border-top: 1px solid var(--border); margin-top: 10px; }
+.tr-score { font-size: 15px; font-weight: 700; min-width: 22px; text-align: right; color: var(--gold); }
+.bracket-section-label { font-size: 13px; font-weight: 700; color: var(--dim); text-transform: uppercase; letter-spacing: 1.5px; padding: 10px 0 8px 0; border-top: 1px solid var(--border); margin-top: 10px; }
 .bracket-section-label:first-child { border-top: none; margin-top: 0; }
+/* Side-by-side WB + LB on large screens */
+.bracket-dual { display: grid; grid-template-columns: 1fr; gap: 0; align-items: start; }
+@media(min-width: 1100px) { .bracket-dual { grid-template-columns: 3fr 2fr; gap: 28px; } }
 </style>
 </head>
 <body>
@@ -915,18 +918,13 @@ const SOCCER_SLOTS = [
     {court:'Soccer Field D', phase:'lb', round:'LB R3', desc:'LBW9 vs WBL5',   winnerSlot:'LBW10', loserSlot:null},
   ]},
   { start: D1(13,45), rows:[
-    {court:'Soccer Field A', phase:'wb', round:'WB R4', desc:'WB Semifinal 1', winnerSlot:'WBW19', loserSlot:'WBL9'},
-    {court:'Soccer Field B', phase:'wb', round:'WB R4', desc:'WB Semifinal 2', winnerSlot:'WBW20', loserSlot:'WBL10'},
-    {court:'Soccer Field C', phase:'lb', round:'LB R4', desc:'LBW10 vs WBL6',  winnerSlot:'LBW11', loserSlot:null},
-    {court:'Soccer Field D', phase:'lb', round:'LB SF', desc:'LBW11 vs LBW12', winnerSlot:'LBW12', loserSlot:null},
-  ]},
-  { start: D1(14,10), rows:[
-    {court:'Soccer Field A', phase:'wb', round:'WB SF',    desc:'WB Semifinal',  winnerSlot:'WBW21', loserSlot:'WBL11'},
-    {court:'Soccer Field B', phase:'wb', round:'WB Final', desc:'WB Final',      winnerSlot:'WBW22', loserSlot:'WBL12'},
-    {court:'Soccer Field C', phase:'lb', round:'LB Final', desc:'LB Final',      winnerSlot:'LBW13', loserSlot:null},
+    {court:'Soccer Field A', phase:'wb_sf', round:'WB SF',    desc:'WBW17 vs WBW18', winnerSlot:'WBW19', loserSlot:null},
+    {court:'Soccer Field B', phase:'lb',    round:'LB R4',    desc:'LBW10 vs WBL6',  winnerSlot:'LBW11', loserSlot:null},
+    {court:'Soccer Field C', phase:'lb',    round:'LB SF',    desc:'LBW11 vs WBL7',  winnerSlot:'LBW12', loserSlot:null},
+    {court:'Soccer Field D', phase:'lb',    round:'LB Final', desc:'LBW12 vs WBL8',  winnerSlot:'LBW13', loserSlot:null},
   ]},
   { start: D2(13,0), rows:[
-    {court:'Soccer Field A', phase:'gf', round:'Grand Final', desc:'WB Winner vs LB Winner', winnerSlot:'Champion', loserSlot:null},
+    {court:'Soccer Field A', phase:'gf', round:'Grand Final', desc:'WBW19 vs LBW13', winnerSlot:'Soccer Champion', loserSlot:null},
   ]},
   { start: D2(13,25), rows:[
     {court:'Soccer Field A', phase:'gf', round:'GF Reset', desc:'Reset Game (if needed)', winnerSlot:'Champion', loserSlot:null},
@@ -945,9 +943,9 @@ const BB_SLOTS = [
     [D1(20,10), 'BW5 vs BW6',      'BL5 vs BL6',     'BW13', 'BBL3', 'BLW3', null],
     [D1(20,35), 'BW7 vs BW8',      'BLW1 vs BLW2',   'BW14', 'BBL4', 'BLW4', null],
     [D1(21, 0), 'BW9 vs BW10',     'BLW3 vs BLW4',   'BW15', 'BBL5', 'BLW5', null],
-    [D1(21,25), 'WB R3 Game 1',    'BLW5 vs BBL1',   'BW16', 'BBL6', 'BLW6', null],
-    [D1(21,50), 'WB R3 Game 2',    'BLW6 vs BBL2',   'BW17', 'BBL7', 'BLW7', null],
-    [D1(22,15), 'WB R3 Game 3',    'BLW7 vs BBL3',   'BW18', 'BBL8', 'BLW8', null],
+    [D1(21,25), 'BW11 vs BW12',    'BLW5 vs BBL1',   'BW16', 'BBL6', 'BLW6', null],
+    [D1(21,50), 'BW13 vs BW14',    'BLW6 vs BBL2',   'BW17', 'BBL7', 'BLW7', null],
+    [D1(22,15), 'BW15 vs BW16',    'BLW7 vs BBL3',   'BW18', 'BBL8', 'BLW8', null],
   ].map(([s,c1,c2,ws1,ls1,ws2,ls2],i) => ({
     start:s,
     rows:[
@@ -955,11 +953,11 @@ const BB_SLOTS = [
       {court:'Basketball Court 2', phase: i<5?'wb':i<8?'lb_r1':'lb_r2', round: i<5?'WB R1':i<8?'LB R1':'LB R2', desc:c2, winnerSlot:ws2, loserSlot:ls2},
     ]
   })),
-  {start:D2(15,30), rows:[{court:'Basketball Court 1',phase:'wb_r4',round:'WB R4',desc:'BW16 vs BW17',winnerSlot:'BW19',loserSlot:'BBL9'},{court:'Basketball Court 2',phase:'lb_r3',round:'LB R3',desc:'BLW8 vs BBL4',winnerSlot:'BLW9',loserSlot:null}]},
-  {start:D2(15,55), rows:[{court:'Basketball Court 1',phase:'wb_r4',round:'WB R4',desc:'BW15 vs BW18',winnerSlot:'BW20',loserSlot:'BBL10'},{court:'Basketball Court 2',phase:'lb_r4',round:'LB R4',desc:'BLW9 vs BBL5',winnerSlot:'BLW10',loserSlot:null}]},
-  {start:D2(16,20), rows:[{court:'Basketball Court 1',phase:'wb_sf',round:'WB SF',desc:'BW19 vs BW20',winnerSlot:'BW21',loserSlot:'BBL11'},{court:'Basketball Court 2',phase:'lb_sf',round:'LB SF',desc:'BLW10 vs BBL6',winnerSlot:'BLW11',loserSlot:null}]},
-  {start:D2(16,45), rows:[{court:'Basketball Court 1',phase:'wb_f',round:'WB Final',desc:'BW21 vs BLW11',winnerSlot:'BW22',loserSlot:'BBL12'},{court:'Basketball Court 2',phase:'lb_f',round:'LB Final',desc:'BLW11 vs BBL7',winnerSlot:'BLW12',loserSlot:null}]},
-  {start:D2(17,10), rows:[{court:'Basketball Court 1',phase:'gf',round:'Grand Final',desc:'BW22 vs BLW12',winnerSlot:'BB Champion',loserSlot:null}]},
+  {start:D2(15,30), rows:[{court:'Basketball Court 1',phase:'wb_f',round:'WB Final',desc:'BW17 vs BW18',winnerSlot:'BW19',loserSlot:'BBL9'},{court:'Basketball Court 2',phase:'lb_r3',round:'LB R3',desc:'BLW8 vs BBL4',winnerSlot:'BLW9',loserSlot:null}]},
+  {start:D2(15,55), rows:[{court:'Basketball Court 2',phase:'lb_r4',round:'LB R4',desc:'BLW9 vs BBL5',winnerSlot:'BLW10',loserSlot:null}]},
+  {start:D2(16,20), rows:[{court:'Basketball Court 2',phase:'lb_sf',round:'LB SF',desc:'BLW10 vs BBL6',winnerSlot:'BLW11',loserSlot:null}]},
+  {start:D2(16,45), rows:[{court:'Basketball Court 2',phase:'lb_f',round:'LB Final',desc:'BLW11 vs BBL7',winnerSlot:'BLW12',loserSlot:null}]},
+  {start:D2(17,10), rows:[{court:'Basketball Court 1',phase:'gf',round:'Grand Final',desc:'BW19 vs BLW12',winnerSlot:'BB Champion',loserSlot:null}]},
   {start:D2(17,35), rows:[{court:'Basketball Court 1',phase:'gf',round:'GF Reset',desc:'Reset Game (if needed)',winnerSlot:'BB Champion',loserSlot:null}]},
 ];
 
@@ -988,8 +986,8 @@ const VB_SLOTS = [
     court:'Volleyball Court',
     phase:round.includes('Grand')?'gf':round.includes('Semi')?'sf':round.includes('QF')||round.includes('Quarter')?'qf':round.includes('3rd')?'3rd':'r1',
     round, desc,
-    winnerSlot: i<10 ? `VW${i+1}` : round.includes('Grand')?'VB Champion':round.includes('3rd')?'VB 3rd':round.includes('Semi')?`VSF${i-13}W`:`VQF${i-9}W`,
-    loserSlot: i<10 ? null : round.includes('Semi') ? `VSF${i-13}L` : null
+    winnerSlot: i<10 ? `W${i+1}` : round.includes('Grand')?'VB Champion':round.includes('3rd')?'VB 3rd':round.includes('Semi')?`SF${i-13}W`:`QF${i-9}W`,
+    loserSlot: i<10 ? null : round.includes('Semi') ? `SF${i-13}L` : null
   }]
 }));
 
@@ -1883,19 +1881,20 @@ function renderBracketPanel() {
   let content = '';
   const sp = bracketSport;
   if (sp === 'soccer') {
-    content += sectionHtml('Winners Bracket') + adminBuildBracketSection('soccer','wb');
-    content += sectionHtml('Losers Bracket')  + adminBuildBracketSection('soccer','lb');
-    content += sectionHtml('Grand Final')     + adminBuildBracketSection('soccer','gf');
+    content = `<div class="bracket-dual">
+      <div>${sectionHtml('Winners Bracket')}${adminBuildBracketSection('soccer','wb')}</div>
+      <div>${sectionHtml('Losers Bracket')}${adminBuildBracketSection('soccer','lb')}${sectionHtml('Grand Final')}${adminBuildBracketSection('soccer','gf')}</div>
+    </div>`;
   } else if (sp === 'basketball') {
-    content += sectionHtml('Winners Bracket') + adminBuildBracketSection('basketball','wb');
-    content += sectionHtml('Losers Bracket')  + adminBuildBracketSection('basketball','lb');
-    content += sectionHtml('Grand Final')     + adminBuildBracketSection('basketball','gf');
+    content = `<div class="bracket-dual">
+      <div>${sectionHtml('Winners Bracket')}${adminBuildBracketSection('basketball','wb')}</div>
+      <div>${sectionHtml('Losers Bracket')}${adminBuildBracketSection('basketball','lb')}${sectionHtml('Championship')}${adminBuildBracketSection('basketball','gf')}</div>
+    </div>`;
   } else {
-    content += sectionHtml('Round 1')         + adminBuildBracketSection('volleyball','r1');
-    content += sectionHtml('Quarterfinals')   + adminBuildBracketSection('volleyball','qf');
-    content += sectionHtml('Semifinals')      + adminBuildBracketSection('volleyball','sf');
-    content += sectionHtml('3rd Place')       + adminBuildBracketSection('volleyball','3rd');
-    content += sectionHtml('Grand Final')     + adminBuildBracketSection('volleyball','gf');
+    content = `<div class="bracket-dual">
+      <div>${sectionHtml('Round 1')}${adminBuildBracketSection('volleyball','r1')}${sectionHtml('Quarterfinals')}${adminBuildBracketSection('volleyball','qf')}</div>
+      <div>${sectionHtml('Semifinals')}${adminBuildBracketSection('volleyball','sf')}${sectionHtml('Grand Final')}${adminBuildBracketSection('volleyball','gf')}</div>
+    </div>`;
   }
 
   view.innerHTML = `
@@ -2044,7 +2043,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ===== INIT =====
-const BB_SCHEMA_V = 2;  // increment when slot naming changes to force rebuild
+const BB_SCHEMA_V = 3;  // increment when slot naming changes to force rebuild
 
 function needsRebuild(games, schemaV) {
   const list = Object.values(games || {});

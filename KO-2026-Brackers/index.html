@@ -57,14 +57,20 @@ body{background:var(--navy);color:var(--text);font-family:'Segoe UI',system-ui,s
 .sport-tab.active .tab-badge{background:var(--gold);color:var(--navy)}
 
 /* ── VIEWS ── */
-.view{display:none;padding:16px}
+.view{display:none;padding:16px 18px}
 .view.active{display:block}
+@media(min-width:900px){.view.active{padding:20px 32px}}
+@media(min-width:1400px){.view.active{padding:24px 48px}}
 
 /* ── SECTION TITLE ── */
 .sec-title{font-size:15px;font-weight:700;color:var(--gold);margin-bottom:12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .sec-badge{font-size:10px;background:var(--gold);color:var(--navy);padding:2px 8px;border-radius:8px;font-weight:700}
 .sec-sub{font-size:12px;color:var(--dim);font-weight:400}
-hr.sep{border:none;border-top:1px solid var(--gray3);margin:20px 0}
+hr.sep{border:none;border-top:1px solid var(--gray3);margin:16px 0}
+.bracket-phase-label{font-size:13px;font-weight:700;color:var(--dim);margin:0 0 10px;text-transform:uppercase;letter-spacing:1.5px;padding:0 2px}
+/* Side-by-side WB + LB layout on wide screens */
+.bracket-dual{display:grid;grid-template-columns:1fr;gap:0;align-items:start}
+@media(min-width:1100px){.bracket-dual{grid-template-columns:3fr 2fr;gap:28px}}
 
 /* ── SCHEDULE TIMELINE ── */
 .schedule-grid{display:grid;grid-template-columns:80px repeat(4,1fr);gap:1px;background:var(--gray3);border-radius:8px;overflow:hidden;margin-bottom:16px}
@@ -103,27 +109,27 @@ hr.sep{border:none;border-top:1px solid var(--gray3);margin:20px 0}
 .delay-current{font-size:12px;font-weight:700;min-width:60px;color:var(--gold)}
 
 /* ── BRACKET ── */
-.bracket-wrap{overflow-x:auto;padding-bottom:8px}
-.bracket{display:flex;align-items:flex-start;gap:0}
-.br-round{display:flex;flex-direction:column;min-width:185px}
-.br-round-hdr{text-align:center;font-size:10px;font-weight:700;color:var(--dim);letter-spacing:1px;text-transform:uppercase;padding:5px 10px;background:var(--gray);border-bottom:1px solid var(--gray3)}
+.bracket-wrap{overflow-x:auto;padding-bottom:8px;width:100%}
+.bracket{display:flex;align-items:flex-start;gap:0;width:100%}
+.br-round{display:flex;flex-direction:column;flex:1;min-width:150px}
+.br-round-hdr{text-align:center;font-size:11px;font-weight:700;color:var(--dim);letter-spacing:1px;text-transform:uppercase;padding:6px 10px;background:var(--gray);border-bottom:1px solid var(--gray3)}
 .br-games{display:flex;flex-direction:column;justify-content:space-around;padding:6px;gap:6px;flex:1}
-.matchup{background:var(--gray2);border:1px solid var(--gray3);border-radius:7px;overflow:hidden;cursor:pointer;transition:border-color .15s}
+/* cap card width so single-round sections (GF) don't stretch across the whole screen */
+.matchup{position:relative;background:var(--gray2);border:1px solid var(--gray3);border-radius:7px;overflow:hidden;cursor:pointer;transition:border-color .15s;max-width:320px;margin-left:auto;margin-right:auto;width:100%}
 .matchup:hover{border-color:var(--gold)}
 .matchup.is-live{border-color:var(--live);box-shadow:0 0 10px rgba(224,80,80,.2)}
 .matchup.is-live::after{content:'LIVE';position:absolute;top:3px;right:5px;font-size:8px;font-weight:700;color:var(--live);letter-spacing:1px;animation:pulse 1s infinite}
-.matchup{position:relative}
-.tr{display:flex;align-items:center;padding:7px 8px;gap:7px;border-bottom:1px solid var(--gray3);transition:background .1s}
+.tr{display:flex;align-items:center;padding:8px 10px;gap:8px;border-bottom:1px solid var(--gray3);transition:background .1s}
 .tr:last-child{border-bottom:none}
 .tr.won{background:var(--win-bg)}
 .tr.lost{background:var(--loss-bg);opacity:.7}
 .tr.dq-row{opacity:.4;text-decoration:line-through}
 .tr-seed{font-size:10px;color:var(--dim);width:16px;text-align:right;flex-shrink:0}
-.tr-name{flex:1;font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tr-name{flex:1;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tr-name.tbd{color:var(--dim);font-weight:400;font-style:italic}
-.tr-score{font-size:15px;font-weight:700;min-width:24px;text-align:right}
+.tr-score{font-size:16px;font-weight:700;min-width:26px;text-align:right}
 .tr.won .tr-score{color:var(--gold-light)}
-.match-time{font-size:9px;color:var(--dim);text-align:center;padding:2px 4px;background:rgba(0,0,0,.2)}
+.match-time{font-size:10px;color:var(--dim);text-align:center;padding:3px 6px;background:rgba(0,0,0,.2)}
 
 /* ── POOLS ── */
 .pools-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:20px}
@@ -233,7 +239,10 @@ body.tv-on .header,.tv-on .sport-tabs,.tv-on #liveBanner,.tv-on .view{display:no
 .ri-time{font-size:10px;color:var(--dim)}
 @media(max-width:700px){
   .tv-courts{grid-template-columns:1fr}
-  .br-round{min-width:155px}
+  .br-round{min-width:120px}
+  .br-round-hdr{font-size:10px;letter-spacing:.5px}
+  .tr-name{font-size:12px}
+  .tr-score{font-size:14px}
   .schedule-grid{font-size:10px}
 }
 .sim-bar{background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.3);border-radius:7px;padding:8px 12px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px}
@@ -379,19 +388,14 @@ const SOCCER_SLOTS = [
     {court:'Soccer Field D', phase:'lb', round:'LB R3', desc:'LBW9 vs WBL5'},
   ]},
   { start: D1(13,45), rows:[
-    {court:'Soccer Field A', phase:'wb', round:'WB R4', desc:'WB Semifinal 1'},
-    {court:'Soccer Field B', phase:'wb', round:'WB R4', desc:'WB Semifinal 2'},
-    {court:'Soccer Field C', phase:'lb', round:'LB R4', desc:'LBW10 vs WBL6'},
-    {court:'Soccer Field D', phase:'lb', round:'LB SF', desc:'LBW11 vs LBW12'},
-  ]},
-  { start: D1(14,10), rows:[
-    {court:'Soccer Field A', phase:'wb', round:'WB SF', desc:'WB Semifinal'},
-    {court:'Soccer Field B', phase:'wb', round:'WB Final', desc:'WB Final'},
-    {court:'Soccer Field C', phase:'lb', round:'LB Final', desc:'LB Final'},
+    {court:'Soccer Field A', phase:'wb_sf', round:'WB SF',    desc:'WBW17 vs WBW18'},
+    {court:'Soccer Field B', phase:'lb',    round:'LB R4',    desc:'LBW10 vs WBL6'},
+    {court:'Soccer Field C', phase:'lb',    round:'LB SF',    desc:'LBW11 vs WBL7'},
+    {court:'Soccer Field D', phase:'lb',    round:'LB Final', desc:'LBW12 vs WBL8'},
   ]},
   // Day 2
   { start: D2(13,0), rows:[
-    {court:'Soccer Field A', phase:'gf', round:'Grand Final', desc:'WB Winner vs LB Winner'},
+    {court:'Soccer Field A', phase:'gf', round:'Grand Final', desc:'WBW19 vs LBW13'},
   ]},
   { start: D2(13,25), rows:[
     {court:'Soccer Field A', phase:'gf', round:'GF Reset', desc:'Reset Game (if needed)'},
@@ -412,9 +416,9 @@ const BB_SLOTS = [
     [D1(20,10), 'BW5 vs BW6',      'BL5 vs BL6'],
     [D1(20,35), 'BW7 vs BW8',      'BLW1 vs BLW2'],
     [D1(21, 0), 'BW9 vs BW10',     'BLW3 vs BLW4'],
-    [D1(21,25), 'WB R3 Game 1',    'BLW5 vs BBL1'],
-    [D1(21,50), 'WB R3 Game 2',    'BLW6 vs BBL2'],
-    [D1(22,15), 'WB R3 Game 3',    'BLW7 vs BBL3'],
+    [D1(21,25), 'BW11 vs BW12',    'BLW5 vs BBL1'],
+    [D1(21,50), 'BW13 vs BW14',    'BLW6 vs BBL2'],
+    [D1(22,15), 'BW15 vs BW16',    'BLW7 vs BBL3'],
   ].map(([s,c1,c2],i) => ({
     start:s,
     rows:[
@@ -423,11 +427,11 @@ const BB_SLOTS = [
     ]
   })),
   // Day 2
-  {start:D2(15,30), rows:[{court:'Basketball Court 1',phase:'wb_r4',round:'WB R4',desc:'BW16 vs BW17'},{court:'Basketball Court 2',phase:'lb_r3',round:'LB R3',desc:'BLW8 vs BBL4'}]},
-  {start:D2(15,55), rows:[{court:'Basketball Court 1',phase:'wb_r4',round:'WB R4',desc:'BW15 vs BW18'},{court:'Basketball Court 2',phase:'lb_r4',round:'LB R4',desc:'BLW9 vs BBL5'}]},
-  {start:D2(16,20), rows:[{court:'Basketball Court 1',phase:'wb_sf',round:'WB SF',desc:'BW19 vs BW20'},{court:'Basketball Court 2',phase:'lb_sf',round:'LB SF',desc:'BLW10 vs BBL6'}]},
-  {start:D2(16,45), rows:[{court:'Basketball Court 1',phase:'wb_f',round:'WB Final',desc:'BW21 vs BLW11'},{court:'Basketball Court 2',phase:'lb_f',round:'LB Final',desc:'BLW11 vs BBL7'}]},
-  {start:D2(17,10), rows:[{court:'Basketball Court 1',phase:'gf',round:'Grand Final',desc:'BW22 vs BLW12'}]},
+  {start:D2(15,30), rows:[{court:'Basketball Court 1',phase:'wb_f',round:'WB Final',desc:'BW17 vs BW18'},{court:'Basketball Court 2',phase:'lb_r3',round:'LB R3',desc:'BLW8 vs BBL4'}]},
+  {start:D2(15,55), rows:[{court:'Basketball Court 2',phase:'lb_r4',round:'LB R4',desc:'BLW9 vs BBL5'}]},
+  {start:D2(16,20), rows:[{court:'Basketball Court 2',phase:'lb_sf',round:'LB SF',desc:'BLW10 vs BBL6'}]},
+  {start:D2(16,45), rows:[{court:'Basketball Court 2',phase:'lb_f',round:'LB Final',desc:'BLW11 vs BBL7'}]},
+  {start:D2(17,10), rows:[{court:'Basketball Court 1',phase:'gf',round:'Grand Final',desc:'BW19 vs BLW12'}]},
   {start:D2(17,35), rows:[{court:'Basketball Court 1',phase:'gf',round:'GF Reset',desc:'Reset Game (if needed)'}]},
 ];
 
@@ -902,12 +906,16 @@ function renderSoccerBracket() {
       <span class="sec-sub">Day 1: 10:20 AM–5 PM · Day 2 GF: 1:00 PM</span>
     </div>
     ${buildScheduleGrid('soccer')}
-    <hr class="sep">
-    ${buildBracketSection('soccer','wb','Winners Bracket')}
-    <hr class="sep">
-    ${buildBracketSection('soccer','lb','Losers Bracket')}
-    <hr class="sep">
-    ${buildBracketSection('soccer','gf','Grand Final')}
+    <div class="bracket-dual">
+      <div>
+        ${buildBracketSection('soccer','wb','Winners Bracket')}
+      </div>
+      <div>
+        ${buildBracketSection('soccer','lb','Losers Bracket')}
+        <hr class="sep">
+        ${buildBracketSection('soccer','gf','Grand Final')}
+      </div>
+    </div>
   `;
 }
 
@@ -918,12 +926,16 @@ function renderBBPanel() {
       <span class="sec-sub">Day 1: 5:15 PM–11 PM · Day 2: 3:30 PM–6:45 PM</span>
     </div>
     ${buildScheduleGrid('basketball')}
-    <hr class="sep">
-    ${buildBracketSection('basketball','wb','Winners Bracket')}
-    <hr class="sep">
-    ${buildBracketSection('basketball','lb','Losers Bracket')}
-    <hr class="sep">
-    ${buildBracketSection('basketball','gf','Championship')}
+    <div class="bracket-dual">
+      <div>
+        ${buildBracketSection('basketball','wb','Winners Bracket')}
+      </div>
+      <div>
+        ${buildBracketSection('basketball','lb','Losers Bracket')}
+        <hr class="sep">
+        ${buildBracketSection('basketball','gf','Championship')}
+      </div>
+    </div>
   `;
 }
 
@@ -934,14 +946,18 @@ function renderVBPanel() {
       <span class="sec-sub">Day 1 only: 5:10 PM–11:20 PM · Hard stop 8 PM Day 2 if overflow</span>
     </div>
     ${buildScheduleGrid('volleyball')}
-    <hr class="sep">
-    ${buildBracketSection('volleyball','r1','Round 1')}
-    <hr class="sep">
-    ${buildBracketSection('volleyball','qf','Quarterfinals')}
-    <hr class="sep">
-    ${buildBracketSection('volleyball','sf','Semifinals')}
-    <hr class="sep">
-    ${buildBracketSection('volleyball','gf','Grand Final')}
+    <div class="bracket-dual">
+      <div>
+        ${buildBracketSection('volleyball','r1','Round 1')}
+        <hr class="sep">
+        ${buildBracketSection('volleyball','qf','Quarterfinals')}
+      </div>
+      <div>
+        ${buildBracketSection('volleyball','sf','Semifinals')}
+        <hr class="sep">
+        ${buildBracketSection('volleyball','gf','Grand Final')}
+      </div>
+    </div>
   `;
 }
 
@@ -985,8 +1001,8 @@ function buildBracketSection(sport, phase, label) {
   });
   const rounds = Object.keys(roundMap);
 
-  let html = `<div style="font-size:13px;font-weight:700;color:var(--dim);margin-bottom:10px;text-transform:uppercase;letter-spacing:1px">${label}</div>
-    <div class="bracket-wrap"><div class="bracket">`;
+  let html = label ? `<div class="bracket-phase-label">${label}</div>` : '';
+  html += `<div class="bracket-wrap"><div class="bracket">`;
 
   rounds.forEach(r => {
     html += `<div class="br-round"><div class="br-round-hdr">${r}</div><div class="br-games">`;
