@@ -407,14 +407,14 @@ const BB_SLOTS = [
     [D1(18, 5), 'T9 vs T10',      'T11 vs T12'],
     [D1(18,30), 'T13 vs T14',     'T15 vs T16'],
     [D1(18,55), 'T17 vs T18',     'T19 vs T20'],
-    [D1(19,20), 'WBW1 vs WBW2',   'L1 vs L2'],
-    [D1(19,45), 'WBW3 vs WBW4',   'L3 vs L4'],
-    [D1(20,10), 'WBW5 vs WBW6',   'L5 vs L6'],
-    [D1(20,35), 'WBW7 vs WBW8',   'LBW1 vs LBW2'],
-    [D1(21, 0), 'WBW9 vs WBW10',  'LBW3 vs LBW4'],
-    [D1(21,25), 'WB R3 Game 1',   'LBW5 vs WBL1'],
-    [D1(21,50), 'WB R3 Game 2',   'LBW6 vs WBL2'],
-    [D1(22,15), 'WB R3 Game 3',   'LBW7 vs WBL3'],
+    [D1(19,20), 'BW1 vs BW2',      'BL1 vs BL2'],
+    [D1(19,45), 'BW3 vs BW4',      'BL3 vs BL4'],
+    [D1(20,10), 'BW5 vs BW6',      'BL5 vs BL6'],
+    [D1(20,35), 'BW7 vs BW8',      'BLW1 vs BLW2'],
+    [D1(21, 0), 'BW9 vs BW10',     'BLW3 vs BLW4'],
+    [D1(21,25), 'WB R3 Game 1',    'BLW5 vs BBL1'],
+    [D1(21,50), 'WB R3 Game 2',    'BLW6 vs BBL2'],
+    [D1(22,15), 'WB R3 Game 3',    'BLW7 vs BBL3'],
   ].map(([s,c1,c2],i) => ({
     start:s,
     rows:[
@@ -423,11 +423,11 @@ const BB_SLOTS = [
     ]
   })),
   // Day 2
-  {start:D2(15,30), rows:[{court:'Basketball Court 1',phase:'wb_r4',round:'WB R4',desc:'WBW1 vs WBW2'},{court:'Basketball Court 2',phase:'lb_r3',round:'LB R3',desc:'LBW8 vs WBL4'}]},
-  {start:D2(15,55), rows:[{court:'Basketball Court 1',phase:'wb_r4',round:'WB R4',desc:'WBW3 vs WBW4'},{court:'Basketball Court 2',phase:'lb_r4',round:'LB R4',desc:'LBW9 vs WBL5'}]},
-  {start:D2(16,20), rows:[{court:'Basketball Court 1',phase:'wb_sf',round:'WB SF',desc:'WB Semifinal'},{court:'Basketball Court 2',phase:'lb_sf',round:'LB SF',desc:'LBW10 vs LBW11'}]},
-  {start:D2(16,45), rows:[{court:'Basketball Court 1',phase:'wb_f',round:'WB Final',desc:'WB Final'},{court:'Basketball Court 2',phase:'lb_f',round:'LB Final',desc:'LB Final'}]},
-  {start:D2(17,10), rows:[{court:'Basketball Court 1',phase:'gf',round:'Grand Final',desc:'WB Winner vs LB Winner'}]},
+  {start:D2(15,30), rows:[{court:'Basketball Court 1',phase:'wb_r4',round:'WB R4',desc:'BW16 vs BW17'},{court:'Basketball Court 2',phase:'lb_r3',round:'LB R3',desc:'BLW8 vs BBL4'}]},
+  {start:D2(15,55), rows:[{court:'Basketball Court 1',phase:'wb_r4',round:'WB R4',desc:'BW15 vs BW18'},{court:'Basketball Court 2',phase:'lb_r4',round:'LB R4',desc:'BLW9 vs BBL5'}]},
+  {start:D2(16,20), rows:[{court:'Basketball Court 1',phase:'wb_sf',round:'WB SF',desc:'BW19 vs BW20'},{court:'Basketball Court 2',phase:'lb_sf',round:'LB SF',desc:'BLW10 vs BBL6'}]},
+  {start:D2(16,45), rows:[{court:'Basketball Court 1',phase:'wb_f',round:'WB Final',desc:'BW21 vs BLW11'},{court:'Basketball Court 2',phase:'lb_f',round:'LB Final',desc:'BLW11 vs BBL7'}]},
+  {start:D2(17,10), rows:[{court:'Basketball Court 1',phase:'gf',round:'Grand Final',desc:'BW22 vs BLW12'}]},
   {start:D2(17,35), rows:[{court:'Basketball Court 1',phase:'gf',round:'GF Reset',desc:'Reset Game (if needed)'}]},
 ];
 

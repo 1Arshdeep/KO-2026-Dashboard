@@ -585,13 +585,14 @@ select:focus, input[type="text"]:focus {
 #evt-player:focus, #evt-minute:focus { outline: 2px solid var(--gold); outline-offset: -2px; }
 
 /* ===== BRACKET PANEL ===== */
-#bracket-panel { padding: 0 0 20px 0; }
+#bracket-view { padding: 0 16px 32px 16px; max-width: 100%; }
 .bracket-wrap { overflow-x: auto; padding-bottom: 8px; }
 .bracket { display: flex; align-items: flex-start; gap: 0; }
 .br-round { display: flex; flex-direction: column; min-width: 185px; }
 .br-round-hdr { text-align: center; font-size: 10px; font-weight: 700; color: var(--dim); letter-spacing: 1px; text-transform: uppercase; padding: 5px 10px; background: var(--surface); border-bottom: 1px solid var(--border); }
 .br-games { display: flex; flex-direction: column; justify-content: space-around; padding: 6px; gap: 6px; flex: 1; }
-.matchup-card { background: var(--card); border: 1px solid var(--border); border-radius: 7px; overflow: hidden; }
+.matchup-card { background: var(--card); border: 1px solid var(--border); border-radius: 7px; overflow: hidden; transition: border-color 0.15s, box-shadow 0.15s; }
+.matchup-card:hover { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
 .matchup-card.is-live { border-color: var(--gold); }
 .match-time-line { font-size: 9px; color: var(--dim); text-align: center; padding: 2px 4px; background: rgba(0,0,0,0.2); }
 .tr-row { display: flex; align-items: center; padding: 7px 8px; gap: 7px; border-bottom: 1px solid var(--border); }
@@ -654,7 +655,7 @@ select:focus, input[type="text"]:focus {
   <button class="sport-tab active" data-sport="soccer">⚽ Soccer</button>
   <button class="sport-tab" data-sport="basketball">🏀 Basketball</button>
   <button class="sport-tab" data-sport="volleyball">🏐 Volleyball</button>
-  <button class="sport-tab" id="tab-brackets" onclick="showBrackets()">📊 Brackets</button>
+  <button class="sport-tab" id="tab-brackets">📊 Brackets</button>
 </div>
 
 <!-- ===== TEST MODE BAR ===== -->
@@ -808,8 +809,8 @@ select:focus, input[type="text"]:focus {
 
 </div><!-- /main -->
 
-<!-- ===== BRACKET PANEL ===== -->
-<div id="bracket-panel" style="display:none; max-width:100%; overflow-x:auto; padding: 16px;"></div>
+<!-- ===== BRACKET VIEW ===== -->
+<div id="bracket-view" style="display:none; padding: 16px; max-width:100%; overflow-x:auto;"></div>
 
 <!-- ===== SETUP MODAL ===== -->
 <div id="modal-overlay">
@@ -822,6 +823,10 @@ select:focus, input[type="text"]:focus {
     <div class="modal-actions">
       <button id="btn-save-teams">💾 Save Teams &amp; Rebuild Schedule</button>
       <button id="btn-test-mode">🧪 Test Mode</button>
+    </div>
+    <div style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border);">
+      <p style="font-size:12px;color:var(--dim);margin:0 0 10px 0;">⚠️ Danger zone — cannot be undone</p>
+      <button id="btn-reset-scores" style="width:100%;padding:12px;background:#7f1d1d;color:#fca5a5;border:1px solid #991b1b;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.03em;">🗑 Reset All Match Data</button>
     </div>
   </div>
 </div>
@@ -935,14 +940,14 @@ const BB_SLOTS = [
     [D1(18, 5), 'T9 vs T10',      'T11 vs T12',     'BW5',  'BL5',  'BW6',  'BL6'],
     [D1(18,30), 'T13 vs T14',     'T15 vs T16',     'BW7',  'BL7',  'BW8',  'BL8'],
     [D1(18,55), 'T17 vs T18',     'T19 vs T20',     'BW9',  'BL9',  'BW10', 'BL10'],
-    [D1(19,20), 'WBW1 vs WBW2',   'L1 vs L2',       'BW11', 'BBL1', 'BLW1', null],
-    [D1(19,45), 'WBW3 vs WBW4',   'L3 vs L4',       'BW12', 'BBL2', 'BLW2', null],
-    [D1(20,10), 'WBW5 vs WBW6',   'L5 vs L6',       'BW13', 'BBL3', 'BLW3', null],
-    [D1(20,35), 'WBW7 vs WBW8',   'LBW1 vs LBW2',   'BW14', 'BBL4', 'BLW4', null],
-    [D1(21, 0), 'WBW9 vs WBW10',  'LBW3 vs LBW4',   'BW15', 'BBL5', 'BLW5', null],
-    [D1(21,25), 'WB R3 Game 1',   'LBW5 vs WBL1',   'BW16', 'BBL6', 'BLW6', null],
-    [D1(21,50), 'WB R3 Game 2',   'LBW6 vs WBL2',   'BW17', 'BBL7', 'BLW7', null],
-    [D1(22,15), 'WB R3 Game 3',   'LBW7 vs WBL3',   'BW18', 'BBL8', 'BLW8', null],
+    [D1(19,20), 'BW1 vs BW2',      'BL1 vs BL2',     'BW11', 'BBL1', 'BLW1', null],
+    [D1(19,45), 'BW3 vs BW4',      'BL3 vs BL4',     'BW12', 'BBL2', 'BLW2', null],
+    [D1(20,10), 'BW5 vs BW6',      'BL5 vs BL6',     'BW13', 'BBL3', 'BLW3', null],
+    [D1(20,35), 'BW7 vs BW8',      'BLW1 vs BLW2',   'BW14', 'BBL4', 'BLW4', null],
+    [D1(21, 0), 'BW9 vs BW10',     'BLW3 vs BLW4',   'BW15', 'BBL5', 'BLW5', null],
+    [D1(21,25), 'WB R3 Game 1',    'BLW5 vs BBL1',   'BW16', 'BBL6', 'BLW6', null],
+    [D1(21,50), 'WB R3 Game 2',    'BLW6 vs BBL2',   'BW17', 'BBL7', 'BLW7', null],
+    [D1(22,15), 'WB R3 Game 3',    'BLW7 vs BBL3',   'BW18', 'BBL8', 'BLW8', null],
   ].map(([s,c1,c2,ws1,ls1,ws2,ls2],i) => ({
     start:s,
     rows:[
@@ -950,11 +955,11 @@ const BB_SLOTS = [
       {court:'Basketball Court 2', phase: i<5?'wb':i<8?'lb_r1':'lb_r2', round: i<5?'WB R1':i<8?'LB R1':'LB R2', desc:c2, winnerSlot:ws2, loserSlot:ls2},
     ]
   })),
-  {start:D2(15,30), rows:[{court:'Basketball Court 1',phase:'wb_r4',round:'WB R4',desc:'WBW1 vs WBW2',winnerSlot:'BW19',loserSlot:'BBL9'},{court:'Basketball Court 2',phase:'lb_r3',round:'LB R3',desc:'LBW8 vs WBL4',winnerSlot:'BLW9',loserSlot:null}]},
-  {start:D2(15,55), rows:[{court:'Basketball Court 1',phase:'wb_r4',round:'WB R4',desc:'WBW3 vs WBW4',winnerSlot:'BW20',loserSlot:'BBL10'},{court:'Basketball Court 2',phase:'lb_r4',round:'LB R4',desc:'LBW9 vs WBL5',winnerSlot:'BLW10',loserSlot:null}]},
-  {start:D2(16,20), rows:[{court:'Basketball Court 1',phase:'wb_sf',round:'WB SF',desc:'WB Semifinal',winnerSlot:'BW21',loserSlot:'BBL11'},{court:'Basketball Court 2',phase:'lb_sf',round:'LB SF',desc:'LBW10 vs LBW11',winnerSlot:'BLW11',loserSlot:null}]},
-  {start:D2(16,45), rows:[{court:'Basketball Court 1',phase:'wb_f',round:'WB Final',desc:'WB Final',winnerSlot:'BW22',loserSlot:'BBL12'},{court:'Basketball Court 2',phase:'lb_f',round:'LB Final',desc:'LB Final',winnerSlot:'BLW12',loserSlot:null}]},
-  {start:D2(17,10), rows:[{court:'Basketball Court 1',phase:'gf',round:'Grand Final',desc:'WB Winner vs LB Winner',winnerSlot:'BB Champion',loserSlot:null}]},
+  {start:D2(15,30), rows:[{court:'Basketball Court 1',phase:'wb_r4',round:'WB R4',desc:'BW16 vs BW17',winnerSlot:'BW19',loserSlot:'BBL9'},{court:'Basketball Court 2',phase:'lb_r3',round:'LB R3',desc:'BLW8 vs BBL4',winnerSlot:'BLW9',loserSlot:null}]},
+  {start:D2(15,55), rows:[{court:'Basketball Court 1',phase:'wb_r4',round:'WB R4',desc:'BW15 vs BW18',winnerSlot:'BW20',loserSlot:'BBL10'},{court:'Basketball Court 2',phase:'lb_r4',round:'LB R4',desc:'BLW9 vs BBL5',winnerSlot:'BLW10',loserSlot:null}]},
+  {start:D2(16,20), rows:[{court:'Basketball Court 1',phase:'wb_sf',round:'WB SF',desc:'BW19 vs BW20',winnerSlot:'BW21',loserSlot:'BBL11'},{court:'Basketball Court 2',phase:'lb_sf',round:'LB SF',desc:'BLW10 vs BBL6',winnerSlot:'BLW11',loserSlot:null}]},
+  {start:D2(16,45), rows:[{court:'Basketball Court 1',phase:'wb_f',round:'WB Final',desc:'BW21 vs BLW11',winnerSlot:'BW22',loserSlot:'BBL12'},{court:'Basketball Court 2',phase:'lb_f',round:'LB Final',desc:'BLW11 vs BBL7',winnerSlot:'BLW12',loserSlot:null}]},
+  {start:D2(17,10), rows:[{court:'Basketball Court 1',phase:'gf',round:'Grand Final',desc:'BW22 vs BLW12',winnerSlot:'BB Champion',loserSlot:null}]},
   {start:D2(17,35), rows:[{court:'Basketball Court 1',phase:'gf',round:'GF Reset',desc:'Reset Game (if needed)',winnerSlot:'BB Champion',loserSlot:null}]},
 ];
 
@@ -1053,6 +1058,7 @@ function propagateResult(gameId) {
   const lSlot = g.loserSlot;
   Object.values(state.games).forEach(other => {
     if (other.id === gameId) return;
+    if (other.sport !== g.sport) return;   // never propagate across sports
     if (other.status === 'final') return;
     if (wSlot) {
       if (other.team1 === wSlot) { other.team1 = winner; other.desc = other.desc.replace(wSlot, winner); }
@@ -1499,14 +1505,19 @@ function refresh() {
 // Sport tabs
 document.querySelectorAll('.sport-tab').forEach(tab => {
   tab.addEventListener('click', () => {
-    currentGameId = null;
-    currentSport = tab.dataset.sport;
     document.querySelectorAll('.sport-tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
-    buzzerFired = false;
-    fulltimeShown = false;
-    document.getElementById('fulltime-overlay').classList.remove('visible');
-    refresh();
+    if (tab.id === 'tab-brackets') {
+      enterBracketMode();
+    } else {
+      exitBracketMode();
+      currentGameId = null;
+      currentSport = tab.dataset.sport;
+      buzzerFired = false;
+      fulltimeShown = false;
+      document.getElementById('fulltime-overlay').classList.remove('visible');
+      refresh();
+    }
   });
 });
 
@@ -1771,6 +1782,20 @@ document.getElementById('btn-save-teams').addEventListener('click', () => {
   refresh();
 });
 
+// Reset all match data
+document.getElementById('btn-reset-scores').addEventListener('click', () => {
+  if (!window.confirm('Reset ALL match data?\n\nThis will clear every score, status, timer, and bracket result. Team names are kept.\n\nThis cannot be undone.')) return;
+  // Rebuild schedule from scratch — team names come from state.teams, later rounds reset to slot placeholders
+  state.games = buildSchedule(state.teams || JSON.parse(JSON.stringify(DEFAULT_TEAMS)));
+  state.timers = {};
+  state.schemaV = BB_SCHEMA_V;
+  state.simTime = null;
+  saveState();
+  currentGameId = null;
+  document.getElementById('modal-overlay').classList.remove('visible');
+  refresh();
+});
+
 // Test mode
 document.getElementById('btn-test-mode').addEventListener('click', () => {
   if (state.simTime) {
@@ -1823,43 +1848,86 @@ document.getElementById('btn-exit-test').addEventListener('click', () => {
   refresh();
 });
 
-// ===== BRACKET PANEL =====
-let bracketVisible = false;
+// ===== BRACKET VIEW =====
+let bracketMode = false;
+let bracketSport = 'soccer';
 
-function showBrackets() {
-  bracketVisible = !bracketVisible;
-  const panel = document.getElementById('bracket-panel');
-  const tab = document.getElementById('tab-brackets');
-  if (bracketVisible) {
-    panel.style.display = 'block';
-    tab.classList.add('active');
-    renderBracketPanel();
-  } else {
-    panel.style.display = 'none';
-    tab.classList.remove('active');
-  }
+function enterBracketMode() {
+  bracketMode = true;
+  bracketSport = currentSport || 'soccer';
+  document.getElementById('main').style.display = 'none';
+  document.getElementById('bracket-view').style.display = 'block';
+  renderBracketPanel();
+}
+
+function exitBracketMode() {
+  bracketMode = false;
+  document.getElementById('main').style.display = '';
+  document.getElementById('bracket-view').style.display = 'none';
+}
+
+function setBracketSport(sp) {
+  bracketSport = sp;
+  currentSport = sp;
+  renderBracketPanel();
 }
 
 function renderBracketPanel() {
-  if (!bracketVisible) return;
-  const panel = document.getElementById('bracket-panel');
-  const sport = currentSport;
-  let html = '';
-  if (sport === 'soccer') {
-    html += `<div class="bracket-section-label">Winners Bracket</div>` + adminBuildBracketSection('soccer','wb');
-    html += `<div class="bracket-section-label">Losers Bracket</div>` + adminBuildBracketSection('soccer','lb');
-    html += `<div class="bracket-section-label">Grand Final</div>` + adminBuildBracketSection('soccer','gf');
-  } else if (sport === 'basketball') {
-    html += `<div class="bracket-section-label">Winners Bracket</div>` + adminBuildBracketSection('basketball','wb');
-    html += `<div class="bracket-section-label">Losers Bracket</div>` + adminBuildBracketSection('basketball','lb');
-    html += `<div class="bracket-section-label">Grand Final</div>` + adminBuildBracketSection('basketball','gf');
+  if (!bracketMode) return;
+  const view = document.getElementById('bracket-view');
+  const sportLabels = { soccer: '⚽ Soccer', basketball: '🏀 Basketball', volleyball: '🏐 Volleyball' };
+  const sportTabs = ['soccer','basketball','volleyball'].map(s =>
+    `<button onclick="setBracketSport('${s}')" style="padding:8px 18px;border:none;border-radius:6px;cursor:pointer;font-size:13px;font-weight:600;background:${s===bracketSport?'var(--gold)':'var(--surface2)'};color:${s===bracketSport?'#111':'var(--fg)'};">${sportLabels[s]}</button>`
+  ).join('');
+
+  let content = '';
+  const sp = bracketSport;
+  if (sp === 'soccer') {
+    content += sectionHtml('Winners Bracket') + adminBuildBracketSection('soccer','wb');
+    content += sectionHtml('Losers Bracket')  + adminBuildBracketSection('soccer','lb');
+    content += sectionHtml('Grand Final')     + adminBuildBracketSection('soccer','gf');
+  } else if (sp === 'basketball') {
+    content += sectionHtml('Winners Bracket') + adminBuildBracketSection('basketball','wb');
+    content += sectionHtml('Losers Bracket')  + adminBuildBracketSection('basketball','lb');
+    content += sectionHtml('Grand Final')     + adminBuildBracketSection('basketball','gf');
   } else {
-    html += `<div class="bracket-section-label">Round 1</div>` + adminBuildBracketSection('volleyball','r1');
-    html += `<div class="bracket-section-label">Quarterfinals</div>` + adminBuildBracketSection('volleyball','qf');
-    html += `<div class="bracket-section-label">Semifinals</div>` + adminBuildBracketSection('volleyball','sf');
-    html += `<div class="bracket-section-label">Grand Final</div>` + adminBuildBracketSection('volleyball','gf');
+    content += sectionHtml('Round 1')         + adminBuildBracketSection('volleyball','r1');
+    content += sectionHtml('Quarterfinals')   + adminBuildBracketSection('volleyball','qf');
+    content += sectionHtml('Semifinals')      + adminBuildBracketSection('volleyball','sf');
+    content += sectionHtml('3rd Place')       + adminBuildBracketSection('volleyball','3rd');
+    content += sectionHtml('Grand Final')     + adminBuildBracketSection('volleyball','gf');
   }
-  panel.innerHTML = html;
+
+  view.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+      <div style="display:flex;gap:8px;">${sportTabs}</div>
+      <button onclick="leaveBrackets()" style="padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--surface2);color:var(--fg);cursor:pointer;font-size:13px;">← Back to Scoring</button>
+    </div>
+    ${content}`;
+}
+
+function sectionHtml(label) {
+  return `<div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:18px 0 8px 2px;">${label}</div>`;
+}
+
+function leaveBrackets() {
+  exitBracketMode();
+  document.querySelectorAll('.sport-tab').forEach(t => t.classList.remove('active'));
+  const activeTab = document.querySelector(`.sport-tab[data-sport="${currentSport}"]`);
+  if (activeTab) activeTab.classList.add('active');
+  refresh();
+}
+
+function openGameFromBracket(gameId) {
+  const g = state.games[gameId];
+  if (!g) return;
+  exitBracketMode();
+  currentSport = g.sport;
+  currentGameId = gameId;
+  document.querySelectorAll('.sport-tab').forEach(t => t.classList.remove('active'));
+  const activeTab = document.querySelector(`.sport-tab[data-sport="${currentSport}"]`);
+  if (activeTab) activeTab.classList.add('active');
+  refresh();
 }
 
 function adminBuildBracketSection(sport, phase) {
@@ -1895,7 +1963,7 @@ function adminMatchupCard(g) {
   const timeStr = formatTs(eff);
   const isTbd1 = !isDone && (g.team1 === 'TBD' || /^(T\d+|WBW\d+|LBW?\d+|L\d+|WBL\d+|BW\d+|BLW\d+|BL\d+|BBL\d+|VW\d+|VSF\d+[WL]|VQF\d+W|WB (Winner|Semifinal)|LB Winner|W\d+|QF\d+W|SF\d+[WL])$/.test(g.team1));
   const isTbd2 = !isDone && (g.team2 === 'TBD' || /^(T\d+|WBW\d+|LBW?\d+|L\d+|WBL\d+|BW\d+|BLW\d+|BL\d+|BBL\d+|VW\d+|VSF\d+[WL]|VQF\d+W|WB (Winner|Semifinal)|LB Winner|W\d+|QF\d+W|SF\d+[WL])$/.test(g.team2));
-  return `<div class="matchup-card ${isLv?'is-live':''}">
+  return `<div class="matchup-card ${isLv?'is-live':''}" onclick="openGameFromBracket('${g.id}')" style="cursor:pointer;" title="Click to open scorecard">
     <div class="match-time-line">${timeStr} · ${g.court}</div>
     <div class="tr-row ${t1w?'won':''} ${!t1w&&isDone?'lost':''} ${g.dq==='team1'?'dq-row':''}">
       <span class="tr-name ${isTbd1?'tbd':''}">${g.team1}${g.dq==='team1'?' 🚫':''}</span>
@@ -1976,17 +2044,60 @@ document.addEventListener('keydown', e => {
 });
 
 // ===== INIT =====
+const BB_SCHEMA_V = 2;  // increment when slot naming changes to force rebuild
+
+function needsRebuild(games, schemaV) {
+  const list = Object.values(games || {});
+  if (list.length === 0 || !list[0].hasOwnProperty('winnerSlot')) return true;
+  // Detect old basketball slot names (WBW1-style instead of BW1-style)
+  if ((schemaV || 0) < BB_SCHEMA_V) return true;
+  return false;
+}
+
+function propagateAll() {
+  // Re-apply propagation for all finalized games (sorted chronologically)
+  Object.values(state.games)
+    .filter(g => g.status === 'final' && g.winner)
+    .sort((a, b) => a.scheduledStart - b.scheduledStart)
+    .forEach(g => propagateResult(g.id));
+}
+
+function mergeAndRebuild(oldGames) {
+  const newGames = buildSchedule(state.teams || JSON.parse(JSON.stringify(DEFAULT_TEAMS)));
+  Object.keys(newGames).forEach(id => {
+    if (oldGames && oldGames[id]) {
+      const old = oldGames[id];
+      newGames[id].score1 = old.score1 || 0;
+      newGames[id].score2 = old.score2 || 0;
+      newGames[id].status = old.status || 'upcoming';
+      newGames[id].winner = old.winner || null;
+      newGames[id].loser  = old.loser  || null;
+      newGames[id].dq     = old.dq     || null;
+      if (old.events) newGames[id].events = old.events;
+      if (old.timers) newGames[id].timers = old.timers;
+    }
+  });
+  return newGames;
+}
+
 function init() {
   state = loadState();
-  if (!state) {
-    state = initState();
-    saveState();
-  }
+  if (!state) state = initState();
+
   // Ensure all required keys exist
   if (!state.teams) state.teams = JSON.parse(JSON.stringify(DEFAULT_TEAMS));
-  if (!state.games) state.games = buildSchedule(state.teams);
   if (!state.courtDelays) state.courtDelays = {};
   if (!state.timers) state.timers = {};
+
+  // Auto-migrate if games are missing, old schema, or old BB slot naming
+  if (needsRebuild(state.games, state.schemaV)) {
+    state.games = mergeAndRebuild(state.games);
+    state.schemaV = BB_SCHEMA_V;
+    propagateAll();
+    saveState();
+  } else {
+    propagateAll();  // re-apply propagation for any already-finalized games
+  }
 
   refresh();
 
@@ -2019,21 +2130,36 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 window.fbDb = firebase.database();
 
-// Seed local state from Firebase on load so admin picks up the canonical game structure
+// Seed local state from Firebase on load
 window.fbDb.ref('ko2026').once('value', snapshot => {
   try {
     const data = snapshot.val();
-    if (data && data.games) {
-      const localSimTime = state.simTime; // preserve whatever the user set locally
+    // Only seed if Firebase has non-empty, valid-schema games
+    const fbGames = data && data.games ? data.games : {};
+    if (data && !needsRebuild(fbGames, data.schemaV)) {
+      const localSimTime = state.simTime;
       state = data;
-      state.simTime = localSimTime;       // never let Firebase override test-mode state
+      state.simTime = localSimTime; // never restore test-mode from Firebase
       if (!state.teams) state.teams = JSON.parse(JSON.stringify(DEFAULT_TEAMS));
       if (!state.courtDelays) state.courtDelays = {};
       if (!state.timers) state.timers = {};
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      currentGameId = null;
-      refresh();
+      propagateAll();  // re-apply propagation for any already-finalized games
+    } else if (data) {
+      // Firebase has data but old schema — migrate scores into new game structure
+      const localSimTime = state.simTime;
+      const oldTeams = (data.teams && data.teams.soccer) ? data.teams : state.teams;
+      state.teams = oldTeams;
+      state.simTime = localSimTime;
+      if (!state.courtDelays) state.courtDelays = data.courtDelays || {};
+      if (!state.timers) state.timers = data.timers || {};
+      state.games = mergeAndRebuild(data.games);
+      state.schemaV = BB_SCHEMA_V;
+      propagateAll();
+      saveState(); // push migrated state back to Firebase
     }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    currentGameId = null;
+    refresh();
   } catch(e) { console.warn('Firebase seed failed:', e); }
 });
 </script>
