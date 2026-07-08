@@ -212,6 +212,8 @@ body.tv-on .header,.tv-on .sport-tabs,.tv-on #liveBanner,.tv-on .view{display:no
 /* All-courts screen */
 .tv-all-wrap{display:flex;flex-direction:column;gap:8px;padding:12px;flex:1;overflow:hidden;box-sizing:border-box}
 .tv-all-row{display:grid;gap:10px;min-height:0}
+.tv-all-row.soccer-row{grid-template-columns:repeat(4,1fr)}
+.tv-all-row.other-row{grid-template-columns:repeat(3,1fr)}
 .tv-row-hdr{font-size:10px;font-weight:700;color:var(--dim);letter-spacing:2px;text-transform:uppercase;flex-shrink:0}
 /* Sport-specific screen */
 .tv-sport-screen{display:grid;grid-template-columns:3fr 2fr;flex:1;overflow:hidden}
@@ -262,13 +264,47 @@ body.tv-on .header,.tv-on .sport-tabs,.tv-on #liveBanner,.tv-on .view{display:no
 .ri-loser{color:var(--dim)}
 .ri-score{font-weight:700;font-size:15px}
 .ri-time{font-size:10px;color:var(--dim)}
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .tv-sport-screen{grid-template-columns:1fr;overflow-y:auto}
+  .tv-sport-right{border-left:none;border-top:1px solid rgba(255,255,255,.08)}
+  .tv-all-row.soccer-row{grid-template-columns:repeat(2,1fr)}
+}
 @media(max-width:700px){
-  .tv-courts{grid-template-columns:1fr}
-  .br-round{min-width:120px}
+  .br-round{min-width:110px}
   .br-round-hdr{font-size:10px;letter-spacing:.5px}
   .tr-name{font-size:12px}
   .tr-score{font-size:14px}
   .schedule-grid{font-size:10px}
+  .tv-grid-screen{grid-template-columns:repeat(2,1fr)}
+  .tv-all-row.soccer-row{grid-template-columns:repeat(2,1fr)}
+  .tv-all-row.other-row{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:540px){
+  /* Header & nav */
+  .ko-info{display:none}
+  .nav-btn{padding:5px 9px;font-size:11px}
+  .sport-tab{padding:8px 10px;font-size:11px}
+  /* Live banner */
+  .lb-card{min-width:160px}
+  /* Brackets */
+  .br-round{min-width:88px}
+  .matchup{font-size:12px}
+  /* TV mode */
+  .tv-grid-screen{grid-template-columns:1fr}
+  .tv-all-row.soccer-row{grid-template-columns:1fr 1fr}
+  .tv-all-row.other-row{grid-template-columns:1fr}
+  .tv-sport-screen{display:flex;flex-direction:column}
+  .tv-team-score{font-size:28px}
+  .tv-team-name{font-size:14px}
+  .tv-logo{font-size:22px}
+  .tv-sub{font-size:11px}
+  .tv-time{font-size:18px}
+}
+@media(max-width:400px){
+  .lb-card{min-width:140px}
+  .br-round{min-width:72px}
+  .sport-tab{padding:7px 6px;font-size:10px}
 }
 .sim-bar{background:rgba(212,160,23,.1);border:1px solid rgba(212,160,23,.3);border-radius:7px;padding:8px 12px;margin-bottom:12px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:12px}
 .sim-bar label{color:var(--gold);font-weight:700}
@@ -1300,11 +1336,11 @@ function renderTVAllCourts() {
   const other  = COURTS_TV.filter(c => c.sport !== 'soccer');
   el.innerHTML = `
     <div class="tv-row-hdr">⚽ Soccer Fields</div>
-    <div class="tv-all-row" style="grid-template-columns:repeat(4,1fr);flex:3;min-height:0">
+    <div class="tv-all-row soccer-row" style="flex:3;min-height:0">
       ${soccer.map(tvCourtCard).join('')}
     </div>
     <div class="tv-row-hdr">🏀 Basketball · 🏐 Volleyball</div>
-    <div class="tv-all-row" style="grid-template-columns:1fr 1fr 1fr;flex:2;min-height:0">
+    <div class="tv-all-row other-row" style="flex:2;min-height:0">
       ${other.map(tvCourtCard).join('')}
     </div>`;
 }

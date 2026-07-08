@@ -608,6 +608,57 @@ select:focus, input[type="text"]:focus {
 /* Side-by-side WB + LB on large screens */
 .bracket-dual { display: grid; grid-template-columns: 1fr; gap: 0; align-items: start; }
 @media(min-width: 1100px) { .bracket-dual { grid-template-columns: 3fr 2fr; gap: 28px; } }
+
+/* ── MOBILE RESPONSIVE ── */
+@media(max-width:700px){
+  /* Header */
+  #header { flex-wrap: wrap; padding: 8px 12px; gap: 6px; }
+  #header-title { font-size: 15px; }
+  #live-clock { font-size: 16px; }
+  /* Tabs */
+  .sport-tab { padding: 10px 6px; font-size: 12px; }
+  /* Score entry: keep side-by-side but shrink scores */
+  .score-display { font-size: 38px; }
+  /* Delay buttons: 6→3 columns */
+  .delay-buttons { grid-template-columns: repeat(3,1fr); }
+  /* Bracket */
+  .br-round { min-width: 110px; }
+  /* Modal */
+  #modal-box { padding: 14px; }
+}
+@media(max-width:480px){
+  /* Header: hide clock to save space */
+  #header-title { font-size: 13px; }
+  #live-clock { display: none; }
+  /* Tabs: tighten further */
+  .sport-tab { font-size: 11px; padding: 8px 4px; }
+  /* Score entry: stack teams vertically */
+  #score-card .teams-row { grid-template-columns: 1fr; }
+  #score-card .teams-row > :nth-child(2) { display: none; }
+  .score-display { font-size: 44px; }
+  .btn-grid { grid-template-columns: repeat(4,1fr); }
+  /* Status buttons: 3→2 columns */
+  #status-buttons { grid-template-columns: 1fr 1fr; }
+  /* Delay: keep 3 columns */
+  .delay-buttons { grid-template-columns: repeat(3,1fr); }
+  /* PIN pad: shrink buttons */
+  #pin-pad { grid-template-columns: repeat(3,60px); gap: 8px; }
+  .pin-key { height: 60px; font-size: 20px; }
+  /* Bracket */
+  .br-round { min-width: 85px; }
+  /* Layout */
+  #main { padding: 10px; gap: 10px; }
+  .card { padding: 12px; }
+}
+@media(max-width:360px){
+  .sport-tab { font-size: 10px; padding: 7px 2px; }
+  /* Delay: 3→2 columns on very small phones */
+  .delay-buttons { grid-template-columns: repeat(2,1fr); }
+  #status-buttons { grid-template-columns: 1fr; }
+  .br-round { min-width: 70px; }
+  #pin-pad { grid-template-columns: repeat(3,50px); gap: 6px; }
+  .pin-key { height: 50px; font-size: 18px; }
+}
 </style>
 </head>
 <body>
