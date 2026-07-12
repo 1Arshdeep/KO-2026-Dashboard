@@ -310,6 +310,23 @@ body.tv-on .header,.tv-on .sport-tabs,.tv-on #liveBanner,.tv-on .view{display:no
 .sim-bar label{color:var(--gold);font-weight:700}
 .sim-bar input[type=datetime-local]{background:var(--navy);border:1px solid var(--gray3);color:var(--text);padding:5px 8px;border-radius:5px;font-size:12px}
 .sim-bar input:focus{outline:none;border-color:var(--gold)}
+/* ── TV PICKER MODAL ── */
+#tvPickerModal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:600;align-items:center;justify-content:center;padding:16px}
+#tvPickerModal.open{display:flex}
+.tvp-panel{background:var(--gray2);border:1px solid var(--gray3);border-radius:16px;padding:24px;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;display:flex;flex-direction:column;gap:16px}
+.tvp-hdr{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.tvp-title{font-size:18px;font-weight:800;color:var(--gold)}
+.tvp-close{background:transparent;border:none;color:var(--dim);font-size:20px;cursor:pointer;line-height:1;padding:4px 8px;border-radius:6px}
+.tvp-close:hover{color:var(--text);background:var(--gray3)}
+.tvp-rotate-btn{background:var(--gold);color:var(--navy);border:none;border-radius:10px;padding:14px 20px;font-size:15px;font-weight:800;cursor:pointer;width:100%;letter-spacing:.5px}
+.tvp-rotate-btn:hover{filter:brightness(1.1)}
+.tvp-divider{display:flex;align-items:center;gap:10px;color:var(--dim);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.tvp-divider::before,.tvp-divider::after{content:'';flex:1;height:1px;background:var(--gray3)}
+.tvp-section-lbl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:-6px}
+.tvp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.tvp-link{display:block;background:var(--gray1);border:1px solid var(--gray3);border-radius:8px;padding:11px 14px;font-size:13px;font-weight:600;color:var(--text);text-decoration:none;transition:background .12s,border-color .12s}
+.tvp-link:hover{background:rgba(212,160,23,.12);border-color:var(--gold);color:var(--gold-light)}
+@media(max-width:480px){.tvp-grid{grid-template-columns:1fr}}
 /* ── TV HASH SCREENS ── */
 #tvHashScreen{display:none;position:fixed;inset:0;background:var(--navy);z-index:500;flex-direction:column;overflow:hidden;font-family:inherit}
 body.tv-hash-on #tvHashScreen{display:flex}
@@ -388,6 +405,42 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
   <div id="lbBody"></div>
 </div>
 
+<!-- ── TV PICKER MODAL ── -->
+<div id="tvPickerModal" onclick="if(event.target===this)closeTVPicker()">
+  <div class="tvp-panel">
+    <div class="tvp-hdr">
+      <div class="tvp-title">📺 TV Screens</div>
+      <button class="tvp-close" onclick="closeTVPicker()">✕</button>
+    </div>
+    <button class="tvp-rotate-btn" onclick="closeTVPicker();enterTV()">▶ Start Rotating Mode — all courts cycling</button>
+    <div class="tvp-divider">or pick a screen</div>
+    <div class="tvp-section-lbl">⚽ Soccer Fields</div>
+    <div class="tvp-grid">
+      <a class="tvp-link" href="#tv/field-a" onclick="closeTVPicker()">⚽ Field A</a>
+      <a class="tvp-link" href="#tv/field-b" onclick="closeTVPicker()">⚽ Field B</a>
+      <a class="tvp-link" href="#tv/field-c" onclick="closeTVPicker()">⚽ Field C</a>
+      <a class="tvp-link" href="#tv/field-d" onclick="closeTVPicker()">⚽ Field D</a>
+    </div>
+    <div class="tvp-section-lbl">🏀🏐 Gyms</div>
+    <div class="tvp-grid">
+      <a class="tvp-link" href="#tv/gym-1" onclick="closeTVPicker()">🏐 Gym 1 (Volleyball)</a>
+      <a class="tvp-link" href="#tv/gym-2" onclick="closeTVPicker()">🏀 Gym 2 (Basketball)</a>
+      <a class="tvp-link" href="#tv/gym-3" onclick="closeTVPicker()">🏀 Gym 3 (Basketball)</a>
+    </div>
+    <div class="tvp-section-lbl">🏟 Gallery Views</div>
+    <div class="tvp-grid">
+      <a class="tvp-link" href="#tv/gallery-soccer" onclick="closeTVPicker()">⚽ All Soccer Fields</a>
+      <a class="tvp-link" href="#tv/gallery-gyms" onclick="closeTVPicker()">🏟 All Gyms</a>
+      <a class="tvp-link" href="#tv/gallery-semis" onclick="closeTVPicker()">🔥 Semifinals</a>
+    </div>
+    <div class="tvp-section-lbl">🏆 Finals</div>
+    <div class="tvp-grid">
+      <a class="tvp-link" href="#tv/finals-soccer" onclick="closeTVPicker()">🏆 Soccer Grand Final</a>
+      <a class="tvp-link" href="#tv/finals-basketball" onclick="closeTVPicker()">🏆 Basketball Final</a>
+      <a class="tvp-link" href="#tv/finals-volleyball" onclick="closeTVPicker()">🏆 Volleyball Final</a>
+    </div>
+  </div>
+</div>
 <!-- ── TV HASH SCREENS (url-addressable, z-index 500) ── -->
 <div id="tvHashScreen"></div>
 <!-- ── TV OVERLAY (rotating carousel, z-index 400) ── -->
@@ -418,7 +471,7 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
   <div class="header-nav">
     <button class="nav-btn active" onclick="showView('dashboard')" id="nav-dashboard">📊 Brackets</button>
     <button class="nav-btn" onclick="showView('schedule')" id="nav-schedule">📅 Schedule</button>
-    <button class="nav-btn" onclick="enterTV()">📺 TV Mode</button>
+    <button class="nav-btn" onclick="openTVPicker()">📺 TV</button>
   </div>
 </div>
 
@@ -1575,6 +1628,9 @@ function exitTV() {
   document.removeEventListener('keydown', tvKeyHandler);
 }
 
+function openTVPicker() { document.getElementById('tvPickerModal').classList.add('open'); }
+function closeTVPicker() { document.getElementById('tvPickerModal').classList.remove('open'); }
+
 function tvKeyHandler(e) {
   if (e.key==='Escape') exitTV();
   else if (e.key==='ArrowRight') tvNext();
@@ -1962,6 +2018,9 @@ function tvHashRenderList() {
   el.innerHTML = `<div class="tvh-hdr"><div class="tvh-logo">🏆 KO 2026</div><div class="tvh-title">TV SCREENS — Tap to open</div><div class="tvh-time">🖥</div></div>
     <div class="tvh-list-body">${links}</div>`;
 }
+
+// Close TV picker on Escape
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeTVPicker && closeTVPicker(); if (_tvHashKey) tvHashExit(); } });
 
 // ── Init hash routing on page load ──
 (function initTVHash() {
