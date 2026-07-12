@@ -919,7 +919,7 @@ function confirmDQ(side) {
 let currentSport = 'soccer';
 let currentView = 'dashboard';
 
-function showView(v) {
+function showView(v, pushState = true) {
   document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
   document.getElementById(`view-${v}`).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
@@ -928,9 +928,12 @@ function showView(v) {
   if (v === 'schedule') renderSchedule();
   if (v === 'scorer') { seUpdateSport(); seLoadRecentResults(); }
   if (v === 'dashboard') renderDashboard();
+  if (pushState && history.pushState) {
+    history.pushState({ view: v, sport: currentSport }, '', '#' + v);
+  }
 }
 
-function showSport(sp) {
+function showSport(sp, pushState = true) {
   currentSport = sp;
   ['soccer','basketball','volleyball'].forEach(s => {
     document.getElementById(`tab-${s}`).classList.toggle('active', s === sp);
@@ -941,7 +944,16 @@ function showSport(sp) {
   } else {
     renderDashboard();
   }
+  if (pushState && history.pushState) {
+    history.pushState({ view: currentView, sport: sp }, '', '#' + currentView + '-' + sp);
+  }
 }
+
+// Browser back button navigates between in-app views instead of leaving the site
+window.addEventListener('popstate', e => {
+  if (e.state && e.state.view) showView(e.state.view, false);
+  if (e.state && e.state.sport) showSport(e.state.sport, false);
+});
 
 function renderDashboard() {
   renderSoccerBracket();
@@ -1251,6 +1263,22 @@ let tvCurrentPanel = 0;
 let tvPaused = false;
 let tvAutoInterval = null;
 
+// ── Now Playing: only show courts the admin marked active (null = all) ──
+function tvActiveCourts() {
+  const ac = state.activeCourts;
+  if (Array.isArray(ac) && ac.length) return COURTS_TV.filter(c => ac.includes(c.court));
+  return COURTS_TV;
+}
+// Panels to rotate through — drop a sport's screen when it has no active courts
+function activePanels() {
+  const active = tvActiveCourts();
+  const sportsWithCourts = new Set(active.map(c => c.sport));
+  return TV_PANELS.filter(p => {
+    if (p.id === 'soccer' || p.id === 'basketball' || p.id === 'volleyball') return sportsWithCourts.has(p.id);
+    return true;
+  });
+}
+
 // ── Shared helper: render one court card ──────────────────────
 function tvCourtCard(c) {
   const courtGames = Object.values(state.games)
@@ -1313,12 +1341,14 @@ function tvResultCard(g) {
 function renderTV() {
   document.getElementById('tvClock').textContent =
     new Date(now()).toLocaleTimeString('en-CA',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:true});
-  document.getElementById('tvDots').innerHTML = TV_PANELS.map((p,i) =>
+  const panels = activePanels();
+  if (tvCurrentPanel >= panels.length) tvCurrentPanel = 0;
+  document.getElementById('tvDots').innerHTML = panels.map((p,i) =>
     `<div class="tv-dot${i===tvCurrentPanel?' active':''}" onclick="tvGoTo(${i})" title="${p.label}"></div>`
   ).join('');
-  document.getElementById('tvPanelLabel').textContent = TV_PANELS[tvCurrentPanel].label;
+  document.getElementById('tvPanelLabel').textContent = panels[tvCurrentPanel].label;
   document.getElementById('tvPauseBtn').textContent = tvPaused ? '▶ Resume' : '⏸ Pause';
-  const id = TV_PANELS[tvCurrentPanel].id;
+  const id = panels[tvCurrentPanel].id;
   if      (id === 'all')        renderTVAllCourts();
   else if (id === 'soccer')     renderTVSport('soccer');
   else if (id === 'basketball') renderTVSport('basketball');
@@ -1332,17 +1362,18 @@ function renderTVAllCourts() {
   const el = document.getElementById('tvCourts');
   el.className = 'tv-all-wrap';
   el.style.cssText = '';
-  const soccer = COURTS_TV.filter(c => c.sport === 'soccer');
-  const other  = COURTS_TV.filter(c => c.sport !== 'soccer');
+  const active = tvActiveCourts();
+  const soccer = active.filter(c => c.sport === 'soccer');
+  const other  = active.filter(c => c.sport !== 'soccer');
   el.innerHTML = `
-    <div class="tv-row-hdr">⚽ Soccer Fields</div>
+    ${soccer.length ? `<div class="tv-row-hdr">⚽ Soccer Fields</div>
     <div class="tv-all-row soccer-row" style="flex:3;min-height:0">
       ${soccer.map(tvCourtCard).join('')}
-    </div>
-    <div class="tv-row-hdr">🏀 Basketball · 🏐 Volleyball</div>
+    </div>` : ''}
+    ${other.length ? `<div class="tv-row-hdr">🏀 Basketball · 🏐 Volleyball</div>
     <div class="tv-all-row other-row" style="flex:2;min-height:0">
       ${other.map(tvCourtCard).join('')}
-    </div>`;
+    </div>` : ''}`;
 }
 
 // Screens 2/3/4 — sport-specific: courts on left, results on right
@@ -1350,7 +1381,7 @@ function renderTVSport(sport) {
   const el = document.getElementById('tvCourts');
   el.className = 'tv-sport-screen';
   el.style.cssText = '';
-  const sportCourts = COURTS_TV.filter(c => c.sport === sport);
+  const sportCourts = tvActiveCourts().filter(c => c.sport === sport);
   const icon = SPORT_ICON[sport];
   const label = sport.toUpperCase();
   const results = Object.values(state.games)
@@ -1457,8 +1488,8 @@ function renderTVResults() {
 }
 
 function tvGoTo(idx) { tvCurrentPanel = idx; renderTV(); }
-function tvNext() { tvCurrentPanel = (tvCurrentPanel+1) % TV_PANELS.length; renderTV(); }
-function tvPrev() { tvCurrentPanel = (tvCurrentPanel-1+TV_PANELS.length) % TV_PANELS.length; renderTV(); }
+function tvNext() { const n = activePanels().length; tvCurrentPanel = (tvCurrentPanel+1) % n; renderTV(); }
+function tvPrev() { const n = activePanels().length; tvCurrentPanel = (tvCurrentPanel-1+n) % n; renderTV(); }
 
 function tvTogglePause() {
   tvPaused = !tvPaused;
@@ -1589,13 +1620,17 @@ window.applyFirebaseState = (data) => {
   state.teams       = data.teams       || defaultTeams();
   state.games       = data.games       || {};
   state.timers      = data.timers      || {};
+  state.rosters     = data.rosters     || {soccer:{},basketball:{},volleyball:{}};
+  state.activeCourts = data.activeCourts !== undefined ? data.activeCourts : null;
   state.simTime     = null; // public view always uses real clock
   renderAll();
 };
 // ── INIT ──
 renderBanner();
 renderDashboard();
-showSport('soccer');
+showSport('soccer', false);
+// Seed initial history entry so the back button has somewhere to return to
+if (history.pushState) history.pushState({ view: 'dashboard', sport: 'soccer' }, '', '#dashboard');
 window._appReady = true;
 </script>
 <!-- Firebase -->
