@@ -1089,16 +1089,16 @@ const BB_SLOTS = [
   ].map(([s,c1,c2,ws1,ls1,ws2,ls2],i) => ({
     start:s,
     rows:[
-      {court:'Basketball Court 1', phase: i<5?'wb':i<8?'wb_r2':'wb_r3', round: i<5?'WB R1':i<8?'WB R2':'WB R3', desc:c1, winnerSlot:ws1, loserSlot:ls1},
-      {court:'Basketball Court 2', phase: i<5?'wb':i<8?'lb_r1':'lb_r2', round: i<5?'WB R1':i<8?'LB R1':'LB R2', desc:c2, winnerSlot:ws2, loserSlot:ls2},
+      {court:'Gym 2 (Basketball)', phase: i<5?'wb':i<8?'wb_r2':'wb_r3', round: i<5?'WB R1':i<8?'WB R2':'WB R3', desc:c1, winnerSlot:ws1, loserSlot:ls1},
+      {court:'Gym 3 (Basketball)', phase: i<5?'wb':i<8?'lb_r1':'lb_r2', round: i<5?'WB R1':i<8?'LB R1':'LB R2', desc:c2, winnerSlot:ws2, loserSlot:ls2},
     ]
   })),
-  {start:D2(15,30), rows:[{court:'Basketball Court 1',phase:'wb_f',round:'WB Final',desc:'BW17 vs BW18',winnerSlot:'BW19',loserSlot:'BBL9'},{court:'Basketball Court 2',phase:'lb_r3',round:'LB R3',desc:'BLW8 vs BBL4',winnerSlot:'BLW9',loserSlot:null}]},
-  {start:D2(15,55), rows:[{court:'Basketball Court 2',phase:'lb_r4',round:'LB R4',desc:'BLW9 vs BBL5',winnerSlot:'BLW10',loserSlot:null}]},
-  {start:D2(16,20), rows:[{court:'Basketball Court 2',phase:'lb_sf',round:'LB SF',desc:'BLW10 vs BBL6',winnerSlot:'BLW11',loserSlot:null}]},
-  {start:D2(16,45), rows:[{court:'Basketball Court 2',phase:'lb_f',round:'LB Final',desc:'BLW11 vs BBL7',winnerSlot:'BLW12',loserSlot:null}]},
-  {start:D2(17,10), rows:[{court:'Basketball Court 1',phase:'gf',round:'Grand Final',desc:'BW19 vs BLW12',winnerSlot:'BB Champion',loserSlot:null}]},
-  {start:D2(17,35), rows:[{court:'Basketball Court 1',phase:'gf',round:'GF Reset',desc:'Reset Game (if needed)',winnerSlot:'BB Champion',loserSlot:null}]},
+  {start:D2(15,30), rows:[{court:'Gym 2 (Basketball)',phase:'wb_f',round:'WB Final',desc:'BW17 vs BW18',winnerSlot:'BW19',loserSlot:'BBL9'},{court:'Gym 3 (Basketball)',phase:'lb_r3',round:'LB R3',desc:'BLW8 vs BBL4',winnerSlot:'BLW9',loserSlot:null}]},
+  {start:D2(15,55), rows:[{court:'Gym 3 (Basketball)',phase:'lb_r4',round:'LB R4',desc:'BLW9 vs BBL5',winnerSlot:'BLW10',loserSlot:null}]},
+  {start:D2(16,20), rows:[{court:'Gym 3 (Basketball)',phase:'lb_sf',round:'LB SF',desc:'BLW10 vs BBL6',winnerSlot:'BLW11',loserSlot:null}]},
+  {start:D2(16,45), rows:[{court:'Gym 3 (Basketball)',phase:'lb_f',round:'LB Final',desc:'BLW11 vs BBL7',winnerSlot:'BLW12',loserSlot:null}]},
+  {start:D2(17,10), rows:[{court:'Gym 2 (Basketball)',phase:'gf',round:'Grand Final',desc:'BW19 vs BLW12',winnerSlot:'BB Champion',loserSlot:null}]},
+  {start:D2(17,35), rows:[{court:'Gym 2 (Basketball)',phase:'gf',round:'GF Reset',desc:'Reset Game (if needed)',winnerSlot:'BB Champion',loserSlot:null}]},
 ];
 
 const VB_SLOTS = [
@@ -1123,7 +1123,7 @@ const VB_SLOTS = [
 ].map(([s,round,desc],i) => ({
   start:s,
   rows:[{
-    court:'Volleyball Court',
+    court:'Gym 1 (Volleyball)',
     phase:round.includes('Grand')?'gf':round.includes('Semi')?'sf':round.includes('QF')||round.includes('Quarter')?'qf':round.includes('3rd')?'3rd':'r1',
     round, desc,
     winnerSlot: i<10 ? `W${i+1}` : round.includes('Grand')?'VB Champion':round.includes('3rd')?'VB 3rd':round.includes('Semi')?`SF${i-13}W`:`QF${i-9}W`,
@@ -1264,9 +1264,19 @@ function initState() {
   };
 }
 
+// One-time migration: remap old court names in loaded state
+function migrateCourtNames(s) {
+  const MAP = {'Basketball Court 1':'Gym 2 (Basketball)','Basketball Court 2':'Gym 3 (Basketball)','Volleyball Court':'Gym 1 (Volleyball)'};
+  const remap = n => MAP[n] || n;
+  if (s.games) Object.values(s.games).forEach(g => { if (g.court) g.court = remap(g.court); });
+  if (s.courtDelays) { const old=s.courtDelays; s.courtDelays={}; Object.entries(old).forEach(([k,v])=>{ s.courtDelays[remap(k)]=v; }); }
+  if (Array.isArray(s.activeCourts)) s.activeCourts = s.activeCourts.map(remap);
+}
+
 // Make sure older saved/synced states gain the newer fields
 function ensureStateFields(s) {
   if (!s) return;
+  migrateCourtNames(s);
   if (!s.rosters) s.rosters = { soccer:{}, basketball:{}, volleyball:{} };
   ['soccer','basketball','volleyball'].forEach(sp => { if (!s.rosters[sp]) s.rosters[sp] = {}; });
   if (s.activeCourts === undefined) s.activeCourts = null;

@@ -310,6 +310,67 @@ body.tv-on .header,.tv-on .sport-tabs,.tv-on #liveBanner,.tv-on .view{display:no
 .sim-bar label{color:var(--gold);font-weight:700}
 .sim-bar input[type=datetime-local]{background:var(--navy);border:1px solid var(--gray3);color:var(--text);padding:5px 8px;border-radius:5px;font-size:12px}
 .sim-bar input:focus{outline:none;border-color:var(--gold)}
+/* ── TV HASH SCREENS ── */
+#tvHashScreen{display:none;position:fixed;inset:0;background:var(--navy);z-index:500;flex-direction:column;overflow:hidden;font-family:inherit}
+body.tv-hash-on #tvHashScreen{display:flex}
+body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,body.tv-hash-on .view,body.tv-hash-on .tv-overlay{display:none!important}
+.tvh-hdr{background:linear-gradient(90deg,var(--blue),var(--navy));border-bottom:3px solid var(--gold);padding:14px 32px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.tvh-logo{font-size:24px;font-weight:900;color:var(--gold);white-space:nowrap}
+.tvh-title{font-size:20px;font-weight:800;color:var(--text);text-align:center;flex:1;padding:0 16px}
+.tvh-time{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+/* single court */
+.tvh-single-body{flex:1;display:grid;grid-template-rows:auto auto 1fr auto;gap:16px;padding:24px 40px;overflow:hidden;box-sizing:border-box}
+.tvh-single-status{text-align:center;font-size:22px;font-weight:800;letter-spacing:3px;padding:10px 0}
+.tvh-status-live{color:var(--live);animation:pulse 1.5s infinite}
+.tvh-status-next{color:var(--gold)}
+.tvh-status-done{color:var(--green)}
+.tvh-single-matchup{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;flex-shrink:0}
+.tvh-single-team{display:flex;flex-direction:column;align-items:center;gap:8px}
+.tvh-single-tname{font-size:44px;font-weight:900;text-align:center;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.tvh-single-score{font-size:110px;font-weight:900;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums}
+.tvh-single-vs{font-size:32px;font-weight:900;color:var(--dim);text-align:center;padding:0 10px}
+.tvh-single-round{font-size:16px;font-weight:700;letter-spacing:2px;text-align:center;text-transform:uppercase;color:var(--dim)}
+.tvh-single-rosters{display:grid;grid-template-columns:1fr 1fr;gap:20px;overflow:hidden;min-height:0}
+.tvh-single-roster-col{background:rgba(255,255,255,.04);border-radius:10px;padding:14px;overflow:hidden}
+.tvh-single-roster-hdr{font-size:15px;font-weight:800;text-transform:uppercase;letter-spacing:2px;padding-bottom:8px;border-bottom:2px solid;margin-bottom:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tvh-player-name{font-size:19px;padding:3px 0;color:var(--text)}
+.tvh-no-roster{color:var(--dim);font-size:15px;padding:6px 0}
+.tvh-single-next{background:rgba(255,255,255,.06);border-radius:8px;padding:12px 20px;text-align:center;font-size:17px;color:var(--dim);font-weight:600;flex-shrink:0}
+.tvh-single-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.tvh-empty-icon{font-size:72px}
+.tvh-empty-court{font-size:32px;font-weight:800;color:var(--gold)}
+.tvh-empty-msg{font-size:22px;color:var(--dim)}
+/* gallery */
+.tvh-gallery{flex:1;display:grid;gap:16px;padding:18px;overflow:hidden;box-sizing:border-box}
+.tvh-card{background:var(--gray2);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+.tvh-card-live{background:rgba(40,10,10,.6);box-shadow:0 0 24px rgba(224,80,80,.2)}
+.tvh-card-empty{opacity:.45}
+.tvh-card-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-shrink:0}
+.tvh-court-name{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--dim)}
+.tvh-live-badge{background:var(--live);color:#fff;font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;letter-spacing:1px;white-space:nowrap;flex-shrink:0}
+.tvh-next-badge{font-size:11px;color:var(--gold);font-weight:700;white-space:nowrap;flex-shrink:0}
+.tvh-matchup{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;flex:1}
+.tvh-team-side{display:flex;flex-direction:column;align-items:center;gap:4px;overflow:hidden}
+.tvh-tname{font-size:19px;font-weight:800;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.tvh-score{font-size:54px;font-weight:900;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums}
+.tvh-vs{font-size:13px;font-weight:700;color:var(--dim);text-align:center;padding:0 4px}
+.tvh-no-game{text-align:center;color:var(--dim);font-size:14px;flex:1;display:flex;align-items:center;justify-content:center}
+/* finals */
+.tvh-final-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:28px;text-align:center}
+.tvh-champion-banner{font-size:32px;font-weight:900;padding:18px 40px;border-radius:14px;color:#fff;animation:pulse 2s infinite;letter-spacing:2px}
+.tvh-final-status{font-size:22px;font-weight:800;letter-spacing:3px}
+.tvh-final-matchup{display:grid;grid-template-columns:1fr auto 1fr;gap:24px;align-items:center;width:100%;max-width:1400px}
+.tvh-final-team{display:flex;flex-direction:column;align-items:center;gap:12px;padding:24px;background:rgba(255,255,255,.04);border-radius:14px}
+.tvh-final-team.tvh-winner{background:rgba(212,160,23,.12);border:2px solid var(--gold)}
+.tvh-final-tname{font-size:48px;font-weight:900;text-align:center;line-height:1.1}
+.tvh-final-score{font-size:130px;font-weight:900;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums}
+.tvh-final-vs{font-size:36px;font-weight:900;color:var(--dim)}
+.tvh-final-round{font-size:18px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--dim)}
+.tvh-final-pending{font-size:22px;color:var(--dim)}
+/* list */
+.tvh-list-body{flex:1;overflow-y:auto;padding:28px 56px;display:grid;grid-template-columns:repeat(2,1fr);gap:14px;align-content:start}
+.tvh-list-link{display:block;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:18px 26px;font-size:20px;font-weight:700;color:var(--text);text-decoration:none;transition:background .15s}
+.tvh-list-link:hover,.tvh-list-link:focus{background:rgba(212,160,23,.15);border-color:var(--gold)}
 </style>
 </head>
 <body>
@@ -327,7 +388,9 @@ body.tv-on .header,.tv-on .sport-tabs,.tv-on #liveBanner,.tv-on .view{display:no
   <div id="lbBody"></div>
 </div>
 
-<!-- ── TV OVERLAY ── -->
+<!-- ── TV HASH SCREENS (url-addressable, z-index 500) ── -->
+<div id="tvHashScreen"></div>
+<!-- ── TV OVERLAY (rotating carousel, z-index 400) ── -->
 <div class="tv-overlay" id="tvOverlay">
   <div class="tv-hdr">
     <div>
@@ -483,17 +546,17 @@ const BB_SLOTS = [
   ].map(([s,c1,c2],i) => ({
     start:s,
     rows:[
-      {court:'Basketball Court 1', phase: i<5?'wb':i<8?'wb_r2':'wb_r3', round: i<5?'WB R1':i<8?'WB R2':'WB R3', desc:c1},
-      {court:'Basketball Court 2', phase: i<5?'wb':i<8?'lb_r1':'lb_r2', round: i<5?'WB R1':i<8?'LB R1':'LB R2', desc:c2},
+      {court:'Gym 2 (Basketball)', phase: i<5?'wb':i<8?'wb_r2':'wb_r3', round: i<5?'WB R1':i<8?'WB R2':'WB R3', desc:c1},
+      {court:'Gym 3 (Basketball)', phase: i<5?'wb':i<8?'lb_r1':'lb_r2', round: i<5?'WB R1':i<8?'LB R1':'LB R2', desc:c2},
     ]
   })),
   // Day 2
-  {start:D2(15,30), rows:[{court:'Basketball Court 1',phase:'wb_f',round:'WB Final',desc:'BW17 vs BW18'},{court:'Basketball Court 2',phase:'lb_r3',round:'LB R3',desc:'BLW8 vs BBL4'}]},
-  {start:D2(15,55), rows:[{court:'Basketball Court 2',phase:'lb_r4',round:'LB R4',desc:'BLW9 vs BBL5'}]},
-  {start:D2(16,20), rows:[{court:'Basketball Court 2',phase:'lb_sf',round:'LB SF',desc:'BLW10 vs BBL6'}]},
-  {start:D2(16,45), rows:[{court:'Basketball Court 2',phase:'lb_f',round:'LB Final',desc:'BLW11 vs BBL7'}]},
-  {start:D2(17,10), rows:[{court:'Basketball Court 1',phase:'gf',round:'Grand Final',desc:'BW19 vs BLW12'}]},
-  {start:D2(17,35), rows:[{court:'Basketball Court 1',phase:'gf',round:'GF Reset',desc:'Reset Game (if needed)'}]},
+  {start:D2(15,30), rows:[{court:'Gym 2 (Basketball)',phase:'wb_f',round:'WB Final',desc:'BW17 vs BW18'},{court:'Gym 3 (Basketball)',phase:'lb_r3',round:'LB R3',desc:'BLW8 vs BBL4'}]},
+  {start:D2(15,55), rows:[{court:'Gym 3 (Basketball)',phase:'lb_r4',round:'LB R4',desc:'BLW9 vs BBL5'}]},
+  {start:D2(16,20), rows:[{court:'Gym 3 (Basketball)',phase:'lb_sf',round:'LB SF',desc:'BLW10 vs BBL6'}]},
+  {start:D2(16,45), rows:[{court:'Gym 3 (Basketball)',phase:'lb_f',round:'LB Final',desc:'BLW11 vs BBL7'}]},
+  {start:D2(17,10), rows:[{court:'Gym 2 (Basketball)',phase:'gf',round:'Grand Final',desc:'BW19 vs BLW12'}]},
+  {start:D2(17,35), rows:[{court:'Gym 2 (Basketball)',phase:'gf',round:'GF Reset',desc:'Reset Game (if needed)'}]},
 ];
 
 // Volleyball: 20-min slots, 1 court, Day 1 only
@@ -516,7 +579,7 @@ const VB_SLOTS = [
   [D1(22,10),'Semifinal 2','QF3W vs QF4W'],
   [D1(22,30),'3rd Place','SF1L vs SF2L'],
   [D1(22,50),'Grand Final','SF1W vs SF2W'],
-].map(([s,round,desc]) => ({start:s, rows:[{court:'Volleyball Court',phase:round.includes('Grand')?'gf':round.includes('Semi')?'sf':round.includes('QF')||round.includes('Quarter')?'qf':round.includes('3rd')?'3rd':'r1', round, desc}]}));
+].map(([s,round,desc]) => ({start:s, rows:[{court:'Gym 1 (Volleyball)',phase:round.includes('Grand')?'gf':round.includes('Semi')?'sf':round.includes('QF')||round.includes('Quarter')?'qf':round.includes('3rd')?'3rd':'r1', round, desc}]}));
 
 // ══════════════════════════════════════════════════════════════
 // STATE
@@ -712,11 +775,11 @@ function renderSchedule() {
       '⚽ Soccer — 4 Fields · 25-min slots');
   } else if (currentSport === 'basketball') {
     html = renderScheduleTable('basketball', BB_SLOTS, BB_SLOT,
-      ['Basketball Court 1','Basketball Court 2'],
+      ['Gym 2 (Basketball)','Gym 3 (Basketball)'],
       '🏀 Basketball — 2 Courts · 25-min slots');
   } else if (currentSport === 'volleyball') {
     html = renderScheduleTable('volleyball', VB_SLOTS, VB_SLOT,
-      ['Volleyball Court'],
+      ['Gym 1 (Volleyball)'],
       '🏐 Volleyball — 1 Court · 20-min slots');
   }
   document.getElementById('scheduleContent').innerHTML = html;
@@ -1243,9 +1306,9 @@ const COURTS_TV = [
   {name:'⚽ Soccer Field B',     court:'Soccer Field B',     sport:'soccer'},
   {name:'⚽ Soccer Field C',     court:'Soccer Field C',     sport:'soccer'},
   {name:'⚽ Soccer Field D',     court:'Soccer Field D',     sport:'soccer'},
-  {name:'🏀 Basketball Court 1', court:'Basketball Court 1', sport:'basketball'},
-  {name:'🏀 Basketball Court 2', court:'Basketball Court 2', sport:'basketball'},
-  {name:'🏐 Volleyball Court',   court:'Volleyball Court',   sport:'volleyball'},
+  {name:'🏀 Gym 2 (Basketball)', court:'Gym 2 (Basketball)', sport:'basketball'},
+  {name:'🏀 Gym 3 (Basketball)', court:'Gym 3 (Basketball)', sport:'basketball'},
+  {name:'🏐 Gym 1 (Volleyball)', court:'Gym 1 (Volleyball)', sport:'volleyball'},
 ];
 
 const SPORT_COLOR = {soccer:'#27ae60', basketball:'#e67e22', volleyball:'#8e44ad'};
@@ -1612,10 +1675,20 @@ setInterval(() => {
   renderBanner();
 }, 1000);
 
+// One-time migration: remap old court names in Firebase-loaded data
+function migrateCourtNames(data) {
+  const MAP = {'Basketball Court 1':'Gym 2 (Basketball)','Basketball Court 2':'Gym 3 (Basketball)','Volleyball Court':'Gym 1 (Volleyball)'};
+  const remap = n => MAP[n] || n;
+  if (data.games) Object.values(data.games).forEach(g => { if (g.court) g.court = remap(g.court); });
+  if (data.courtDelays) { const old=data.courtDelays; data.courtDelays={}; Object.entries(old).forEach(([k,v])=>{ data.courtDelays[remap(k)]=v; }); }
+  if (Array.isArray(data.activeCourts)) data.activeCourts = data.activeCourts.map(remap);
+}
+
 // Firebase is the single source of truth for the public view.
 // simTime is always null here — admin strips it before saving to Firebase.
 window.applyFirebaseState = (data) => {
   if (!window._appReady) return;
+  migrateCourtNames(data);
   state.courtDelays = data.courtDelays || {};
   state.teams       = data.teams       || defaultTeams();
   state.games       = data.games       || {};
@@ -1624,6 +1697,7 @@ window.applyFirebaseState = (data) => {
   state.activeCourts = data.activeCourts !== undefined ? data.activeCourts : null;
   state.simTime     = null; // public view always uses real clock
   renderAll();
+  if (_tvHashKey) tvHashRender();
 };
 // ── INIT ──
 renderBanner();
@@ -1674,6 +1748,234 @@ window._appReady = true;
   setInterval(() => {
     db.ref('ko2026').once('value').then(applySnapshot).catch(() => {});
   }, 10000);
+</script>
+<script>
+// ══════════════════════════════════════════════════════════════
+// TV HASH ROUTING — each physical TV loads one URL, stays on it
+// ══════════════════════════════════════════════════════════════
+const TV_HASH_MAP = {
+  'field-a':           {type:'court',  court:'Soccer Field A',     sport:'soccer'},
+  'field-b':           {type:'court',  court:'Soccer Field B',     sport:'soccer'},
+  'field-c':           {type:'court',  court:'Soccer Field C',     sport:'soccer'},
+  'field-d':           {type:'court',  court:'Soccer Field D',     sport:'soccer'},
+  'gym-1':             {type:'court',  court:'Gym 1 (Volleyball)', sport:'volleyball'},
+  'gym-2':             {type:'court',  court:'Gym 2 (Basketball)', sport:'basketball'},
+  'gym-3':             {type:'court',  court:'Gym 3 (Basketball)', sport:'basketball'},
+  'gallery-soccer':    {type:'gallery',courts:['Soccer Field A','Soccer Field B','Soccer Field C','Soccer Field D'],cols:2,label:'⚽ ALL SOCCER FIELDS'},
+  'gallery-gyms':      {type:'gallery',courts:['Gym 1 (Volleyball)','Gym 2 (Basketball)','Gym 3 (Basketball)'],cols:3,label:'🏟 ALL GYMS'},
+  'gallery-semis':     {type:'gallery',courts:['Soccer Field A','Soccer Field B'],cols:2,label:'🔥 SEMIFINALS'},
+  'finals-soccer':     {type:'final',  court:'Soccer Field A',     sport:'soccer',     label:'⚽ SOCCER GRAND FINAL'},
+  'finals-basketball': {type:'final',  court:'Gym 2 (Basketball)', sport:'basketball', label:'🏀 BASKETBALL GRAND FINAL'},
+  'finals-volleyball': {type:'final',  court:'Gym 1 (Volleyball)', sport:'volleyball', label:'🏐 VOLLEYBALL GRAND FINAL'},
+  'list':              {type:'list'},
+};
+
+let _tvHashKey = null, _tvHashTimer = null;
+
+function tvHashKeyFromUrl() {
+  const h = location.hash;
+  return h.startsWith('#tv/') ? h.slice(4) : null;
+}
+
+function tvHashEnter(key) {
+  _tvHashKey = key;
+  document.body.classList.add('tv-hash-on');
+  if (document.documentElement.requestFullscreen && !document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {});
+  }
+  tvHashRender();
+  clearInterval(_tvHashTimer);
+  _tvHashTimer = setInterval(tvHashRender, 3000);
+}
+
+function tvHashExit() {
+  _tvHashKey = null;
+  document.body.classList.remove('tv-hash-on');
+  clearInterval(_tvHashTimer);
+  document.getElementById('tvHashScreen').innerHTML = '';
+}
+
+function tvHashRender() {
+  if (!_tvHashKey) return;
+  const screen = TV_HASH_MAP[_tvHashKey];
+  if (!screen) { tvHashRenderList(); return; }
+  if (screen.type === 'court')        tvHashRenderCourt(screen);
+  else if (screen.type === 'gallery') tvHashRenderGallery(screen);
+  else if (screen.type === 'final')   tvHashRenderFinal(screen);
+  else                                tvHashRenderList();
+}
+
+function tvHashHdr(title) {
+  const t = new Date(now()).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  return `<div class="tvh-hdr"><div class="tvh-logo">🏆 KO 2026</div><div class="tvh-title">${title}</div><div class="tvh-time">${t}</div></div>`;
+}
+
+function tvHashGameInfo(court) {
+  const games = Object.values(state.games).filter(g => g.court === court).sort((a,b) => (a.scheduledStart||0)-(b.scheduledStart||0));
+  const live = games.find(g => g.status === 'live');
+  if (live) return {game:live, isLive:true, remaining:games.filter(g => g.status !== 'final' && g.id !== live.id)};
+  const coming = games.filter(g => g.status !== 'final').sort((a,b) => (a.scheduledStart||0)-(b.scheduledStart||0));
+  return coming.length ? {game:coming[0], isLive:false, remaining:coming.slice(1)} : null;
+}
+
+function tvHashRosterHtml(game) {
+  if (!game || !state.rosters) return '';
+  const r = state.rosters[game.sport] || {};
+  const teams = state.teams[game.sport] || [];
+  const i1 = teams.indexOf(game.team1), i2 = teams.indexOf(game.team2);
+  const r1 = i1 >= 0 ? (r[i1] || []) : [], r2 = i2 >= 0 ? (r[i2] || []) : [];
+  if (!r1.length && !r2.length) return '';
+  const sc = SPORT_COLOR[game.sport];
+  return `<div class="tvh-single-rosters">
+    <div class="tvh-single-roster-col">
+      <div class="tvh-single-roster-hdr" style="border-color:${sc}">${game.team1}</div>
+      ${r1.length ? r1.map(p=>`<div class="tvh-player-name">${p}</div>`).join('') : '<div class="tvh-no-roster">No roster added</div>'}
+    </div>
+    <div class="tvh-single-roster-col">
+      <div class="tvh-single-roster-hdr" style="border-color:${sc}">${game.team2}</div>
+      ${r2.length ? r2.map(p=>`<div class="tvh-player-name">${p}</div>`).join('') : '<div class="tvh-no-roster">No roster added</div>'}
+    </div>
+  </div>`;
+}
+
+function tvHashRenderCourt(screen) {
+  const el = document.getElementById('tvHashScreen');
+  const {court, sport} = screen;
+  const sc = SPORT_COLOR[sport];
+  const info = tvHashGameInfo(court);
+  let body;
+  if (!info) {
+    body = `<div class="tvh-single-empty">
+      <div class="tvh-empty-icon">${SPORT_ICON[sport]}</div>
+      <div class="tvh-empty-court">${court}</div>
+      <div class="tvh-empty-msg">No active games</div>
+    </div>`;
+  } else {
+    const {game, isLive, remaining} = info;
+    const s1 = isLive ? game.score1 : '', s2 = isLive ? game.score2 : '';
+    const nextUp = remaining && remaining[0];
+    body = `
+      <div class="tvh-single-status ${isLive ? 'tvh-status-live' : 'tvh-status-next'}">
+        ${isLive ? '🔴 LIVE NOW' : `⏰ UP NEXT · ${fmtTime(effectiveStart(game))}`}
+      </div>
+      <div class="tvh-single-matchup">
+        <div class="tvh-single-team">
+          <div class="tvh-single-tname">${game.team1}</div>
+          ${isLive ? `<div class="tvh-single-score">${s1}</div>` : ''}
+        </div>
+        <div class="tvh-single-vs">VS</div>
+        <div class="tvh-single-team">
+          <div class="tvh-single-tname">${game.team2}</div>
+          ${isLive ? `<div class="tvh-single-score">${s2}</div>` : ''}
+        </div>
+      </div>
+      <div class="tvh-single-round" style="color:${sc}">${game.round || ''}</div>
+      ${tvHashRosterHtml(game)}
+      ${nextUp ? `<div class="tvh-single-next">AFTER THIS: <strong>${nextUp.team1} vs ${nextUp.team2}</strong> · ${nextUp.round || ''} · ${fmtTime(effectiveStart(nextUp))}</div>` : ''}`;
+  }
+  el.innerHTML = tvHashHdr(`${SPORT_ICON[sport]} ${court}`) + `<div class="tvh-single-body">${body}</div>`;
+}
+
+function tvHashCourtCard(court) {
+  const ct = COURTS_TV.find(x => x.court === court);
+  const sport = ct ? ct.sport : 'soccer';
+  const sc = SPORT_COLOR[sport];
+  const info = tvHashGameInfo(court);
+  if (!info) return `<div class="tvh-card tvh-card-empty" style="border-top:4px solid ${sc}">
+    <div class="tvh-card-top"><div class="tvh-court-name">${court}</div></div>
+    <div class="tvh-no-game">No games scheduled</div>
+  </div>`;
+  const {game, isLive} = info;
+  const s1 = isLive ? game.score1 : '', s2 = isLive ? game.score2 : '';
+  return `<div class="tvh-card ${isLive ? 'tvh-card-live' : ''}" style="border-top:4px solid ${sc}">
+    <div class="tvh-card-top">
+      <div class="tvh-court-name">${court}</div>
+      <div class="${isLive ? 'tvh-live-badge' : 'tvh-next-badge'}">${isLive ? '🔴 LIVE' : `⏰ ${fmtTime(effectiveStart(game))}`}</div>
+    </div>
+    <div class="tvh-matchup">
+      <div class="tvh-team-side"><div class="tvh-tname">${game.team1}</div>${isLive ? `<div class="tvh-score">${s1}</div>` : ''}</div>
+      <div class="tvh-vs">VS</div>
+      <div class="tvh-team-side"><div class="tvh-tname">${game.team2}</div>${isLive ? `<div class="tvh-score">${s2}</div>` : ''}</div>
+    </div>
+  </div>`;
+}
+
+function tvHashRenderGallery(screen) {
+  const {courts, cols, label} = screen;
+  const el = document.getElementById('tvHashScreen');
+  el.innerHTML = tvHashHdr(label || 'LIVE GAMES') +
+    `<div class="tvh-gallery" style="grid-template-columns:repeat(${cols},1fr)">${courts.map(tvHashCourtCard).join('')}</div>`;
+}
+
+function tvHashRenderFinal(screen) {
+  const {court, sport, label} = screen;
+  const el = document.getElementById('tvHashScreen');
+  const sc = SPORT_COLOR[sport];
+  const games = Object.values(state.games).filter(g => g.court === court).sort((a,b) => (a.scheduledStart||0)-(b.scheduledStart||0));
+  const g = games.find(g2 => g2.phase === 'gf') || games[games.length - 1];
+  let body;
+  if (!g) {
+    body = `<div class="tvh-final-pending">Bracket not yet set — check back soon</div>`;
+  } else {
+    const isDone = g.status === 'final', isLive = g.status === 'live';
+    const s1 = (isLive || isDone) ? g.score1 : '—';
+    const s2 = (isLive || isDone) ? g.score2 : '—';
+    const t1w = isDone && g.winner === g.team1, t2w = isDone && g.winner === g.team2;
+    body = `
+      ${isDone && g.winner ? `<div class="tvh-champion-banner" style="background:${sc}">🏆 CHAMPION: ${g.winner} 🏆</div>` : ''}
+      <div class="tvh-final-status ${isLive ? 'tvh-status-live' : isDone ? 'tvh-status-done' : 'tvh-status-next'}">
+        ${isLive ? '🔴 LIVE NOW' : isDone ? '✅ GAME OVER' : `⏰ ${fmtTime(effectiveStart(g))}`}
+      </div>
+      <div class="tvh-final-matchup">
+        <div class="tvh-final-team ${t1w ? 'tvh-winner' : ''}">
+          <div class="tvh-final-tname">${g.team1}</div>
+          <div class="tvh-final-score">${s1}</div>
+        </div>
+        <div class="tvh-final-vs">VS</div>
+        <div class="tvh-final-team ${t2w ? 'tvh-winner' : ''}">
+          <div class="tvh-final-tname">${g.team2}</div>
+          <div class="tvh-final-score">${s2}</div>
+        </div>
+      </div>
+      <div class="tvh-final-round" style="color:${sc}">${g.round || 'Grand Final'}</div>`;
+  }
+  el.innerHTML = tvHashHdr(label) + `<div class="tvh-final-body">${body}</div>`;
+}
+
+function tvHashRenderList() {
+  const el = document.getElementById('tvHashScreen');
+  const links = [
+    ['field-a',           '⚽ Soccer Field A'],
+    ['field-b',           '⚽ Soccer Field B'],
+    ['field-c',           '⚽ Soccer Field C'],
+    ['field-d',           '⚽ Soccer Field D'],
+    ['gym-1',             '🏐 Gym 1 (Volleyball)'],
+    ['gym-2',             '🏀 Gym 2 (Basketball)'],
+    ['gym-3',             '🏀 Gym 3 (Basketball)'],
+    ['gallery-soccer',    '⚽ Soccer Gallery — All 4 Fields'],
+    ['gallery-gyms',      '🏟 Gym Gallery — All 3 Gyms'],
+    ['gallery-semis',     '🔥 Semifinals — Fields A & B'],
+    ['finals-soccer',     '🏆 Soccer Grand Final'],
+    ['finals-basketball', '🏆 Basketball Grand Final'],
+    ['finals-volleyball', '🏆 Volleyball Grand Final'],
+  ].map(([k,l]) => `<a class="tvh-list-link" href="#tv/${k}">${l}</a>`).join('');
+  el.innerHTML = `<div class="tvh-hdr"><div class="tvh-logo">🏆 KO 2026</div><div class="tvh-title">TV SCREENS — Tap to open</div><div class="tvh-time">🖥</div></div>
+    <div class="tvh-list-body">${links}</div>`;
+}
+
+// ── Init hash routing on page load ──
+(function initTVHash() {
+  const k = tvHashKeyFromUrl();
+  if (k !== null) {
+    const tryEnter = () => window._appReady ? tvHashEnter(k) : setTimeout(tryEnter, 100);
+    tryEnter();
+  }
+  window.addEventListener('hashchange', () => {
+    const k2 = tvHashKeyFromUrl();
+    if (k2 !== null) tvHashEnter(k2);
+    else if (_tvHashKey !== null) tvHashExit();
+  });
+})();
 </script>
 </body>
 </html>
