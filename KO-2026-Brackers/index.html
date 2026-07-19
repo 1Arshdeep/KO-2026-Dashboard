@@ -519,120 +519,107 @@ const SOC_SLOT = 25;
 const BB_SLOT  = 25;
 const VB_SLOT  = 20;
 
-// Soccer schedule slots — each entry is one time slot with up to 4 games
+// Soccer schedule slots — 11 teams, Double Elimination, 4 fields
 const SOCCER_SLOTS = [
   { start: D1(10,20), rows:[
-    {court:'Soccer Field A', phase:'wb', round:'WB R1', desc:'T1 vs T2'},
-    {court:'Soccer Field B', phase:'wb', round:'WB R1', desc:'T3 vs T4'},
-    {court:'Soccer Field C', phase:'wb', round:'WB R1', desc:'T5 vs T6'},
-    {court:'Soccer Field D', phase:'wb', round:'WB R1', desc:'T7 vs T8'},
+    {court:'Soccer Field A', phase:'wb', round:'WB Prelim', desc:'T6 vs T11'},
+    {court:'Soccer Field B', phase:'wb', round:'WB Prelim', desc:'T7 vs T10'},
+    {court:'Soccer Field C', phase:'wb', round:'WB Prelim', desc:'T8 vs T9'},
   ]},
   { start: D1(10,45), rows:[
-    {court:'Soccer Field A', phase:'wb', round:'WB R1', desc:'T9 vs T10'},
-    {court:'Soccer Field B', phase:'wb', round:'WB R1', desc:'T11 vs T12'},
-    {court:'Soccer Field C', phase:'wb', round:'WB R1', desc:'T13 vs T14'},
-    {court:'Soccer Field D', phase:'wb', round:'WB R1', desc:'T15 vs T16'},
+    {court:'Soccer Field A', phase:'wb', round:'WB R1', desc:'T1 vs PW3'},
+    {court:'Soccer Field B', phase:'wb', round:'WB R1', desc:'T2 vs PW2'},
+    {court:'Soccer Field C', phase:'wb', round:'WB R1', desc:'T3 vs PW1'},
+    {court:'Soccer Field D', phase:'wb', round:'WB R1', desc:'T4 vs T5'},
   ]},
   { start: D1(11,10), rows:[
-    {court:'Soccer Field A', phase:'wb', round:'WB R1', desc:'T17 vs T18'},
-    {court:'Soccer Field B', phase:'wb', round:'WB R1', desc:'T19 vs T20'},
-    {court:'Soccer Field C', phase:'lb', round:'LB R1', desc:'L1 vs L2'},
-    {court:'Soccer Field D', phase:'lb', round:'LB R1', desc:'L3 vs L4'},
+    {court:'Soccer Field A', phase:'wb', round:'WB SF',  desc:'WBW1 vs WBW4'},
+    {court:'Soccer Field B', phase:'wb', round:'WB SF',  desc:'WBW2 vs WBW3'},
+    {court:'Soccer Field C', phase:'lb', round:'LB R1',  desc:'PL1 vs WBL4'},
+    {court:'Soccer Field D', phase:'lb', round:'LB R1',  desc:'PL2 vs WBL3'},
   ]},
   { start: D1(11,35), rows:[
-    {court:'Soccer Field A', phase:'wb', round:'WB R2', desc:'WBW1 vs WBW2'},
-    {court:'Soccer Field B', phase:'wb', round:'WB R2', desc:'WBW3 vs WBW4'},
-    {court:'Soccer Field C', phase:'wb', round:'WB R2', desc:'WBW5 vs WBW6'},
-    {court:'Soccer Field D', phase:'lb', round:'LB R1', desc:'L5 vs L6'},
+    {court:'Soccer Field A', phase:'wb_f', round:'WB Final', desc:'WBW5 vs WBW6'},
+    {court:'Soccer Field B', phase:'lb',   round:'LB R1',    desc:'PL3 vs WBL2'},
   ]},
   // Lunch 12:00–12:30
   { start: D1(12,30), rows:[
-    {court:'Soccer Field A', phase:'wb', round:'WB R2', desc:'WBW7 vs WBW8'},
-    {court:'Soccer Field B', phase:'wb', round:'WB R2', desc:'WBW9 vs WBW10'},
-    {court:'Soccer Field C', phase:'lb', round:'LB R2', desc:'LBW1 vs LBW2'},
-    {court:'Soccer Field D', phase:'lb', round:'LB R2', desc:'LBW3 vs LBW4'},
+    {court:'Soccer Field A', phase:'lb', round:'LB R2', desc:'WBL1 vs WBQL1'},
+    {court:'Soccer Field B', phase:'lb', round:'LB R2', desc:'LBW1 vs WBQL2'},
+    {court:'Soccer Field C', phase:'lb', round:'LB R2', desc:'LBW2 vs LBW3'},
   ]},
   { start: D1(12,55), rows:[
-    {court:'Soccer Field A', phase:'wb', round:'WB R3', desc:'WBW11 vs WBW12'},
-    {court:'Soccer Field B', phase:'wb', round:'WB R3', desc:'WBW13 vs WBW14'},
-    {court:'Soccer Field C', phase:'lb', round:'LB R2', desc:'LBW5 vs WBL1'},
-    {court:'Soccer Field D', phase:'lb', round:'LB R2', desc:'LBW6 vs WBL2'},
+    {court:'Soccer Field A', phase:'lb', round:'LB R3', desc:'LBW4 vs WBFL'},
+    {court:'Soccer Field B', phase:'lb', round:'LB R3', desc:'LBW5 vs LBW6'},
   ]},
   { start: D1(13,20), rows:[
-    {court:'Soccer Field A', phase:'wb', round:'WB R3', desc:'WBW15 vs WBW16'},
-    {court:'Soccer Field B', phase:'lb', round:'LB R3', desc:'LBW7 vs WBL3'},
-    {court:'Soccer Field C', phase:'lb', round:'LB R3', desc:'LBW8 vs WBL4'},
-    {court:'Soccer Field D', phase:'lb', round:'LB R3', desc:'LBW9 vs WBL5'},
-  ]},
-  { start: D1(13,45), rows:[
-    {court:'Soccer Field A', phase:'wb_sf', round:'WB SF',    desc:'WBW17 vs WBW18'},
-    {court:'Soccer Field B', phase:'lb',    round:'LB R4',    desc:'LBW10 vs WBL6'},
-    {court:'Soccer Field C', phase:'lb',    round:'LB SF',    desc:'LBW11 vs WBL7'},
-    {court:'Soccer Field D', phase:'lb',    round:'LB Final', desc:'LBW12 vs WBL8'},
+    {court:'Soccer Field A', phase:'lb_sf', round:'LB SF', desc:'LBW7 vs LBW8'},
   ]},
   // Day 2
   { start: D2(13,0), rows:[
-    {court:'Soccer Field A', phase:'gf', round:'Grand Final', desc:'WBW19 vs LBW13'},
+    {court:'Soccer Field A', phase:'gf', round:'Grand Final', desc:'WBW7 vs LBW9'},
   ]},
   { start: D2(13,25), rows:[
     {court:'Soccer Field A', phase:'gf', round:'GF Reset', desc:'Reset Game (if needed)'},
   ]},
 ];
 
-// Basketball: 25-min slots, 2 courts
+// Basketball: 9 teams, Double Elimination, 2 courts, 25-min slots
 const BB_SLOTS = [
-  // Day 1 — 5:15 PM to ~10:40 PM
-  ...[
-    [D1(17,15), 'T1 vs T2',       'T3 vs T4'],
-    [D1(17,40), 'T5 vs T6',       'T7 vs T8'],
-    [D1(18, 5), 'T9 vs T10',      'T11 vs T12'],
-    [D1(18,30), 'T13 vs T14',     'T15 vs T16'],
-    [D1(18,55), 'T17 vs T18',     'T19 vs T20'],
-    [D1(19,20), 'BW1 vs BW2',      'BL1 vs BL2'],
-    [D1(19,45), 'BW3 vs BW4',      'BL3 vs BL4'],
-    [D1(20,10), 'BW5 vs BW6',      'BL5 vs BL6'],
-    [D1(20,35), 'BW7 vs BW8',      'BLW1 vs BLW2'],
-    [D1(21, 0), 'BW9 vs BW10',     'BLW3 vs BLW4'],
-    [D1(21,25), 'BW11 vs BW12',    'BLW5 vs BBL1'],
-    [D1(21,50), 'BW13 vs BW14',    'BLW6 vs BBL2'],
-    [D1(22,15), 'BW15 vs BW16',    'BLW7 vs BBL3'],
-  ].map(([s,c1,c2],i) => ({
-    start:s,
-    rows:[
-      {court:'Gym 2 (Basketball)', phase: i<5?'wb':i<8?'wb_r2':'wb_r3', round: i<5?'WB R1':i<8?'WB R2':'WB R3', desc:c1},
-      {court:'Gym 3 (Basketball)', phase: i<5?'wb':i<8?'lb_r1':'lb_r2', round: i<5?'WB R1':i<8?'LB R1':'LB R2', desc:c2},
-    ]
-  })),
-  // Day 2
-  {start:D2(15,30), rows:[{court:'Gym 2 (Basketball)',phase:'wb_f',round:'WB Final',desc:'BW17 vs BW18'},{court:'Gym 3 (Basketball)',phase:'lb_r3',round:'LB R3',desc:'BLW8 vs BBL4'}]},
-  {start:D2(15,55), rows:[{court:'Gym 3 (Basketball)',phase:'lb_r4',round:'LB R4',desc:'BLW9 vs BBL5'}]},
-  {start:D2(16,20), rows:[{court:'Gym 3 (Basketball)',phase:'lb_sf',round:'LB SF',desc:'BLW10 vs BBL6'}]},
-  {start:D2(16,45), rows:[{court:'Gym 3 (Basketball)',phase:'lb_f',round:'LB Final',desc:'BLW11 vs BBL7'}]},
-  {start:D2(17,10), rows:[{court:'Gym 2 (Basketball)',phase:'gf',round:'Grand Final',desc:'BW19 vs BLW12'}]},
-  {start:D2(17,35), rows:[{court:'Gym 2 (Basketball)',phase:'gf',round:'GF Reset',desc:'Reset Game (if needed)'}]},
+  {start:D1(17,15), rows:[
+    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB Prelim', desc:'T8 vs T9'},
+  ]},
+  {start:D1(17,40), rows:[
+    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB R1', desc:'T1 vs BWP'},
+    {court:'Gym 3 (Basketball)', phase:'wb', round:'WB R1', desc:'T2 vs T7'},
+  ]},
+  {start:D1(18, 5), rows:[
+    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB R1', desc:'T3 vs T6'},
+    {court:'Gym 3 (Basketball)', phase:'wb', round:'WB R1', desc:'T4 vs T5'},
+  ]},
+  {start:D1(18,30), rows:[
+    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB QF', desc:'BW1 vs BW4'},
+    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R1', desc:'BL1 vs BL4'},
+  ]},
+  {start:D1(18,55), rows:[
+    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB QF', desc:'BW2 vs BW3'},
+    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R1', desc:'BL2 vs BL3'},
+  ]},
+  {start:D1(19,20), rows:[
+    {court:'Gym 2 (Basketball)', phase:'wb_f', round:'WB Final', desc:'BW5 vs BW6'},
+    {court:'Gym 3 (Basketball)', phase:'lb',   round:'LB R2',    desc:'BLW1 vs BLP'},
+  ]},
+  {start:D1(19,45), rows:[
+    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R2', desc:'BLW2 vs BBL1'},
+  ]},
+  {start:D1(20,15), rows:[
+    {court:'Gym 2 (Basketball)', phase:'lb', round:'LB R3', desc:'BLW3 vs BBL3'},
+    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R3', desc:'BLW4 vs BBL2'},
+  ]},
+  {start:D1(20,45), rows:[
+    {court:'Gym 2 (Basketball)', phase:'lb_f', round:'LB Final', desc:'BLW5 vs BLW6'},
+  ]},
+  {start:D2(15,30), rows:[
+    {court:'Gym 2 (Basketball)', phase:'gf', round:'Grand Final',       desc:'BW7 vs BLW7'},
+  ]},
+  {start:D2(15,55), rows:[
+    {court:'Gym 2 (Basketball)', phase:'gf', round:'GF Reset',          desc:'Reset Game (if needed)'},
+  ]},
 ];
 
-// Volleyball: 20-min slots, 1 court, Day 1 only
+// Volleyball: 10 teams, Single Elimination, 1 court, 20-min slots, Day 1
 const VB_SLOTS = [
-  [D1(17,10),'R1 Game 1','T1 vs T2'],
-  [D1(17,30),'R1 Game 2','T3 vs T4'],
-  [D1(17,50),'R1 Game 3','T5 vs T6'],
-  [D1(18,10),'R1 Game 4','T7 vs T8'],
-  [D1(18,30),'R1 Game 5','T9 vs T10'],
-  [D1(18,50),'R1 Game 6','T11 vs T12'],
-  [D1(19,10),'R1 Game 7','T13 vs T14'],
-  [D1(19,30),'R1 Game 8','T15 vs T16'],
-  [D1(19,50),'R1 Game 9','T17 vs T18'],
-  [D1(20,10),'R1 Game 10','T19 vs T20'],
-  [D1(20,30),'Quarterfinal 1','W1 vs W2'],
-  [D1(20,50),'Quarterfinal 2','W3 vs W4'],
-  [D1(21,10),'Quarterfinal 3','W5 vs W6'],
-  [D1(21,30),'Quarterfinal 4','W7 vs W8'],
-  [D1(21,50),'Semifinal 1','QF1W vs QF2W'],
-  [D1(22,10),'Semifinal 2','QF3W vs QF4W'],
-  [D1(22,30),'3rd Place','SF1L vs SF2L'],
-  [D1(22,50),'Grand Final','SF1W vs SF2W'],
-].map(([s,round,desc]) => ({start:s, rows:[{court:'Gym 1 (Volleyball)',phase:round.includes('Grand')?'gf':round.includes('Semi')?'sf':round.includes('QF')||round.includes('Quarter')?'qf':round.includes('3rd')?'3rd':'r1', round, desc}]}));
+  {start:D1(17,10), rows:[{court:'Gym 1 (Volleyball)', phase:'r1', round:'R1 Game 1',     desc:'T7 vs T10'}]},
+  {start:D1(17,30), rows:[{court:'Gym 1 (Volleyball)', phase:'r1', round:'R1 Game 2',     desc:'T8 vs T9'}]},
+  {start:D1(18, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 1',desc:'T1 vs VW2'}]},
+  {start:D1(18,20), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 2',desc:'T2 vs VW1'}]},
+  {start:D1(18,40), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 3',desc:'T3 vs T6'}]},
+  {start:D1(19, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 4',desc:'T4 vs T5'}]},
+  {start:D1(19,30), rows:[{court:'Gym 1 (Volleyball)', phase:'sf', round:'Semifinal 1',   desc:'VQF1W vs VQF4W'}]},
+  {start:D1(19,50), rows:[{court:'Gym 1 (Volleyball)', phase:'sf', round:'Semifinal 2',   desc:'VQF2W vs VQF3W'}]},
+  {start:D1(20,10), rows:[{court:'Gym 1 (Volleyball)', phase:'sf', round:'3rd Place',     desc:'VSF1L vs VSF2L'}]},
+  {start:D1(20,30), rows:[{court:'Gym 1 (Volleyball)', phase:'gf', round:'Grand Final',   desc:'VSF1W vs VSF2W'}]},
+];
 
 // ══════════════════════════════════════════════════════════════
 // STATE
@@ -641,9 +628,9 @@ const SK = 'ko2026_v3';
 
 function defaultTeams() {
   return {
-    soccer: Array.from({length:20},(_,i)=>`Soccer T${i+1}`),
-    basketball: Array.from({length:20},(_,i)=>`BB Team ${i+1}`),
-    volleyball: Array.from({length:20},(_,i)=>`VB Team ${i+1}`),
+    soccer: Array.from({length:11},(_,i)=>`Soccer T${i+1}`),
+    basketball: Array.from({length:9},(_,i)=>`BB Team ${i+1}`),
+    volleyball: Array.from({length:10},(_,i)=>`VB Team ${i+1}`),
   };
 }
 
