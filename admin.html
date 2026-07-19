@@ -1903,7 +1903,8 @@ function buildModalInputs() {
     container.appendChild(section);
     const grid = section.querySelector(`#inputs-${sport}`);
     const teamList = state.teams[sport] || DEFAULT_TEAMS[sport];
-    for (let i = 0; i < 20; i++) {
+    const count = DEFAULT_TEAMS[sport].length;
+    for (let i = 0; i < count; i++) {
       const inp = document.createElement('input');
       inp.type = 'text';
       inp.className = 'team-input';
@@ -2631,6 +2632,12 @@ function init() {
 
   // Auto-migrate if games are missing, old schema, or old BB slot naming
   if (needsRebuild(state.games, state.schemaV)) {
+    // Trim/pad teams to match new confirmed counts, preserving existing names
+    ['soccer','basketball','volleyball'].forEach(sp => {
+      const def = DEFAULT_TEAMS[sp];
+      const old = state.teams[sp] || [];
+      state.teams[sp] = def.map((d, i) => old[i] || d);
+    });
     state.games = mergeAndRebuild(state.games);
     state.schemaV = BB_SCHEMA_V;
     propagateAll();
