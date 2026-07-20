@@ -5,13 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>KO 2026 — Scorekeeper Admin</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,700;0,800;0,900&family=Inter:wght@400;500;600;700&display=swap');
 /* ===== RESET & BASE ===== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg: #080c14;
-  --surface: #0f1420;
-  --card: #161c2e;
-  --border: #1e2a45;
+  --bg: #050a14;
+  --surface: #0a1220;
+  --card: #111e33;
+  --border: #1e3050;
   --gold: #d4a017;
   --gold-light: #f0c040;
   --red: #dc2626;
@@ -19,13 +20,18 @@
   --amber: #d97706;
   --text: #f1f5f9;
   --dim: #64748b;
-  --radius: 10px;
+  --radius: 12px;
+  --c-soccer: #22c55e;
+  --c-basketball: #f97316;
+  --c-volleyball: #a855f7;
+  --tap-min: 56px;
 }
 html { font-size: 16px; }
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 15px;
   min-height: 100vh;
   padding-bottom: 80px;
 }
@@ -103,8 +109,9 @@ select:focus, input[type="text"]:focus {
 .sport-tab {
   flex: 1;
   padding: 14px 8px;
+  min-height: 48px;
   text-align: center;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--dim);
   cursor: pointer;
@@ -149,13 +156,16 @@ select:focus, input[type="text"]:focus {
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius);
+  border-top: 1px solid rgba(255,255,255,.06);
+  box-shadow: 0 4px 20px rgba(0,0,0,.4);
   padding: 16px;
 }
 .card-title {
   font-size: 11px;
   font-weight: 700;
+  font-family: 'Inter', sans-serif;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 2px;
   color: var(--dim);
   margin-bottom: 12px;
 }
@@ -202,8 +212,9 @@ select:focus, input[type="text"]:focus {
 }
 .team-col { display: flex; flex-direction: column; gap: 8px; }
 .team-name {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
+  font-family: 'Archivo', sans-serif;
   color: var(--text);
   text-align: center;
   line-height: 1.2;
@@ -213,12 +224,14 @@ select:focus, input[type="text"]:focus {
   justify-content: center;
 }
 .score-display {
-  font-size: 52px;
+  font-size: 64px;
   font-weight: 900;
+  font-family: 'Archivo', sans-serif;
   color: var(--gold);
   text-align: center;
   line-height: 1;
   font-variant-numeric: tabular-nums;
+  border-radius: 12px;
 }
 .btn-grid {
   display: grid;
@@ -226,21 +239,23 @@ select:focus, input[type="text"]:focus {
   gap: 5px;
 }
 .btn-score {
-  min-height: 52px;
-  font-size: 16px;
-  font-weight: 800;
-  border-radius: 8px;
+  min-height: var(--tap-min);
+  min-width: var(--tap-min);
+  font-size: 28px;
+  font-weight: 900;
+  font-family: 'Archivo', sans-serif;
+  border-radius: 10px;
   padding: 0;
 }
 .btn-minus {
-  background: transparent;
-  border: 2px solid var(--red);
-  color: var(--red);
+  background: rgba(239,68,68,.1);
+  color: #f87171;
+  border: 2px solid rgba(239,68,68,.4);
 }
 .btn-plus {
-  background: var(--gold);
-  color: #080c14;
-  border: none;
+  background: rgba(34,197,94,.15);
+  color: #4ade80;
+  border: 2px solid #22c55e;
 }
 .vs-col {
   display: flex;
@@ -329,12 +344,13 @@ select:focus, input[type="text"]:focus {
 /* ===== STATUS CONTROLS ===== */
 #status-buttons { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
 .btn-status {
-  min-height: 56px;
-  font-size: 13px;
+  min-height: var(--tap-min);
+  font-size: 14px;
+  font-weight: 800;
   background: var(--surface);
   color: var(--dim);
   border: 2px solid var(--border);
-  border-radius: 8px;
+  border-radius: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -348,6 +364,7 @@ select:focus, input[type="text"]:focus {
   border-color: var(--gold);
   color: var(--gold);
   background: rgba(212,160,23,0.08);
+  box-shadow: 0 0 0 3px currentColor;
 }
 
 /* ===== DQ CARD ===== */
@@ -475,19 +492,21 @@ select:focus, input[type="text"]:focus {
 .modal-sport-title { font-size: 13px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
 .team-inputs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .team-input {
-  padding: 8px 10px;
-  font-size: 13px;
-  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 14px;
+  border-radius: 8px;
   width: 100%;
 }
 .modal-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
 #btn-save-teams {
   flex: 1;
-  min-height: 48px;
+  min-height: 56px;
   background: var(--gold);
   color: #080c14;
-  font-size: 15px;
-  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 800;
+  font-family: 'Archivo', sans-serif;
+  border-radius: 10px;
 }
 #btn-test-mode {
   min-height: 48px;
@@ -542,7 +561,7 @@ select:focus, input[type="text"]:focus {
 .pin-dot { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--border); background: transparent; transition: background 0.15s, border-color 0.15s; }
 .pin-dot.filled { background: var(--gold); border-color: var(--gold); }
 #pin-pad { display: grid; grid-template-columns: repeat(3, 72px); gap: 10px; }
-.pin-key { height: 72px; font-size: 22px; font-weight: 700; background: var(--card); border: 1px solid var(--border); color: var(--text); border-radius: 10px; }
+.pin-key { height: 76px; font-size: 26px; font-weight: 700; font-family: 'Archivo', sans-serif; background: var(--card); border: 1px solid var(--border); color: var(--text); border-radius: 10px; }
 .pin-key:hover { background: var(--surface); border-color: var(--gold); color: var(--gold); }
 .pin-key.del { font-size: 16px; color: var(--dim); }
 #pin-error { color: var(--red); font-size: 13px; min-height: 20px; font-weight: 600; }
@@ -635,7 +654,8 @@ select:focus, input[type="text"]:focus {
   /* Score entry: stack teams vertically */
   #score-card .teams-row { grid-template-columns: 1fr; }
   #score-card .teams-row > :nth-child(2) { display: none; }
-  .score-display { font-size: 44px; }
+  .score-display { font-size: 56px; }
+  .btn-score { min-height: 64px; font-size: 32px; }
   .btn-grid { grid-template-columns: repeat(4,1fr); }
   /* Status buttons: 3→2 columns */
   #status-buttons { grid-template-columns: 1fr 1fr; }
@@ -661,14 +681,14 @@ select:focus, input[type="text"]:focus {
 .lc-all.end { background:rgba(26,107,60,.15); color:#86efac; border:2px solid #22c55e; }
 #lc-grid { display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); }
 .lc-card { background:var(--card); border:2px solid var(--border); border-radius:14px; padding:14px; display:flex; flex-direction:column; gap:11px; }
-.lc-card.live { border-color:var(--red); box-shadow:0 0 14px rgba(224,80,80,.15); }
+.lc-card.live { border-color:var(--c-soccer); box-shadow:0 0 20px rgba(239,68,68,.2); }
 .lc-card.paused { border-color:var(--gold); }
 .lc-card.final { opacity:.6; }
 .lc-hd { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
 .lc-court { font-size:11px; font-weight:800; color:var(--dim); text-transform:uppercase; letter-spacing:.1em; }
 .lc-round { font-size:10px; color:var(--dim); margin-top:2px; }
 .lc-timer { text-align:center; background:var(--bg); border-radius:10px; padding:6px 10px; min-width:96px; }
-.lc-timer-num { font-size:30px; font-weight:900; font-variant-numeric:tabular-nums; line-height:1; }
+.lc-timer-num { font-family:'Archivo', sans-serif; font-size:36px; font-weight:900; font-variant-numeric:tabular-nums; line-height:1; }
 .lc-timer-num.run { color:#22c55e; } .lc-timer-num.pause { color:var(--gold); } .lc-timer-num.done { color:var(--red); } .lc-timer-num.idle { color:var(--dim); }
 .lc-timer-lbl { font-size:9px; color:var(--dim); letter-spacing:.08em; margin-top:2px; }
 .lc-tctrl { display:flex; gap:5px; justify-content:center; flex-wrap:wrap; }
@@ -679,10 +699,10 @@ select:focus, input[type="text"]:focus {
 .lc-tbtn.end { background:rgba(26,107,60,.2); color:#86efac; border:1px solid #22c55e; }
 .lc-teams { display:grid; grid-template-columns:1fr auto 1fr; gap:6px; align-items:start; }
 .lc-tcol { display:flex; flex-direction:column; align-items:center; gap:6px; }
-.lc-tname { font-size:13px; font-weight:800; text-align:center; word-break:break-word; line-height:1.2; }
-.lc-score { font-size:44px; font-weight:900; color:var(--gold); line-height:1; }
+.lc-tname { font-family:'Archivo', sans-serif; font-size:15px; font-weight:800; text-align:center; word-break:break-word; line-height:1.2; }
+.lc-score { font-family:'Archivo', sans-serif; font-size:56px; font-weight:900; color:var(--gold); line-height:1; }
 .lc-scbtns { display:grid; grid-template-columns:repeat(2,1fr); gap:5px; width:100%; }
-.lc-scbtn { min-height:44px; padding:6px 2px; border-radius:7px; border:none; cursor:pointer; font-size:13px; font-weight:700; background:var(--surface); color:var(--text); }
+.lc-scbtn { min-height:52px; padding:6px 2px; border-radius:10px; border:none; cursor:pointer; font-size:15px; font-weight:900; font-family:'Archivo', sans-serif; background:var(--surface); color:var(--text); }
 .lc-vs { font-size:13px; font-weight:900; color:var(--dim); align-self:center; }
 .lc-evtwrap { background:var(--bg); border-radius:8px; padding:9px; }
 .lc-evtwrap input { width:100%; background:var(--card); border:1px solid var(--border); color:var(--text); border-radius:6px; padding:6px 8px; font-size:12px; margin-bottom:6px; }
@@ -708,6 +728,29 @@ select:focus, input[type="text"]:focus {
   .br-round { min-width: 70px; }
   #pin-pad { grid-template-columns: repeat(3,50px); gap: 6px; }
   .pin-key { height: 50px; font-size: 18px; }
+}
+
+/* ===== SPORT TAB — SPORT-SPECIFIC ACTIVE COLORS ===== */
+.sport-tab[data-sport="soccer"].active { border-bottom-color: var(--c-soccer); }
+.sport-tab[data-sport="basketball"].active { border-bottom-color: var(--c-basketball); }
+.sport-tab[data-sport="volleyball"].active { border-bottom-color: var(--c-volleyball); }
+
+/* ===== SELECTED SCORE CARD ===== */
+#score-card { border: 2px solid var(--gold); box-shadow: 0 0 20px rgba(212,160,23,.2); }
+
+/* ===== DESTRUCTIVE STATUS BUTTON (FINAL) ===== */
+.btn-status[data-status="final"] {
+  background: rgba(220,38,38,.15);
+  border: 2px solid var(--red);
+  color: #fca5a5;
+  margin-top: 8px;
+}
+
+/* ===== ACCESSIBILITY ===== */
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 </style>
 </head>
