@@ -1078,7 +1078,7 @@ function updateBadges() {
 function renderSoccerBracket() {
   const el = document.getElementById('panel-soccer');
   el.innerHTML = `
-    <div class="sec-title">⚽ Soccer — Double Elimination <span class="sec-badge">20 Teams · 4 Fields · ~38 Games</span>
+    <div class="sec-title">⚽ Soccer — Double Elimination <span class="sec-badge">11 Teams · 4 Fields · ~21 Games</span>
       <span class="sec-sub">Day 1: 10:20 AM–5 PM · Day 2 GF: 1:00 PM</span>
     </div>
     ${buildScheduleGrid('soccer')}
@@ -1098,7 +1098,7 @@ function renderSoccerBracket() {
 function renderBBPanel() {
   const el = document.getElementById('panel-basketball');
   el.innerHTML = `
-    <div class="sec-title">🏀 Basketball — Double Elimination <span class="sec-badge">20 Teams · 2 Courts · ~38 Games</span>
+    <div class="sec-title">🏀 Basketball — Double Elimination <span class="sec-badge">9 Teams · 2 Courts · ~17 Games</span>
       <span class="sec-sub">Day 1: 5:15 PM–11 PM · Day 2: 3:30 PM–6:45 PM</span>
     </div>
     ${buildScheduleGrid('basketball')}
@@ -1118,7 +1118,7 @@ function renderBBPanel() {
 function renderVBPanel() {
   const el = document.getElementById('panel-volleyball');
   el.innerHTML = `
-    <div class="sec-title">🏐 Volleyball — Single Elimination <span class="sec-badge">20 Teams · 1 Court · 19 Games</span>
+    <div class="sec-title">🏐 Volleyball — Single Elimination <span class="sec-badge">10 Teams · 1 Court · 10 Games</span>
       <span class="sec-sub">Day 1 only: 5:10 PM–11:20 PM · Hard stop 8 PM Day 2 if overflow</span>
     </div>
     ${buildScheduleGrid('volleyball')}
