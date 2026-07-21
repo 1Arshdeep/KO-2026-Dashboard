@@ -840,6 +840,22 @@ select:focus, input[type="text"]:focus {
     </div>
   </div>
 
+  <!-- STATUS CONTROLS -->
+  <div class="card">
+    <div class="card-title">Game Status</div>
+    <div id="status-buttons">
+      <button class="btn-status active" data-status="upcoming">
+        <span class="icon">⏳</span><span>UPCOMING</span>
+      </button>
+      <button class="btn-status" data-status="live">
+        <span class="icon">🔴</span><span>LIVE</span>
+      </button>
+      <button class="btn-status" data-status="final">
+        <span class="icon">✅</span><span>FINAL</span>
+      </button>
+    </div>
+  </div>
+
   <!-- SCORE ENTRY -->
   <div class="card" id="score-card">
     <div class="card-title">Score Entry</div>
@@ -912,22 +928,6 @@ select:focus, input[type="text"]:focus {
       <button id="btn-start-pause" class="btn-timer">▶ START</button>
       <button id="btn-reset" class="btn-timer">↺ Reset</button>
       <button id="btn-set15" class="btn-timer">Set 20:00</button>
-    </div>
-  </div>
-
-  <!-- STATUS CONTROLS -->
-  <div class="card">
-    <div class="card-title">Game Status</div>
-    <div id="status-buttons">
-      <button class="btn-status active" data-status="upcoming">
-        <span class="icon">⏳</span><span>UPCOMING</span>
-      </button>
-      <button class="btn-status" data-status="live">
-        <span class="icon">🔴</span><span>LIVE</span>
-      </button>
-      <button class="btn-status" data-status="final">
-        <span class="icon">✅</span><span>FINAL</span>
-      </button>
     </div>
   </div>
 
