@@ -405,50 +405,50 @@ const VB_SLOT  = 20;
 
 // Soccer schedule slots — each entry is one time slot with up to 4 games
 const SOCCER_SLOTS = [
-  { start: D1(10,20), rows:[
+  { start: D1(11,0), rows:[
     {court:'Soccer Field A', phase:'wb', round:'WB R1', desc:'T1 vs T2'},
     {court:'Soccer Field B', phase:'wb', round:'WB R1', desc:'T3 vs T4'},
     {court:'Soccer Field C', phase:'wb', round:'WB R1', desc:'T5 vs T6'},
     {court:'Soccer Field D', phase:'wb', round:'WB R1', desc:'T7 vs T8'},
   ]},
-  { start: D1(10,45), rows:[
+  { start: D1(11,25), rows:[
     {court:'Soccer Field A', phase:'wb', round:'WB R1', desc:'T9 vs T10'},
     {court:'Soccer Field B', phase:'wb', round:'WB R1', desc:'T11 vs T12'},
     {court:'Soccer Field C', phase:'wb', round:'WB R1', desc:'T13 vs T14'},
     {court:'Soccer Field D', phase:'wb', round:'WB R1', desc:'T15 vs T16'},
   ]},
-  { start: D1(11,10), rows:[
+  { start: D1(11,50), rows:[
     {court:'Soccer Field A', phase:'wb', round:'WB R1', desc:'T17 vs T18'},
     {court:'Soccer Field B', phase:'wb', round:'WB R1', desc:'T19 vs T20'},
     {court:'Soccer Field C', phase:'lb', round:'LB R1', desc:'L1 vs L2'},
     {court:'Soccer Field D', phase:'lb', round:'LB R1', desc:'L3 vs L4'},
   ]},
-  { start: D1(11,35), rows:[
+  { start: D1(12,15), rows:[
     {court:'Soccer Field A', phase:'wb', round:'WB R2', desc:'WBW1 vs WBW2'},
     {court:'Soccer Field B', phase:'wb', round:'WB R2', desc:'WBW3 vs WBW4'},
     {court:'Soccer Field C', phase:'wb', round:'WB R2', desc:'WBW5 vs WBW6'},
     {court:'Soccer Field D', phase:'lb', round:'LB R1', desc:'L5 vs L6'},
   ]},
   // Lunch 12:00–12:30
-  { start: D1(12,30), rows:[
+  { start: D1(14,0), rows:[
     {court:'Soccer Field A', phase:'wb', round:'WB R2', desc:'WBW7 vs WBW8'},
     {court:'Soccer Field B', phase:'wb', round:'WB R2', desc:'WBW9 vs WBW10'},
     {court:'Soccer Field C', phase:'lb', round:'LB R2', desc:'LBW1 vs LBW2'},
     {court:'Soccer Field D', phase:'lb', round:'LB R2', desc:'LBW3 vs LBW4'},
   ]},
-  { start: D1(12,55), rows:[
+  { start: D1(14,25), rows:[
     {court:'Soccer Field A', phase:'wb', round:'WB R3', desc:'WBW11 vs WBW12'},
     {court:'Soccer Field B', phase:'wb', round:'WB R3', desc:'WBW13 vs WBW14'},
     {court:'Soccer Field C', phase:'lb', round:'LB R2', desc:'LBW5 vs WBL1'},
     {court:'Soccer Field D', phase:'lb', round:'LB R2', desc:'LBW6 vs WBL2'},
   ]},
-  { start: D1(13,20), rows:[
+  { start: D1(14,50), rows:[
     {court:'Soccer Field A', phase:'wb', round:'WB R3', desc:'WBW15 vs WBW16'},
     {court:'Soccer Field B', phase:'lb', round:'LB R3', desc:'LBW7 vs WBL3'},
     {court:'Soccer Field C', phase:'lb', round:'LB R3', desc:'LBW8 vs WBL4'},
     {court:'Soccer Field D', phase:'lb', round:'LB R3', desc:'LBW9 vs WBL5'},
   ]},
-  { start: D1(13,45), rows:[
+  { start: D1(15,15), rows:[
     {court:'Soccer Field A', phase:'wb_sf', round:'WB SF',    desc:'WBW17 vs WBW18'},
     {court:'Soccer Field B', phase:'lb',    round:'LB R4',    desc:'LBW10 vs WBL6'},
     {court:'Soccer Field C', phase:'lb',    round:'LB SF',    desc:'LBW11 vs WBL7'},
@@ -758,13 +758,13 @@ function renderScheduleTable(sport, slots, slotMin, courts, title) {
       html += `<div class="day-bar">${dayLabel}</div>`;
     }
 
-    // Lunch break for soccer: detect gap spanning noon by time-of-day (not absolute timestamp)
+    // Lunch break for soccer: 1:00–2:00 PM (detect the gap by time-of-day)
     if (sport === 'soccer' && prevStart !== null) {
       const prevTod = new Date(prevStart).getHours() * 60 + new Date(prevStart).getMinutes();
       const curTod  = d.getHours() * 60 + d.getMinutes();
-      if (prevTod < 12*60 && curTod >= 12*60+30) {
-        html += `<div class="sg-time" style="grid-column:1">12:00–12:30</div>`;
-        html += `<div class="sg-cell break-cell" style="grid-column:2/-1"><span>🍽 Lunch Break — 30 minutes</span></div>`;
+      if (prevTod < 13*60 && curTod >= 14*60) {
+        html += `<div class="sg-time" style="grid-column:1">1:00–2:00 PM</div>`;
+        html += `<div class="sg-cell break-cell" style="grid-column:2/-1"><span>🍽 Lunch Break — 1 hour</span></div>`;
       }
     }
 
@@ -976,7 +976,7 @@ function renderSoccerBracket() {
   const el = document.getElementById('panel-soccer');
   el.innerHTML = `
     <div class="sec-title">⚽ Soccer — Double Elimination <span class="sec-badge">20 Teams · 4 Fields · ~38 Games</span>
-      <span class="sec-sub">Day 1: 10:20 AM–5 PM · Day 2 GF: 1:00 PM</span>
+      <span class="sec-sub">Day 1: 11:00 AM–3:40 PM · Lunch 1–2 PM · Day 2 GF: 1:00 PM</span>
     </div>
     ${buildScheduleGrid('soccer')}
     <div class="bracket-dual">

@@ -1015,49 +1015,49 @@ const fmtTime = ms => {
 const SOC_SLOT = 25, BB_SLOT = 25, VB_SLOT = 20;
 
 const SOCCER_SLOTS = [
-  { start: D1(10,20), rows:[
+  { start: D1(11,0), rows:[
     {court:'Soccer Field A', phase:'wb', round:'WB R1', desc:'T1 vs T2',   winnerSlot:'WBW1',  loserSlot:'L1'},
     {court:'Soccer Field B', phase:'wb', round:'WB R1', desc:'T3 vs T4',   winnerSlot:'WBW2',  loserSlot:'L2'},
     {court:'Soccer Field C', phase:'wb', round:'WB R1', desc:'T5 vs T6',   winnerSlot:'WBW3',  loserSlot:'L3'},
     {court:'Soccer Field D', phase:'wb', round:'WB R1', desc:'T7 vs T8',   winnerSlot:'WBW4',  loserSlot:'L4'},
   ]},
-  { start: D1(10,45), rows:[
+  { start: D1(11,25), rows:[
     {court:'Soccer Field A', phase:'wb', round:'WB R1', desc:'T9 vs T10',  winnerSlot:'WBW5',  loserSlot:'L5'},
     {court:'Soccer Field B', phase:'wb', round:'WB R1', desc:'T11 vs T12', winnerSlot:'WBW6',  loserSlot:'L6'},
     {court:'Soccer Field C', phase:'wb', round:'WB R1', desc:'T13 vs T14', winnerSlot:'WBW7',  loserSlot:'L7'},
     {court:'Soccer Field D', phase:'wb', round:'WB R1', desc:'T15 vs T16', winnerSlot:'WBW8',  loserSlot:'L8'},
   ]},
-  { start: D1(11,10), rows:[
+  { start: D1(11,50), rows:[
     {court:'Soccer Field A', phase:'wb', round:'WB R1', desc:'T17 vs T18', winnerSlot:'WBW9',  loserSlot:'L9'},
     {court:'Soccer Field B', phase:'wb', round:'WB R1', desc:'T19 vs T20', winnerSlot:'WBW10', loserSlot:'L10'},
     {court:'Soccer Field C', phase:'lb', round:'LB R1', desc:'L1 vs L2',   winnerSlot:'LBW1',  loserSlot:null},
     {court:'Soccer Field D', phase:'lb', round:'LB R1', desc:'L3 vs L4',   winnerSlot:'LBW2',  loserSlot:null},
   ]},
-  { start: D1(11,35), rows:[
+  { start: D1(12,15), rows:[
     {court:'Soccer Field A', phase:'wb', round:'WB R2', desc:'WBW1 vs WBW2',  winnerSlot:'WBW11', loserSlot:'WBL1'},
     {court:'Soccer Field B', phase:'wb', round:'WB R2', desc:'WBW3 vs WBW4',  winnerSlot:'WBW12', loserSlot:'WBL2'},
     {court:'Soccer Field C', phase:'wb', round:'WB R2', desc:'WBW5 vs WBW6',  winnerSlot:'WBW13', loserSlot:'WBL3'},
     {court:'Soccer Field D', phase:'lb', round:'LB R1', desc:'L5 vs L6',      winnerSlot:'LBW3',  loserSlot:null},
   ]},
-  { start: D1(12,30), rows:[
+  { start: D1(14,0), rows:[
     {court:'Soccer Field A', phase:'wb', round:'WB R2', desc:'WBW7 vs WBW8',  winnerSlot:'WBW14', loserSlot:'WBL4'},
     {court:'Soccer Field B', phase:'wb', round:'WB R2', desc:'WBW9 vs WBW10', winnerSlot:'WBW15', loserSlot:'WBL5'},
     {court:'Soccer Field C', phase:'lb', round:'LB R2', desc:'LBW1 vs LBW2',  winnerSlot:'LBW4',  loserSlot:null},
     {court:'Soccer Field D', phase:'lb', round:'LB R2', desc:'LBW3 vs LBW4',  winnerSlot:'LBW5',  loserSlot:null},
   ]},
-  { start: D1(12,55), rows:[
+  { start: D1(14,25), rows:[
     {court:'Soccer Field A', phase:'wb', round:'WB R3', desc:'WBW11 vs WBW12', winnerSlot:'WBW16', loserSlot:'WBL6'},
     {court:'Soccer Field B', phase:'wb', round:'WB R3', desc:'WBW13 vs WBW14', winnerSlot:'WBW17', loserSlot:'WBL7'},
     {court:'Soccer Field C', phase:'lb', round:'LB R2', desc:'LBW5 vs WBL1',   winnerSlot:'LBW6',  loserSlot:null},
     {court:'Soccer Field D', phase:'lb', round:'LB R2', desc:'LBW6 vs WBL2',   winnerSlot:'LBW7',  loserSlot:null},
   ]},
-  { start: D1(13,20), rows:[
+  { start: D1(14,50), rows:[
     {court:'Soccer Field A', phase:'wb', round:'WB R3', desc:'WBW15 vs WBW16', winnerSlot:'WBW18', loserSlot:'WBL8'},
     {court:'Soccer Field B', phase:'lb', round:'LB R3', desc:'LBW7 vs WBL3',   winnerSlot:'LBW8',  loserSlot:null},
     {court:'Soccer Field C', phase:'lb', round:'LB R3', desc:'LBW8 vs WBL4',   winnerSlot:'LBW9',  loserSlot:null},
     {court:'Soccer Field D', phase:'lb', round:'LB R3', desc:'LBW9 vs WBL5',   winnerSlot:'LBW10', loserSlot:null},
   ]},
-  { start: D1(13,45), rows:[
+  { start: D1(15,15), rows:[
     {court:'Soccer Field A', phase:'wb_sf', round:'WB SF',    desc:'WBW17 vs WBW18', winnerSlot:'WBW19', loserSlot:null},
     {court:'Soccer Field B', phase:'lb',    round:'LB R4',    desc:'LBW10 vs WBL6',  winnerSlot:'LBW11', loserSlot:null},
     {court:'Soccer Field C', phase:'lb',    round:'LB SF',    desc:'LBW11 vs WBL7',  winnerSlot:'LBW12', loserSlot:null},
