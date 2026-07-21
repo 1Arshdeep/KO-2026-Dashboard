@@ -1059,49 +1059,49 @@ const SOC_SLOT = 25, BB_SLOT = 25, VB_SLOT = 20;
 
 const SOCCER_SLOTS = [
   // WB Prelim — seeds 5-12 play in (4 games), top 4 seeds get byes to WB R1
-  { start: D1(10,20), rows:[
+  { start: D1(11,0), rows:[
     {court:'Soccer Field A', phase:'wb', round:'WB Prelim', desc:'T5 vs T12', winnerSlot:'PW1', loserSlot:'PL1'},
     {court:'Soccer Field B', phase:'wb', round:'WB Prelim', desc:'T6 vs T11', winnerSlot:'PW2', loserSlot:'PL2'},
     {court:'Soccer Field C', phase:'wb', round:'WB Prelim', desc:'T7 vs T10', winnerSlot:'PW3', loserSlot:'PL3'},
     {court:'Soccer Field D', phase:'wb', round:'WB Prelim', desc:'T8 vs T9',  winnerSlot:'PW4', loserSlot:'PL4'},
   ]},
   // WB R1 — 4 games (seeds 1-4 + 4 prelim winners = 8 teams)
-  { start: D1(10,45), rows:[
+  { start: D1(11,25), rows:[
     {court:'Soccer Field A', phase:'wb', round:'WB R1', desc:'T1 vs PW4', winnerSlot:'WBW1', loserSlot:'WBL1'},
     {court:'Soccer Field B', phase:'wb', round:'WB R1', desc:'T2 vs PW3', winnerSlot:'WBW2', loserSlot:'WBL2'},
     {court:'Soccer Field C', phase:'wb', round:'WB R1', desc:'T3 vs PW2', winnerSlot:'WBW3', loserSlot:'WBL3'},
     {court:'Soccer Field D', phase:'wb', round:'WB R1', desc:'T4 vs PW1', winnerSlot:'WBW4', loserSlot:'WBL4'},
   ]},
   // WB SF + LB R1 G1 & G2
-  { start: D1(11,10), rows:[
+  { start: D1(11,50), rows:[
     {court:'Soccer Field A', phase:'wb', round:'WB SF', desc:'WBW1 vs WBW4', winnerSlot:'WBW5',   loserSlot:'WBSFL1'},
     {court:'Soccer Field B', phase:'wb', round:'WB SF', desc:'WBW2 vs WBW3', winnerSlot:'WBW6',   loserSlot:'WBSFL2'},
     {court:'Soccer Field C', phase:'lb', round:'LB R1', desc:'PL1 vs WBL4',  winnerSlot:'LBW1',   loserSlot:null},
     {court:'Soccer Field D', phase:'lb', round:'LB R1', desc:'PL2 vs WBL3',  winnerSlot:'LBW2',   loserSlot:null},
   ]},
   // WB Final + LB R1 G3 & G4
-  { start: D1(11,35), rows:[
+  { start: D1(12,15), rows:[
     {court:'Soccer Field A', phase:'wb_f', round:'WB Final', desc:'WBW5 vs WBW6', winnerSlot:'WBW7', loserSlot:'WBFL'},
     {court:'Soccer Field B', phase:'lb',   round:'LB R1',    desc:'PL3 vs WBL2',  winnerSlot:'LBW3', loserSlot:null},
     {court:'Soccer Field C', phase:'lb',   round:'LB R1',    desc:'PL4 vs WBL1',  winnerSlot:'LBW4', loserSlot:null},
   ]},
   // Lunch 12:00–12:30
   // LB R2 — 2 games (LB R1 winners pair off)
-  { start: D1(12,30), rows:[
+  { start: D1(14,0), rows:[
     {court:'Soccer Field A', phase:'lb', round:'LB R2', desc:'LBW1 vs LBW2', winnerSlot:'LBW5', loserSlot:null},
     {court:'Soccer Field B', phase:'lb', round:'LB R2', desc:'LBW3 vs LBW4', winnerSlot:'LBW6', loserSlot:null},
   ]},
   // LB R3 — 2 games (WB SF losers enter here)
-  { start: D1(12,55), rows:[
+  { start: D1(14,25), rows:[
     {court:'Soccer Field A', phase:'lb', round:'LB R3', desc:'LBW5 vs WBSFL1', winnerSlot:'LBW7', loserSlot:null},
     {court:'Soccer Field B', phase:'lb', round:'LB R3', desc:'LBW6 vs WBSFL2', winnerSlot:'LBW8', loserSlot:null},
   ]},
   // LB SF — 1 game
-  { start: D1(13,20), rows:[
+  { start: D1(14,50), rows:[
     {court:'Soccer Field A', phase:'lb_sf', round:'LB SF', desc:'LBW7 vs LBW8', winnerSlot:'LBW9', loserSlot:null},
   ]},
   // LB Final — WB Final loser enters here
-  { start: D1(13,45), rows:[
+  { start: D1(15,15), rows:[
     {court:'Soccer Field A', phase:'lb_f', round:'LB Final', desc:'LBW9 vs WBFL', winnerSlot:'LBW10', loserSlot:null},
   ]},
   // Day 2 — Grand Final
