@@ -440,6 +440,18 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:0.01ms!important;transition-duration:0.01ms!important}
 }
+/* ===== EVENT AGENDA TABLE ===== */
+.agenda-wrap{margin-bottom:8px}
+.agenda-day{font-size:13px;font-weight:800;color:var(--gold);letter-spacing:.05em;margin:16px 0 6px;text-transform:uppercase}
+.agenda-tbl{width:100%;border-collapse:collapse;font-size:14px;background:var(--gray2,#1a1f2e);border:1px solid var(--gray3,#2a3142);border-radius:10px;overflow:hidden}
+.agenda-tbl th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);padding:10px 14px;background:rgba(255,255,255,.03);border-bottom:1px solid var(--gray3,#2a3142)}
+.agenda-tbl td{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.05)}
+.agenda-tbl tr:last-child td{border-bottom:none}
+.ag-time{font-weight:700;color:var(--text);white-space:nowrap;font-variant-numeric:tabular-nums}
+.ag-event{font-weight:600}
+.ag-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:9px;vertical-align:middle}
+.ag-loc{color:var(--dim);font-size:13px}
+@media(max-width:640px){.agenda-tbl{font-size:12px}.agenda-tbl th,.agenda-tbl td{padding:8px 9px}}
 </style>
 </head>
 <body>
@@ -881,18 +893,54 @@ function renderBanner() {
 // ══════════════════════════════════════════════════════════════
 // SCHEDULE VIEW
 // ══════════════════════════════════════════════════════════════
+// ===== EVENT AGENDA (2-day run of show) =====
+const EVENT_AGENDA = [
+  { day:'Saturday · July 25', items:[
+    {time:'10:00 – 11:00 AM', event:'Team Check-In',                              loc:'Cafeteria',                 type:'other'},
+    {time:'11:00 AM – 1:00 PM', event:'⚽ Soccer — Prelim & Winners Bracket',      loc:'Soccer Fields A–D',         type:'soccer'},
+    {time:'1:00 – 2:00 PM',    event:'🍽 Lunch',                                   loc:'Cafeteria',                 type:'break'},
+    {time:'2:00 – 5:00 PM',    event:'⚽ Soccer — Losers Bracket & Finals',        loc:'Soccer Fields A–D',         type:'soccer'},
+    {time:'5:00 – 11:00 PM',   event:'🏀 Basketball & 🏐 Volleyball Tournaments',  loc:'Gym 1 (VB) · Gym 2 & 3 (BB)', type:'bbvb'},
+  ]},
+  { day:'Sunday · July 26', items:[
+    {time:'12:30 – 1:00 PM',   event:'Team Check-In',                              loc:'Cafeteria',                 type:'other'},
+    {time:'1:00 – 1:30 PM',    event:'🎤 Opening Remarks',                          loc:'Main Hall',                 type:'ceremony'},
+    {time:'1:30 – 3:00 PM',    event:'⚽ Soccer Finals (60-min games)',             loc:'Soccer Fields',             type:'soccer'},
+    {time:'3:00 – 3:30 PM',    event:'🎤 Theme Speech',                             loc:'Cafeteria',                 type:'ceremony'},
+    {time:'3:30 – 6:30 PM',    event:'🏀 Basketball & 🏐 Volleyball — Semis & Finals', loc:'Gym 1 (VB) · Gym 2 & 3 (BB)', type:'bbvb'},
+    {time:'6:30 – 7:30 PM',    event:'🏆 Award Ceremony',                           loc:'Main Hall',                 type:'ceremony'},
+  ]},
+];
+const AGENDA_COLOR = {soccer:'#22c55e', bbvb:'#f97316', break:'#eab308', ceremony:'#d4a017', other:'#64748b'};
+
+function renderAgendaTable() {
+  return `<div class="agenda-wrap">
+    <div class="sec-title" style="font-size:16px">📋 Event Schedule — Run of Show</div>
+    ${EVENT_AGENDA.map(d=>`
+      <div class="agenda-day">${d.day}</div>
+      <table class="agenda-tbl">
+        <thead><tr><th style="width:150px">Time</th><th>Event</th><th style="width:210px">Location</th></tr></thead>
+        <tbody>${d.items.map(it=>`<tr>
+          <td class="ag-time">${it.time}</td>
+          <td class="ag-event"><span class="ag-dot" style="background:${AGENDA_COLOR[it.type]||'#64748b'}"></span>${it.event}</td>
+          <td class="ag-loc">${it.loc}</td>
+        </tr>`).join('')}</tbody>
+      </table>`).join('')}
+  </div>`;
+}
+
 function renderSchedule() {
-  let html = '';
+  let html = renderAgendaTable() + '<hr class="sep" style="margin:22px 0">';
   if (currentSport === 'soccer') {
-    html = renderScheduleTable('soccer', SOCCER_SLOTS, SOC_SLOT,
+    html += renderScheduleTable('soccer', SOCCER_SLOTS, SOC_SLOT,
       ['Soccer Field A','Soccer Field B','Soccer Field C','Soccer Field D'],
       '⚽ Soccer — 4 Fields · 25-min slots');
   } else if (currentSport === 'basketball') {
-    html = renderScheduleTable('basketball', BB_SLOTS, BB_SLOT,
+    html += renderScheduleTable('basketball', BB_SLOTS, BB_SLOT,
       ['Gym 2 (Basketball)','Gym 3 (Basketball)'],
       '🏀 Basketball — 2 Courts · 25-min slots');
   } else if (currentSport === 'volleyball') {
-    html = renderScheduleTable('volleyball', VB_SLOTS, VB_SLOT,
+    html += renderScheduleTable('volleyball', VB_SLOTS, VB_SLOT,
       ['Gym 1 (Volleyball)'],
       '🏐 Volleyball — 1 Court · 20-min slots');
   }
