@@ -891,7 +891,7 @@ select:focus, input[type="text"]:focus {
       <button id="btn-dismiss-ft">Dismiss</button>
     </div>
     <div id="timer-display-wrap">
-      <div id="timer-main">15:00</div>
+      <div id="timer-main">20:00</div>
       <div id="timer-ot"></div>
     </div>
     <div id="timer-progress-wrap">
@@ -900,7 +900,7 @@ select:focus, input[type="text"]:focus {
     <div id="timer-buttons">
       <button id="btn-start-pause" class="btn-timer">▶ START</button>
       <button id="btn-reset" class="btn-timer">↺ Reset</button>
-      <button id="btn-set15" class="btn-timer">Set 15:00</button>
+      <button id="btn-set15" class="btn-timer">Set 20:00</button>
     </div>
   </div>
 
@@ -1348,7 +1348,7 @@ function getElapsed(gameId) {
 
 function getRemaining(gameId) {
   const t = state.timers[gameId];
-  const dur = (t && t.duration) ? t.duration : 900;
+  const dur = (t && t.duration) ? t.duration : 1200;
   return dur - getElapsed(gameId);
 }
 
@@ -1374,7 +1374,7 @@ function formatTime(seconds) {
 
 function ensureTimer(gameId, duration) {
   if (!state.timers[gameId]) {
-    state.timers[gameId] = { startedAt: null, accumulated: 0, running: false, duration: duration || 900 };
+    state.timers[gameId] = { startedAt: null, accumulated: 0, running: false, duration: duration || 1200 };
   }
 }
 
@@ -1400,7 +1400,7 @@ function pauseTimer(gameId) {
 }
 
 function resetTimer(gameId) {
-  state.timers[gameId] = { startedAt: null, accumulated: 0, running: false, duration: 900 };
+  state.timers[gameId] = { startedAt: null, accumulated: 0, running: false, duration: 1200 };
   buzzerFired = false;
   fulltimeShown = false;
   document.getElementById('fulltime-overlay').classList.remove('visible');
@@ -1412,7 +1412,7 @@ function tickTimer() {
   const remaining = getRemaining(currentGameId);
   const elapsed = getElapsed(currentGameId);
   const t = state.timers[currentGameId];
-  const duration = (t && t.duration) ? t.duration : 900;
+  const duration = (t && t.duration) ? t.duration : 1200;
 
   // Buzzer
   if (remaining <= 0 && !buzzerFired && t && t.running) {
@@ -1601,7 +1601,7 @@ function renderNextUp() {
 
 function renderTimerButtons() {
   const g = currentGameId ? state.games[currentGameId] : null;
-  if (g) ensureTimer(currentGameId, 900);
+  if (g) ensureTimer(currentGameId, 1200);
   tickTimer();
 }
 
@@ -1796,7 +1796,7 @@ document.getElementById('btn-reset').addEventListener('click', () => {
 
 document.getElementById('btn-set15').addEventListener('click', () => {
   if (!currentGameId) return;
-  state.timers[currentGameId] = { startedAt: null, accumulated: 0, running: false, duration: 900 };
+  state.timers[currentGameId] = { startedAt: null, accumulated: 0, running: false, duration: 1200 };
   buzzerFired = false;
   fulltimeShown = false;
   document.getElementById('fulltime-overlay').classList.remove('visible');
