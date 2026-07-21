@@ -134,6 +134,24 @@ hr.sep{border:none;border-top:1px solid var(--gray3);margin:16px 0}
 .tr.won .tr-score{color:var(--gold-light)}
 .match-time{font-size:10px;color:var(--dim);text-align:center;padding:3px 6px;background:rgba(0,0,0,.2)}
 
+/* ── FORMAT NOTE ── */
+.format-note{font-size:11px;color:var(--dim);font-style:italic;line-height:1.55;padding:8px 12px 8px 14px;background:var(--gray);border-left:3px solid var(--gray3);border-radius:0 6px 6px 0;margin-bottom:14px}
+
+/* ── BYE COLUMN ── */
+.br-round-byes{opacity:.6;flex:.7!important;min-width:110px!important}
+.matchup-bye{background:var(--navy);border:1px dashed var(--gray3)!important;cursor:default}
+.matchup-bye:hover{border-color:var(--gray3)!important}
+.bye-row{display:flex;align-items:center;padding:8px 10px;gap:8px;border-bottom:1px solid rgba(255,255,255,.04)}
+.bye-row:last-child{border-bottom:none}
+.bye-seed{font-size:10px;color:var(--dim);width:16px;text-align:right;flex-shrink:0}
+.bye-name{flex:1;font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--dim)}
+.bye-badge{font-size:8px;font-weight:700;color:var(--gold);letter-spacing:.8px;text-transform:uppercase;background:rgba(192,155,72,.15);padding:2px 5px;border-radius:3px;flex-shrink:0}
+
+/* ── GHOST MATCHUP (both team slots still TBD / awaiting upstream result) ── */
+.matchup-ghost{border-style:dashed!important;opacity:.55}
+.matchup-ghost .tr-name{color:var(--dim);font-weight:400;font-style:italic}
+.matchup-ghost .match-time{opacity:.6}
+
 /* ── POOLS ── */
 .pools-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;margin-bottom:20px}
 .pool-card{background:var(--gray2);border:1px solid var(--gray3);border-radius:8px;overflow:hidden}
@@ -1133,14 +1151,16 @@ function updateBadges() {
 
 function renderSoccerBracket() {
   const el = document.getElementById('panel-soccer');
+  const byeCol = buildByeColumn('soccer', 4);
   el.innerHTML = `
-    <div class="sec-title">⚽ Soccer — Double Elimination <span class="sec-badge">12 Teams · 4 Fields · ~23 Games</span>
+    <div class="sec-title">⚽ Soccer — Double Elimination <span class="sec-badge">${sportBadge('soccer')}</span>
       <span class="sec-sub">Day 1: 10:20 AM–5 PM · Day 2 GF: 1:00 PM</span>
     </div>
+    <div class="format-note">Play-in format: Top 4 seeds skip WB Prelim. Seeds 5–12 play 4 opening games — winners join seeds 1–4 in WB Round 1. Losers drop to the Losers Bracket. Double elimination throughout.</div>
     ${buildScheduleGrid('soccer')}
     <div class="bracket-dual">
       <div>
-        ${buildBracketSection('soccer','wb','Winners Bracket')}
+        ${buildBracketSection('soccer','wb','Winners Bracket',{insertAfterRoundIndex:0,insertHtml:byeCol})}
       </div>
       <div>
         ${buildBracketSection('soccer','lb','Losers Bracket')}
@@ -1153,14 +1173,16 @@ function renderSoccerBracket() {
 
 function renderBBPanel() {
   const el = document.getElementById('panel-basketball');
+  const byeCol = buildByeColumn('basketball', 6);
   el.innerHTML = `
-    <div class="sec-title">🏀 Basketball — Double Elimination <span class="sec-badge">10 Teams · 2 Courts · ~19 Games</span>
+    <div class="sec-title">🏀 Basketball — Double Elimination <span class="sec-badge">${sportBadge('basketball')}</span>
       <span class="sec-sub">Day 1: 5:15 PM–11 PM · Day 2: 3:30 PM–6:45 PM</span>
     </div>
+    <div class="format-note">Play-in format: Top 6 seeds skip WB Prelim. Seeds 7–10 play 2 opening games — winners join seeds 1–6 in WB Round 1. Losers drop to the Losers Bracket. Double elimination throughout.</div>
     ${buildScheduleGrid('basketball')}
     <div class="bracket-dual">
       <div>
-        ${buildBracketSection('basketball','wb','Winners Bracket')}
+        ${buildBracketSection('basketball','wb','Winners Bracket',{insertAfterRoundIndex:0,insertHtml:byeCol})}
       </div>
       <div>
         ${buildBracketSection('basketball','lb','Losers Bracket')}
@@ -1174,9 +1196,10 @@ function renderBBPanel() {
 function renderVBPanel() {
   const el = document.getElementById('panel-volleyball');
   el.innerHTML = `
-    <div class="sec-title">🏐 Volleyball — Single Elimination <span class="sec-badge">11 Teams · 1 Court · 11 Games</span>
+    <div class="sec-title">🏐 Volleyball — Single Elimination <span class="sec-badge">${sportBadge('volleyball')}</span>
       <span class="sec-sub">Day 1 only: 5:10 PM–11:20 PM · Hard stop 8 PM Day 2 if overflow</span>
     </div>
+    <div class="format-note">Play-in format: Top 5 seeds get first-round byes. Seeds 6–11 play 3 opening games — winners join seeds 1–5 in Quarterfinals. Single elimination; includes a separate 3rd Place match.</div>
     ${buildScheduleGrid('volleyball')}
     <div class="bracket-dual">
       <div>
@@ -1185,7 +1208,9 @@ function renderVBPanel() {
         ${buildBracketSection('volleyball','qf','Quarterfinals')}
       </div>
       <div>
-        ${buildBracketSection('volleyball','sf','Semifinals')}
+        ${buildBracketSection('volleyball','sf','Semifinals',{excludeRounds:['3rd Place']})}
+        <hr class="sep">
+        ${buildBracketSection('volleyball','sf','3rd Place',{onlyRounds:['3rd Place']})}
         <hr class="sep">
         ${buildBracketSection('volleyball','gf','Grand Final')}
       </div>
@@ -1219,13 +1244,42 @@ function buildScheduleGrid(sport) {
   </div>`;
 }
 
-function buildBracketSection(sport, phase, label) {
+function sportBadge(sport) {
+  const teamCount = (state.teams[sport] || []).length;
+  const games = Object.values(state.games).filter(g => g.sport === sport);
+  const gameCount = games.length;
+  const courts = new Set(games.map(g => g.court));
+  const courtCount = courts.size;
+  const courtLabel = sport === 'soccer' ? 'Fields' : courtCount === 1 ? 'Court' : 'Courts';
+  return `${teamCount} Teams · ${courtCount} ${courtLabel} · ${gameCount} Games`;
+}
+
+function buildByeColumn(sport, byeCount) {
+  const teams = (state.teams[sport] || []).slice(0, byeCount);
+  const rows = teams.map((name, i) => `<div class="bye-row">
+    <span class="bye-seed">${i+1}</span>
+    <span class="bye-name">${name || `Seed ${i+1}`}</span>
+    <span class="bye-badge">BYE</span>
+  </div>`).join('');
+  return `<div class="br-round br-round-byes">
+    <div class="br-round-hdr">Seeded to R1</div>
+    <div class="br-games"><div class="matchup-bye">${rows}</div></div>
+  </div>`;
+}
+
+function buildBracketSection(sport, phase, label, opts) {
+  opts = opts || {};
   const games = Object.values(state.games)
-    .filter(g => g.sport === sport && (g.phase === phase || g.phase.startsWith(phase)))
+    .filter(g => {
+      if (g.sport !== sport) return false;
+      if (!(g.phase === phase || g.phase.startsWith(phase))) return false;
+      if (opts.excludeRounds && opts.excludeRounds.includes(g.round)) return false;
+      if (opts.onlyRounds && !opts.onlyRounds.includes(g.round)) return false;
+      return true;
+    })
     .sort((a,b) => effectiveStart(a)-effectiveStart(b));
   if (!games.length) return '';
 
-  // Group by round
   const roundMap = {};
   games.forEach(g => {
     if (!roundMap[g.round]) roundMap[g.round] = [];
@@ -1236,10 +1290,13 @@ function buildBracketSection(sport, phase, label) {
   let html = label ? `<div class="bracket-phase-label">${label}</div>` : '';
   html += `<div class="bracket-wrap"><div class="bracket">`;
 
-  rounds.forEach(r => {
+  rounds.forEach((r, i) => {
     html += `<div class="br-round"><div class="br-round-hdr">${r}</div><div class="br-games">`;
     roundMap[r].forEach(g => { html += matchupCard(g); });
     html += '</div></div>';
+    if (opts.insertAfterRoundIndex === i && opts.insertHtml) {
+      html += opts.insertHtml;
+    }
   });
 
   html += '</div></div>';
@@ -1247,15 +1304,16 @@ function buildBracketSection(sport, phase, label) {
 }
 
 function matchupCard(g) {
-  const n = now();
   const isLv = (isLiveByTime(g) && g.status !== 'final') || g.status === 'live';
   const isDone = g.status === 'final';
   const t1w = isDone && g.score1 > g.score2;
   const t2w = isDone && g.score2 > g.score1;
   const dly = state.courtDelays[g.court]||0;
   const timeStr = fmtTime(effectiveStart(g)) + (dly!==0?` <span style="color:${dly>0?'var(--live)':'var(--green)'};font-size:9px">${dly>0?'+':''}${dly}m</span>`:'');
+  const knownTeams = state.teams[g.sport] || [];
+  const isGhost = knownTeams.length > 0 && !knownTeams.includes(g.team1) && !knownTeams.includes(g.team2);
 
-  return `<div class="matchup ${isLv?'is-live':''}">
+  return `<div class="matchup ${isLv?'is-live':''} ${isGhost&&!isDone?'matchup-ghost':''}">
     <div class="match-time">${timeStr} · ${g.court}</div>
     <div class="tr ${t1w?'won':''} ${!t1w&&isDone?'lost':''} ${g.dq==='team1'?'dq-row':''}">
       <span class="tr-seed"></span>
