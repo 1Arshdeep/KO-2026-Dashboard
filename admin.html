@@ -670,6 +670,16 @@ select:focus, input[type="text"]:focus {
   #main { padding: 10px; gap: 10px; }
   .card { padding: 12px; }
 }
+/* ===== AGENDA TABLE ===== */
+.ag-tbl{width:100%;border-collapse:collapse;font-size:14px;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.ag-tbl th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--dim);padding:10px 14px;background:rgba(255,255,255,.03);border-bottom:1px solid var(--border)}
+.ag-tbl td{padding:11px 14px;border-bottom:1px solid rgba(255,255,255,.05)}
+.ag-tbl tr:last-child td{border-bottom:none}
+.agt-time{font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.agt-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:9px;vertical-align:middle}
+.agt-loc{color:var(--dim);font-size:13px}
+@media(max-width:640px){.ag-tbl{font-size:12px}.ag-tbl th,.ag-tbl td{padding:8px 9px}}
+
 /* ===== LIVE CONTROL ===== */
 #lc-toolbar { display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
 .lc-sport-btn { padding:8px 16px; border-radius:20px; border:1px solid var(--border); background:var(--card); color:var(--dim); cursor:pointer; font-size:13px; font-weight:700; }
@@ -804,6 +814,7 @@ select:focus, input[type="text"]:focus {
   <button class="sport-tab" data-sport="volleyball">🏐 Volleyball</button>
   <button class="sport-tab" id="tab-livecontrol">🎮 Live Control</button>
   <button class="sport-tab" id="tab-brackets">📊 Brackets</button>
+  <button class="sport-tab" id="tab-agenda">📋 Agenda</button>
 </div>
 
 <!-- ===== TEST MODE BAR ===== -->
@@ -961,6 +972,7 @@ select:focus, input[type="text"]:focus {
 <!-- ===== BRACKET VIEW ===== -->
 <div id="bracket-view" style="display:none; padding: 16px; max-width:100%; overflow-x:auto;"></div>
 <div id="livecontrol-view" style="display:none; padding: 14px;"></div>
+<div id="agenda-view" style="display:none; padding: 16px; max-width:1000px; margin:0 auto;"></div>
 
 <!-- ===== SETUP MODAL ===== -->
 <div id="modal-overlay">
@@ -1738,14 +1750,18 @@ document.querySelectorAll('.sport-tab').forEach(tab => {
     document.querySelectorAll('.sport-tab').forEach(t => t.classList.remove('active'));
     tab.classList.add('active');
     if (tab.id === 'tab-brackets') {
-      exitLiveControl();
+      exitLiveControl(); exitAgenda();
       enterBracketMode();
     } else if (tab.id === 'tab-livecontrol') {
-      exitBracketMode();
+      exitBracketMode(); exitAgenda();
       enterLiveControl();
+    } else if (tab.id === 'tab-agenda') {
+      exitBracketMode(); exitLiveControl();
+      enterAgenda();
     } else {
       exitBracketMode();
       exitLiveControl();
+      exitAgenda();
       currentGameId = null;
       currentSport = tab.dataset.sport;
       buzzerFired = false;
@@ -2229,6 +2245,46 @@ document.getElementById('btn-exit-test').addEventListener('click', () => {
 // ===== BRACKET VIEW =====
 let bracketMode = false;
 let bracketSport = 'soccer';
+
+// ===== EVENT AGENDA =====
+const EVENT_AGENDA = [
+  { day:'Saturday · July 25', items:[
+    {time:'10:00 – 11:00 AM', event:'Team Check-In',                              loc:'Cafeteria',                 type:'other'},
+    {time:'11:00 AM – 1:00 PM', event:'⚽ Soccer — Prelim & Winners Bracket',      loc:'Soccer Fields A–D',         type:'soccer'},
+    {time:'1:00 – 2:00 PM',    event:'🍽 Lunch',                                   loc:'Cafeteria',                 type:'break'},
+    {time:'2:00 – 5:00 PM',    event:'⚽ Soccer — Losers Bracket & Finals',        loc:'Soccer Fields A–D',         type:'soccer'},
+    {time:'5:00 – 11:00 PM',   event:'🏀 Basketball & 🏐 Volleyball Tournaments',  loc:'Gym 1 (VB) · Gym 2 & 3 (BB)', type:'bbvb'},
+  ]},
+  { day:'Sunday · July 26', items:[
+    {time:'12:30 – 1:00 PM',   event:'Team Check-In',                              loc:'Cafeteria',                 type:'other'},
+    {time:'1:00 – 1:30 PM',    event:'🎤 Opening Remarks',                          loc:'Main Hall',                 type:'ceremony'},
+    {time:'1:30 – 3:00 PM',    event:'⚽ Soccer Finals (60-min games)',             loc:'Soccer Fields',             type:'soccer'},
+    {time:'3:00 – 3:30 PM',    event:'🎤 Theme Speech',                             loc:'Cafeteria',                 type:'ceremony'},
+    {time:'3:30 – 6:30 PM',    event:'🏀 Basketball & 🏐 Volleyball — Semis & Finals', loc:'Gym 1 (VB) · Gym 2 & 3 (BB)', type:'bbvb'},
+    {time:'6:30 – 7:30 PM',    event:'🏆 Award Ceremony',                           loc:'Main Hall',                 type:'ceremony'},
+  ]},
+];
+const AGENDA_COLOR = {soccer:'#22c55e', bbvb:'#f97316', break:'#eab308', ceremony:'#d4a017', other:'#64748b'};
+let agendaMode = false;
+function enterAgenda() {
+  agendaMode = true;
+  document.getElementById('main').style.display = 'none';
+  document.getElementById('agenda-view').style.display = 'block';
+  const el = document.getElementById('agenda-view');
+  el.innerHTML = `<div style="font-size:18px;font-weight:800;color:var(--gold);margin-bottom:14px">📋 Event Schedule — Run of Show</div>` +
+    EVENT_AGENDA.map(d=>`
+      <div style="font-size:13px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:.05em;margin:16px 0 6px">${d.day}</div>
+      <table class="ag-tbl"><thead><tr><th style="width:150px">Time</th><th>Event</th><th style="width:220px">Location</th></tr></thead>
+      <tbody>${d.items.map(it=>`<tr>
+        <td class="agt-time">${it.time}</td>
+        <td><span class="agt-dot" style="background:${AGENDA_COLOR[it.type]||'#64748b'}"></span>${it.event}</td>
+        <td class="agt-loc">${it.loc}</td></tr>`).join('')}</tbody></table>`).join('');
+}
+function exitAgenda() {
+  agendaMode = false;
+  document.getElementById('agenda-view').style.display = 'none';
+  document.getElementById('main').style.display = '';
+}
 
 function enterBracketMode() {
   bracketMode = true;
