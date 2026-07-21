@@ -368,6 +368,9 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
 .tvh-card-live{background:rgba(40,10,10,.6);box-shadow:0 0 24px rgba(224,80,80,.2)}
 .tvh-card-empty{opacity:.45}
 .tvh-card-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-shrink:0}
+.tvh-card-next{margin-top:auto;padding:12px 16px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;font-size:17px;font-family:'Archivo',sans-serif;font-weight:700;color:var(--text);line-height:1.4;flex-shrink:0}
+.tvh-card-next-lbl{font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--dim);display:block;margin-bottom:4px}
+.tvh-card-next strong{color:var(--gold-light);font-weight:900}
 .tvh-court-name{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--dim)}
 .tvh-live-badge{background:var(--live);color:#fff;font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;letter-spacing:1px;white-space:nowrap;flex-shrink:0}
 .tvh-next-badge{font-size:11px;color:var(--gold);font-weight:700;white-space:nowrap;flex-shrink:0}
@@ -1959,8 +1962,12 @@ function tvHashCourtCard(court) {
     <div class="tvh-card-top"><div class="tvh-court-name">${court}</div></div>
     <div class="tvh-no-game">No games scheduled</div>
   </div>`;
-  const {game, isLive} = info;
+  const {game, isLive, remaining} = info;
   const s1 = isLive ? game.score1 : '', s2 = isLive ? game.score2 : '';
+  const nextUp = remaining && remaining[0];
+  const nextHtml = nextUp
+    ? `<div class="tvh-card-next"><span class="tvh-card-next-lbl">${isLive ? 'UP NEXT' : 'AFTER THIS'}</span> <strong>${nextUp.team1} vs ${nextUp.team2}</strong> · ${nextUp.round || ''} · ${fmtTime(effectiveStart(nextUp))}</div>`
+    : '';
   return `<div class="tvh-card ${isLive ? 'tvh-card-live' : ''}" style="border-top:4px solid ${sc}">
     <div class="tvh-card-top">
       <div class="tvh-court-name">${court}</div>
@@ -1971,6 +1978,7 @@ function tvHashCourtCard(court) {
       <div class="tvh-vs">VS</div>
       <div class="tvh-team-side"><div class="tvh-tname">${game.team2}</div>${isLive ? `<div class="tvh-score">${s2}</div>` : ''}</div>
     </div>
+    ${nextHtml}
   </div>`;
 }
 
