@@ -1041,9 +1041,9 @@ let timerInterval = null;
 let confirmCallback = null;
 
 const DEFAULT_TEAMS = {
-  soccer: ['Lions FC','Tigers United','Eagles SC','Warriors FC','Panthers FC','Cobras SC','Hawks United','Bulls FC','Stallions SC','Falcons FC','Wolves FC'],
-  basketball: ['Heat BB','Thunder BB','Raptors BB','Blazers BB','Nets BB','Kings BB','Suns BB','Wolves BB','Bulls BB'],
-  volleyball: ['Aces VB','Spikes VB','Sets VB','Blocks VB','Serves VB','Digs VB','Kills VB','Passes VB','Lifts VB','Floats VB'],
+  soccer: ['Lions FC','Tigers United','Eagles SC','Warriors FC','Panthers FC','Cobras SC','Hawks United','Bulls FC','Stallions SC','Falcons FC','Wolves FC','Rovers FC'],
+  basketball: ['Heat BB','Thunder BB','Raptors BB','Blazers BB','Nets BB','Kings BB','Suns BB','Wolves BB','Bulls BB','Bears BB'],
+  volleyball: ['Aces VB','Spikes VB','Sets VB','Blocks VB','Serves VB','Digs VB','Kills VB','Passes VB','Lifts VB','Floats VB','Nets VB'],
 };
 
 // ===== DATE/TIME HELPERS =====
@@ -1058,65 +1058,71 @@ const fmtTime = ms => {
 const SOC_SLOT = 25, BB_SLOT = 25, VB_SLOT = 20;
 
 const SOCCER_SLOTS = [
-  // WB Prelim — seeds 6-11 play in (3 games), top 5 seeds get byes to WB R1
+  // WB Prelim — seeds 5-12 play in (4 games), top 4 seeds get byes to WB R1
   { start: D1(10,20), rows:[
-    {court:'Soccer Field A', phase:'wb', round:'WB Prelim', desc:'T6 vs T11', winnerSlot:'PW1', loserSlot:'PL1'},
-    {court:'Soccer Field B', phase:'wb', round:'WB Prelim', desc:'T7 vs T10', winnerSlot:'PW2', loserSlot:'PL2'},
-    {court:'Soccer Field C', phase:'wb', round:'WB Prelim', desc:'T8 vs T9',  winnerSlot:'PW3', loserSlot:'PL3'},
+    {court:'Soccer Field A', phase:'wb', round:'WB Prelim', desc:'T5 vs T12', winnerSlot:'PW1', loserSlot:'PL1'},
+    {court:'Soccer Field B', phase:'wb', round:'WB Prelim', desc:'T6 vs T11', winnerSlot:'PW2', loserSlot:'PL2'},
+    {court:'Soccer Field C', phase:'wb', round:'WB Prelim', desc:'T7 vs T10', winnerSlot:'PW3', loserSlot:'PL3'},
+    {court:'Soccer Field D', phase:'wb', round:'WB Prelim', desc:'T8 vs T9',  winnerSlot:'PW4', loserSlot:'PL4'},
   ]},
-  // WB R1 — 4 games (seeds 1-5 + 3 prelim winners = 8 teams)
+  // WB R1 — 4 games (seeds 1-4 + 4 prelim winners = 8 teams)
   { start: D1(10,45), rows:[
-    {court:'Soccer Field A', phase:'wb', round:'WB R1', desc:'T1 vs PW3', winnerSlot:'WBW1', loserSlot:'WBL1'},
-    {court:'Soccer Field B', phase:'wb', round:'WB R1', desc:'T2 vs PW2', winnerSlot:'WBW2', loserSlot:'WBL2'},
-    {court:'Soccer Field C', phase:'wb', round:'WB R1', desc:'T3 vs PW1', winnerSlot:'WBW3', loserSlot:'WBL3'},
-    {court:'Soccer Field D', phase:'wb', round:'WB R1', desc:'T4 vs T5',  winnerSlot:'WBW4', loserSlot:'WBL4'},
+    {court:'Soccer Field A', phase:'wb', round:'WB R1', desc:'T1 vs PW4', winnerSlot:'WBW1', loserSlot:'WBL1'},
+    {court:'Soccer Field B', phase:'wb', round:'WB R1', desc:'T2 vs PW3', winnerSlot:'WBW2', loserSlot:'WBL2'},
+    {court:'Soccer Field C', phase:'wb', round:'WB R1', desc:'T3 vs PW2', winnerSlot:'WBW3', loserSlot:'WBL3'},
+    {court:'Soccer Field D', phase:'wb', round:'WB R1', desc:'T4 vs PW1', winnerSlot:'WBW4', loserSlot:'WBL4'},
   ]},
-  // WB SF + LB R1 A&B (WBL1 bypasses LB R1 → goes directly to LB R2)
+  // WB SF + LB R1 G1 & G2
   { start: D1(11,10), rows:[
-    {court:'Soccer Field A', phase:'wb',    round:'WB SF',  desc:'WBW1 vs WBW4', winnerSlot:'WBW5',  loserSlot:'WBQL1'},
-    {court:'Soccer Field B', phase:'wb',    round:'WB SF',  desc:'WBW2 vs WBW3', winnerSlot:'WBW6',  loserSlot:'WBQL2'},
-    {court:'Soccer Field C', phase:'lb',    round:'LB R1',  desc:'PL1 vs WBL4',  winnerSlot:'LBW1',  loserSlot:null},
-    {court:'Soccer Field D', phase:'lb',    round:'LB R1',  desc:'PL2 vs WBL3',  winnerSlot:'LBW2',  loserSlot:null},
+    {court:'Soccer Field A', phase:'wb', round:'WB SF', desc:'WBW1 vs WBW4', winnerSlot:'WBW5',   loserSlot:'WBSFL1'},
+    {court:'Soccer Field B', phase:'wb', round:'WB SF', desc:'WBW2 vs WBW3', winnerSlot:'WBW6',   loserSlot:'WBSFL2'},
+    {court:'Soccer Field C', phase:'lb', round:'LB R1', desc:'PL1 vs WBL4',  winnerSlot:'LBW1',   loserSlot:null},
+    {court:'Soccer Field D', phase:'lb', round:'LB R1', desc:'PL2 vs WBL3',  winnerSlot:'LBW2',   loserSlot:null},
   ]},
-  // WB Final + LB R1 C
+  // WB Final + LB R1 G3 & G4
   { start: D1(11,35), rows:[
-    {court:'Soccer Field A', phase:'wb_f',  round:'WB Final', desc:'WBW5 vs WBW6', winnerSlot:'WBW7', loserSlot:'WBFL'},
-    {court:'Soccer Field B', phase:'lb',    round:'LB R1',    desc:'PL3 vs WBL2',  winnerSlot:'LBW3', loserSlot:null},
+    {court:'Soccer Field A', phase:'wb_f', round:'WB Final', desc:'WBW5 vs WBW6', winnerSlot:'WBW7', loserSlot:'WBFL'},
+    {court:'Soccer Field B', phase:'lb',   round:'LB R1',    desc:'PL3 vs WBL2',  winnerSlot:'LBW3', loserSlot:null},
+    {court:'Soccer Field C', phase:'lb',   round:'LB R1',    desc:'PL4 vs WBL1',  winnerSlot:'LBW4', loserSlot:null},
   ]},
   // Lunch 12:00–12:30
-  // LB R2 — 3 games (WBL1 bypass + LBW1/2/3 + WBQL1/2)
+  // LB R2 — 2 games (LB R1 winners pair off)
   { start: D1(12,30), rows:[
-    {court:'Soccer Field A', phase:'lb', round:'LB R2', desc:'WBL1 vs WBQL1', winnerSlot:'LBW4', loserSlot:null},
-    {court:'Soccer Field B', phase:'lb', round:'LB R2', desc:'LBW1 vs WBQL2', winnerSlot:'LBW5', loserSlot:null},
-    {court:'Soccer Field C', phase:'lb', round:'LB R2', desc:'LBW2 vs LBW3',  winnerSlot:'LBW6', loserSlot:null},
+    {court:'Soccer Field A', phase:'lb', round:'LB R2', desc:'LBW1 vs LBW2', winnerSlot:'LBW5', loserSlot:null},
+    {court:'Soccer Field B', phase:'lb', round:'LB R2', desc:'LBW3 vs LBW4', winnerSlot:'LBW6', loserSlot:null},
   ]},
-  // LB R3 — 2 games (WBFL = WB Final loser enters here)
+  // LB R3 — 2 games (WB SF losers enter here)
   { start: D1(12,55), rows:[
-    {court:'Soccer Field A', phase:'lb', round:'LB R3', desc:'LBW4 vs WBFL',  winnerSlot:'LBW7', loserSlot:null},
-    {court:'Soccer Field B', phase:'lb', round:'LB R3', desc:'LBW5 vs LBW6',  winnerSlot:'LBW8', loserSlot:null},
+    {court:'Soccer Field A', phase:'lb', round:'LB R3', desc:'LBW5 vs WBSFL1', winnerSlot:'LBW7', loserSlot:null},
+    {court:'Soccer Field B', phase:'lb', round:'LB R3', desc:'LBW6 vs WBSFL2', winnerSlot:'LBW8', loserSlot:null},
   ]},
   // LB SF — 1 game
   { start: D1(13,20), rows:[
     {court:'Soccer Field A', phase:'lb_sf', round:'LB SF', desc:'LBW7 vs LBW8', winnerSlot:'LBW9', loserSlot:null},
   ]},
+  // LB Final — WB Final loser enters here
+  { start: D1(13,45), rows:[
+    {court:'Soccer Field A', phase:'lb_f', round:'LB Final', desc:'LBW9 vs WBFL', winnerSlot:'LBW10', loserSlot:null},
+  ]},
   // Day 2 — Grand Final
   { start: D2(13,0), rows:[
-    {court:'Soccer Field A', phase:'gf', round:'Grand Final',       desc:'WBW7 vs LBW9',           winnerSlot:'Soccer Champion', loserSlot:null},
+    {court:'Soccer Field A', phase:'gf', round:'Grand Final', desc:'WBW7 vs LBW10',           winnerSlot:'Soccer Champion', loserSlot:null},
   ]},
   { start: D2(13,25), rows:[
-    {court:'Soccer Field A', phase:'gf', round:'GF Reset',          desc:'Reset Game (if needed)', winnerSlot:'Champion',        loserSlot:null},
+    {court:'Soccer Field A', phase:'gf', round:'GF Reset',    desc:'Reset Game (if needed)',   winnerSlot:'Champion',        loserSlot:null},
   ]},
 ];
 
 const BB_SLOTS = [
-  // Prelim — 9th seed vs 8th, winner enters WB R1, loser enters LB R2 (bypass LB R1)
+  // WB Prelim — seeds 7-10 play in (2 games), top 6 seeds get byes to WB R1
   {start:D1(17,15), rows:[
-    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB Prelim', desc:'T8 vs T9', winnerSlot:'BWP', loserSlot:'BLP'},
+    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB Prelim', desc:'T9 vs T10', winnerSlot:'BWP1', loserSlot:'BLP1'},
+    {court:'Gym 3 (Basketball)', phase:'wb', round:'WB Prelim', desc:'T7 vs T8',  winnerSlot:'BWP2', loserSlot:'BLP2'},
   ]},
-  // WB R1 — 4 games (T1-T7 + prelim winner = 8 teams)
+  // WB R1 — 4 games (T1-T6 + 2 prelim winners = 8 teams)
   {start:D1(17,40), rows:[
-    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB R1', desc:'T1 vs BWP', winnerSlot:'BW1', loserSlot:'BL1'},
-    {court:'Gym 3 (Basketball)', phase:'wb', round:'WB R1', desc:'T2 vs T7',  winnerSlot:'BW2', loserSlot:'BL2'},
+    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB R1', desc:'T1 vs BWP1', winnerSlot:'BW1', loserSlot:'BL1'},
+    {court:'Gym 3 (Basketball)', phase:'wb', round:'WB R1', desc:'T2 vs BWP2', winnerSlot:'BW2', loserSlot:'BL2'},
   ]},
   {start:D1(18, 5), rows:[
     {court:'Gym 2 (Basketball)', phase:'wb', round:'WB R1', desc:'T3 vs T6', winnerSlot:'BW3', loserSlot:'BL3'},
@@ -1131,48 +1137,53 @@ const BB_SLOTS = [
     {court:'Gym 2 (Basketball)', phase:'wb', round:'WB QF', desc:'BW2 vs BW3', winnerSlot:'BW6',  loserSlot:'BBL2'},
     {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R1', desc:'BL2 vs BL3', winnerSlot:'BLW2', loserSlot:null},
   ]},
-  // WB Final + LB R2 A (BLP = prelim loser enters LB here, bypassing LB R1)
+  // WB Final + LB R2 G1 (prelim losers enter LB R2, bypassing LB R1)
   {start:D1(19,20), rows:[
-    {court:'Gym 2 (Basketball)', phase:'wb_f', round:'WB Final', desc:'BW5 vs BW6',  winnerSlot:'BW7',  loserSlot:'BBL3'},
-    {court:'Gym 3 (Basketball)', phase:'lb',   round:'LB R2',    desc:'BLW1 vs BLP', winnerSlot:'BLW3', loserSlot:null},
+    {court:'Gym 2 (Basketball)', phase:'wb_f', round:'WB Final', desc:'BW5 vs BW6',   winnerSlot:'BW7',  loserSlot:'BBL3'},
+    {court:'Gym 3 (Basketball)', phase:'lb',   round:'LB R2',    desc:'BLW1 vs BLP1', winnerSlot:'BLW3', loserSlot:null},
   ]},
-  // LB R2 B
+  // LB R2 G2
   {start:D1(19,45), rows:[
-    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R2', desc:'BLW2 vs BBL1', winnerSlot:'BLW4', loserSlot:null},
+    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R2', desc:'BLW2 vs BLP2', winnerSlot:'BLW4', loserSlot:null},
   ]},
-  // LB R3 — BBL2 (WB QF2 loser) enters here directly, bypassing LB R2
+  // LB R3 — WB QF losers (BBL1/BBL2) enter here
   {start:D1(20,15), rows:[
-    {court:'Gym 2 (Basketball)', phase:'lb', round:'LB R3', desc:'BLW3 vs BBL3', winnerSlot:'BLW5', loserSlot:null},
+    {court:'Gym 2 (Basketball)', phase:'lb', round:'LB R3', desc:'BLW3 vs BBL1', winnerSlot:'BLW5', loserSlot:null},
     {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R3', desc:'BLW4 vs BBL2', winnerSlot:'BLW6', loserSlot:null},
   ]},
-  // LB Final
+  // LB SF
   {start:D1(20,45), rows:[
-    {court:'Gym 2 (Basketball)', phase:'lb_f', round:'LB Final', desc:'BLW5 vs BLW6', winnerSlot:'BLW7', loserSlot:null},
+    {court:'Gym 2 (Basketball)', phase:'lb_sf', round:'LB SF', desc:'BLW5 vs BLW6', winnerSlot:'BLW7', loserSlot:null},
   ]},
-  // Day 2 — Grand Final
+  // Day 2 — LB Final (WB Final loser BBL3 enters here)
   {start:D2(15,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'gf', round:'Grand Final',       desc:'BW7 vs BLW7',           winnerSlot:'BB Champion', loserSlot:null},
+    {court:'Gym 2 (Basketball)', phase:'lb_f', round:'LB Final', desc:'BLW7 vs BBL3', winnerSlot:'BLW8', loserSlot:null},
   ]},
+  // Grand Final
   {start:D2(15,55), rows:[
-    {court:'Gym 2 (Basketball)', phase:'gf', round:'GF Reset',          desc:'Reset Game (if needed)', winnerSlot:'BB Champion', loserSlot:null},
+    {court:'Gym 2 (Basketball)', phase:'gf', round:'Grand Final', desc:'BW7 vs BLW8',           winnerSlot:'BB Champion', loserSlot:null},
+  ]},
+  {start:D2(16,20), rows:[
+    {court:'Gym 2 (Basketball)', phase:'gf', round:'GF Reset',    desc:'Reset Game (if needed)', winnerSlot:'BB Champion', loserSlot:null},
   ]},
 ];
 
 const VB_SLOTS = [
-  // R1 — seeds 7-10 play in (2 games); seeds 1-6 get byes to QF
-  {start:D1(17,10), rows:[{court:'Gym 1 (Volleyball)', phase:'r1', round:'R1 Game 1',     desc:'T7 vs T10',       winnerSlot:'VW1',         loserSlot:null}]},
-  {start:D1(17,30), rows:[{court:'Gym 1 (Volleyball)', phase:'r1', round:'R1 Game 2',     desc:'T8 vs T9',        winnerSlot:'VW2',         loserSlot:null}]},
-  // QF — 4 games (T1 vs VW2, T2 vs VW1, T3 vs T6, T4 vs T5)
-  {start:D1(18, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 1',desc:'T1 vs VW2',       winnerSlot:'VQF1W',       loserSlot:null}]},
-  {start:D1(18,20), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 2',desc:'T2 vs VW1',       winnerSlot:'VQF2W',       loserSlot:null}]},
-  {start:D1(18,40), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 3',desc:'T3 vs T6',        winnerSlot:'VQF3W',       loserSlot:null}]},
-  {start:D1(19, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 4',desc:'T4 vs T5',        winnerSlot:'VQF4W',       loserSlot:null}]},
-  // SF — 2 games + 3rd place
-  {start:D1(19,30), rows:[{court:'Gym 1 (Volleyball)', phase:'sf', round:'Semifinal 1',   desc:'VQF1W vs VQF4W',  winnerSlot:'VSF1W',       loserSlot:'VSF1L'}]},
-  {start:D1(19,50), rows:[{court:'Gym 1 (Volleyball)', phase:'sf', round:'Semifinal 2',   desc:'VQF2W vs VQF3W',  winnerSlot:'VSF2W',       loserSlot:'VSF2L'}]},
-  {start:D1(20,10), rows:[{court:'Gym 1 (Volleyball)', phase:'sf', round:'3rd Place',     desc:'VSF1L vs VSF2L',  winnerSlot:'VB 3rd',      loserSlot:null}]},
+  // R1 — seeds 6-11 play in (3 games); seeds 1-5 get byes to QF
+  {start:D1(17,10), rows:[{court:'Gym 1 (Volleyball)', phase:'r1', round:'R1 Game 1',     desc:'T9 vs T11',       winnerSlot:'VW1',   loserSlot:null}]},
+  {start:D1(17,30), rows:[{court:'Gym 1 (Volleyball)', phase:'r1', round:'R1 Game 2',     desc:'T8 vs T10',       winnerSlot:'VW2',   loserSlot:null}]},
+  {start:D1(17,50), rows:[{court:'Gym 1 (Volleyball)', phase:'r1', round:'R1 Game 3',     desc:'T6 vs T7',        winnerSlot:'VW3',   loserSlot:null}]},
+  // QF — 4 games (T1-T5 + VW1/VW2/VW3 = 8 teams)
+  {start:D1(18,20), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 1',desc:'T1 vs VW1',       winnerSlot:'VQF1W', loserSlot:null}]},
+  {start:D1(18,40), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 2',desc:'T2 vs VW2',       winnerSlot:'VQF2W', loserSlot:null}]},
+  {start:D1(19, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 3',desc:'T3 vs VW3',       winnerSlot:'VQF3W', loserSlot:null}]},
+  {start:D1(19,20), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 4',desc:'T4 vs T5',        winnerSlot:'VQF4W', loserSlot:null}]},
+  // SF + 3rd Place
+  {start:D1(19,40), rows:[{court:'Gym 1 (Volleyball)', phase:'sf', round:'Semifinal 1',   desc:'VQF1W vs VQF4W',  winnerSlot:'VSF1W', loserSlot:'VSF1L'}]},
+  {start:D1(20, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'sf', round:'Semifinal 2',   desc:'VQF2W vs VQF3W',  winnerSlot:'VSF2W', loserSlot:'VSF2L'}]},
+  {start:D1(20,20), rows:[{court:'Gym 1 (Volleyball)', phase:'sf', round:'3rd Place',     desc:'VSF1L vs VSF2L',  winnerSlot:'VB 3rd',      loserSlot:null}]},
   // Grand Final
-  {start:D1(20,30), rows:[{court:'Gym 1 (Volleyball)', phase:'gf', round:'Grand Final',   desc:'VSF1W vs VSF2W',  winnerSlot:'VB Champion', loserSlot:null}]},
+  {start:D1(20,40), rows:[{court:'Gym 1 (Volleyball)', phase:'gf', round:'Grand Final',   desc:'VSF1W vs VSF2W',  winnerSlot:'VB Champion', loserSlot:null}]},
 ];
 
 // ===== SCHEDULE GENERATION =====
@@ -2629,7 +2640,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ===== INIT =====
-const BB_SCHEMA_V = 5;  // increment when slot naming changes to force rebuild
+const BB_SCHEMA_V = 6;  // increment when slot naming changes to force rebuild
 
 function needsRebuild(games, schemaV) {
   const list = Object.values(games || {});
