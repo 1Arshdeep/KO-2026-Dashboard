@@ -574,43 +574,43 @@ const VB_SLOT  = 20;
 // Soccer schedule slots — 11 teams, Double Elimination, 4 fields
 const SOCCER_SLOTS = [
   // WB Prelim — seeds 5-12 play in (4 games), top 4 seeds get byes to WB R1
-  { start: D1(10,20), rows:[
+  { start: D1(11,0), rows:[
     {court:'Soccer Field A', phase:'wb', round:'WB Prelim', desc:'T5 vs T12'},
     {court:'Soccer Field B', phase:'wb', round:'WB Prelim', desc:'T6 vs T11'},
     {court:'Soccer Field C', phase:'wb', round:'WB Prelim', desc:'T7 vs T10'},
     {court:'Soccer Field D', phase:'wb', round:'WB Prelim', desc:'T8 vs T9'},
   ]},
   // WB R1 — 4 games (seeds 1-4 + 4 prelim winners = 8 teams)
-  { start: D1(10,45), rows:[
+  { start: D1(11,25), rows:[
     {court:'Soccer Field A', phase:'wb', round:'WB R1', desc:'T1 vs PW4'},
     {court:'Soccer Field B', phase:'wb', round:'WB R1', desc:'T2 vs PW3'},
     {court:'Soccer Field C', phase:'wb', round:'WB R1', desc:'T3 vs PW2'},
     {court:'Soccer Field D', phase:'wb', round:'WB R1', desc:'T4 vs PW1'},
   ]},
-  { start: D1(11,10), rows:[
+  { start: D1(11,50), rows:[
     {court:'Soccer Field A', phase:'wb', round:'WB SF', desc:'WBW1 vs WBW4'},
     {court:'Soccer Field B', phase:'wb', round:'WB SF', desc:'WBW2 vs WBW3'},
     {court:'Soccer Field C', phase:'lb', round:'LB R1', desc:'PL1 vs WBL4'},
     {court:'Soccer Field D', phase:'lb', round:'LB R1', desc:'PL2 vs WBL3'},
   ]},
-  { start: D1(11,35), rows:[
+  { start: D1(12,15), rows:[
     {court:'Soccer Field A', phase:'wb_f', round:'WB Final', desc:'WBW5 vs WBW6'},
     {court:'Soccer Field B', phase:'lb',   round:'LB R1',    desc:'PL3 vs WBL2'},
     {court:'Soccer Field C', phase:'lb',   round:'LB R1',    desc:'PL4 vs WBL1'},
   ]},
-  // Lunch 12:00–12:30
-  { start: D1(12,30), rows:[
+  // Lunch 1:00-2:00 PM
+  { start: D1(14,0), rows:[
     {court:'Soccer Field A', phase:'lb', round:'LB R2', desc:'LBW1 vs LBW2'},
     {court:'Soccer Field B', phase:'lb', round:'LB R2', desc:'LBW3 vs LBW4'},
   ]},
-  { start: D1(12,55), rows:[
+  { start: D1(14,25), rows:[
     {court:'Soccer Field A', phase:'lb', round:'LB R3', desc:'LBW5 vs WBSFL1'},
     {court:'Soccer Field B', phase:'lb', round:'LB R3', desc:'LBW6 vs WBSFL2'},
   ]},
-  { start: D1(13,20), rows:[
+  { start: D1(14,50), rows:[
     {court:'Soccer Field A', phase:'lb_sf', round:'LB SF', desc:'LBW7 vs LBW8'},
   ]},
-  { start: D1(13,45), rows:[
+  { start: D1(15,15), rows:[
     {court:'Soccer Field A', phase:'lb_f', round:'LB Final', desc:'LBW9 vs WBFL'},
   ]},
   // Day 2
@@ -939,9 +939,9 @@ function renderScheduleTable(sport, slots, slotMin, courts, title) {
     if (sport === 'soccer' && prevStart !== null) {
       const prevTod = new Date(prevStart).getHours() * 60 + new Date(prevStart).getMinutes();
       const curTod  = d.getHours() * 60 + d.getMinutes();
-      if (prevTod < 12*60 && curTod >= 12*60+30) {
-        html += `<div class="sg-time" style="grid-column:1">12:00–12:30</div>`;
-        html += `<div class="sg-cell break-cell" style="grid-column:2/-1"><span>🍽 Lunch Break — 30 minutes</span></div>`;
+      if (prevTod < 13*60 && curTod >= 14*60) {
+        html += `<div class="sg-time" style="grid-column:1">1:00–2:00 PM</div>`;
+        html += `<div class="sg-cell break-cell" style="grid-column:2/-1"><span>🍽 Lunch Break — 1 hour</span></div>`;
       }
     }
 
@@ -1154,7 +1154,7 @@ function renderSoccerBracket() {
   const byeCol = buildByeColumn('soccer', 4);
   el.innerHTML = `
     <div class="sec-title">⚽ Soccer — Double Elimination <span class="sec-badge">${sportBadge('soccer')}</span>
-      <span class="sec-sub">Day 1: 10:20 AM–5 PM · Day 2 GF: 1:00 PM</span>
+      <span class="sec-sub">Day 1: 11:00 AM–3:40 PM · Lunch 1–2 PM · Day 2 GF: 1:00 PM</span>
     </div>
     <div class="format-note">Play-in format: Top 4 seeds skip WB Prelim. Seeds 5–12 play 4 opening games — winners join seeds 1–4 in WB Round 1. Losers drop to the Losers Bracket. Double elimination throughout.</div>
     ${buildScheduleGrid('soccer')}
