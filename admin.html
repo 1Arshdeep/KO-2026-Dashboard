@@ -1325,6 +1325,8 @@ function ensureStateFields(s) {
   ['soccer','basketball','volleyball'].forEach(sp => { if (!s.rosters[sp]) s.rosters[sp] = {}; });
   if (s.activeCourts === undefined) s.activeCourts = null;
   if (!s.timers) s.timers = {};
+  // Migrate any timers saved with old 15-min duration to 20-min
+  Object.values(s.timers).forEach(t => { if (t && t.duration === 900) t.duration = 1200; });
 }
 
 window.addEventListener('storage', e => {
