@@ -137,6 +137,21 @@ hr.sep{border:none;border-top:1px solid var(--gray3);margin:16px 0}
 /* ── FORMAT NOTE ── */
 .format-note{font-size:11px;color:var(--dim);font-style:italic;line-height:1.55;padding:8px 12px 8px 14px;background:var(--gray);border-left:3px solid var(--gray3);border-radius:0 6px 6px 0;margin-bottom:14px}
 
+/* ── GROUP STAGE TABLES ── */
+.grp-tables-row{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:16px}
+@media(min-width:760px){.grp-tables-row{grid-template-columns:1fr 1fr}}
+.grp-table-wrap{background:var(--gray);border:1px solid var(--gray3);border-radius:var(--radius-sm);overflow:hidden}
+.grp-header{font-size:12px;font-weight:700;color:var(--gold);padding:7px 10px;background:rgba(0,0,0,.25);letter-spacing:.5px;text-transform:uppercase}
+.grp-table{width:100%;border-collapse:collapse;font-size:11px}
+.grp-table thead tr{background:rgba(0,0,0,.15)}
+.grp-table th{padding:5px 6px;color:var(--dim);font-weight:600;text-align:center;white-space:nowrap}
+.grp-table th.grp-name-th{text-align:left}
+.grp-table td{padding:5px 6px;text-align:center;border-top:1px solid var(--gray3)}
+.grp-table td.grp-name{text-align:left;font-weight:500;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.grp-table td.grp-pos{color:var(--dim);font-size:10px;width:18px}
+.grp-table td.grp-pts{font-weight:700;color:var(--gold)}
+.grp-table tr.grp-qualify{background:rgba(0,180,90,.07)}
+
 /* ── BYE COLUMN ── */
 .br-round-byes{opacity:.6;flex:.7!important;min-width:110px!important}
 .matchup-bye{background:var(--navy);border:1px dashed var(--gray3)!important;cursor:default}
@@ -583,69 +598,88 @@ const SOC_SLOT = 25;
 const BB_SLOT  = 25;
 const VB_SLOT  = 20;
 
-// Soccer schedule slots — 14 teams, Double Elimination, 4 fields
+const DEFAULT_SOCCER_GROUPS = {
+  A: ['Babbar Khalsa Ballers','Sharomani Akaali Dal','KLF','NPSS','Humberwood','Brackish','Panjab Lions'],
+  B: ['Dixie United','Mohali fc','Akaal Fauj','Punjab Kings','McMaster University','Rebel FC','Kaurs United'],
+};
+
+// Soccer: Group Stage + Knockout — 2 groups of 7, full round-robin, 4 fields, 25-min slots
 const SOCCER_SLOTS = [
-  // WB Prelim — seeds 3-14 play in (6 games), top 2 seeds get byes to WB R1
-  { start: D1(10,20), rows:[
-    {court:'Soccer Field A', phase:'wb', round:'WB Prelim', desc:'T3 vs T14'},
-    {court:'Soccer Field B', phase:'wb', round:'WB Prelim', desc:'T4 vs T13'},
-    {court:'Soccer Field C', phase:'wb', round:'WB Prelim', desc:'T5 vs T12'},
-    {court:'Soccer Field D', phase:'wb', round:'WB Prelim', desc:'T6 vs T11'},
+  // ── Day 1: Group Stage 11:00 AM – 3:35 PM ──
+  { start: D1(11, 0), rows:[
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'A2 vs A7', group:'A'},
+    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'A3 vs A6', group:'A'},
+    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'A4 vs A5', group:'A'},
+    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B2 vs B7', group:'B'},
   ]},
-  { start: D1(10,45), rows:[
-    {court:'Soccer Field A', phase:'wb', round:'WB Prelim', desc:'T7 vs T10'},
-    {court:'Soccer Field B', phase:'wb', round:'WB Prelim', desc:'T8 vs T9'},
+  { start: D1(11,25), rows:[
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B3 vs B6', group:'B'},
+    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'B4 vs B5', group:'B'},
+    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'A1 vs A7', group:'A'},
+    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'A2 vs A5', group:'A'},
   ]},
-  // WB R1 — T1-T2 byes + 6 prelim winners (8 teams total)
-  { start: D1(11,10), rows:[
-    {court:'Soccer Field A', phase:'wb', round:'WB R1', desc:'T1 vs PW6'},
-    {court:'Soccer Field B', phase:'wb', round:'WB R1', desc:'T2 vs PW5'},
-    {court:'Soccer Field C', phase:'wb', round:'WB R1', desc:'PW1 vs PW4'},
-    {court:'Soccer Field D', phase:'wb', round:'WB R1', desc:'PW2 vs PW3'},
+  { start: D1(11,50), rows:[
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'A3 vs A4', group:'A'},
+    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'B1 vs B7', group:'B'},
+    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B3 vs B4', group:'B'},
+    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B5 vs B6', group:'B'},
   ]},
-  // WB SF + LB R1 G1 & G2 (prelim losers pair off)
-  { start: D1(11,35), rows:[
-    {court:'Soccer Field A', phase:'wb', round:'WB SF', desc:'WBW1 vs WBW4'},
-    {court:'Soccer Field B', phase:'wb', round:'WB SF', desc:'WBW2 vs WBW3'},
-    {court:'Soccer Field C', phase:'lb', round:'LB R1', desc:'PL1 vs PL6'},
-    {court:'Soccer Field D', phase:'lb', round:'LB R1', desc:'PL2 vs PL5'},
+  { start: D1(12,15), rows:[
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'A1 vs A6', group:'A'},
+    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'A7 vs A5', group:'A'},
+    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B1 vs B2', group:'B'},
+    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B6 vs B4', group:'B'},
   ]},
-  // WB Final + LB R1 G3
-  { start: D1(12,0), rows:[
-    {court:'Soccer Field A', phase:'wb_f', round:'WB Final', desc:'WBW5 vs WBW6'},
-    {court:'Soccer Field B', phase:'lb',   round:'LB R1',    desc:'PL3 vs PL4'},
+  { start: D1(12,40), rows:[
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B5 vs B3', group:'B'},
+    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'A2 vs A3', group:'A'},
+    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'A1 vs A5', group:'A'},
+    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'A6 vs A7', group:'A'},
   ]},
-  // Lunch 12:25–2:00 PM
-  // LB R2 — LB R1 winners vs WB R1 losers (WBL1 gets bye to LB R3)
-  { start: D1(14,0), rows:[
-    {court:'Soccer Field A', phase:'lb', round:'LB R2', desc:'LBW1 vs WBL4'},
-    {court:'Soccer Field B', phase:'lb', round:'LB R2', desc:'LBW2 vs WBL3'},
-    {court:'Soccer Field C', phase:'lb', round:'LB R2', desc:'LBW3 vs WBL2'},
+  { start: D1(13, 5), rows:[
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B1 vs B6', group:'B'},
+    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'B4 vs B2', group:'B'},
+    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'A4 vs A2', group:'A'},
+    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B7 vs B5', group:'B'},
   ]},
-  // LB R3 — WBL1 (bye) vs LBW4; LBW5 vs LBW6
-  { start: D1(14,25), rows:[
-    {court:'Soccer Field A', phase:'lb', round:'LB R3', desc:'WBL1 vs LBW4'},
-    {court:'Soccer Field B', phase:'lb', round:'LB R3', desc:'LBW5 vs LBW6'},
+  { start: D1(13,30), rows:[
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'A5 vs A6', group:'A'},
+    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'A7 vs A3', group:'A'},
+    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B1 vs B4', group:'B'},
+    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B6 vs B2', group:'B'},
   ]},
-  // LB R4 — WB SF losers enter here
-  { start: D1(14,50), rows:[
-    {court:'Soccer Field A', phase:'lb', round:'LB R4', desc:'LBW7 vs WBSFL1'},
-    {court:'Soccer Field B', phase:'lb', round:'LB R4', desc:'LBW8 vs WBSFL2'},
+  { start: D1(13,55), rows:[
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B7 vs B3', group:'B'},
+    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'A1 vs A2', group:'A'},
+    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'A5 vs A3', group:'A'},
+    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'A6 vs A4', group:'A'},
   ]},
-  // LB SF
-  { start: D1(15,15), rows:[
-    {court:'Soccer Field A', phase:'lb_sf', round:'LB SF', desc:'LBW9 vs LBW10'},
+  { start: D1(14,20), rows:[
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B1 vs B5', group:'B'},
+    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'A1 vs A4', group:'A'},
+    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B6 vs B7', group:'B'},
+    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'A6 vs A2', group:'A'},
   ]},
-  // LB Final — WB Final loser enters here
-  { start: D1(15,40), rows:[
-    {court:'Soccer Field A', phase:'lb_f', round:'LB Final', desc:'LBW11 vs WBFL'},
+  { start: D1(14,45), rows:[
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B2 vs B3', group:'B'},
+    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'A1 vs A3', group:'A'},
+    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B4 vs B7', group:'B'},
+    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'A4 vs A7', group:'A'},
   ]},
-  // Day 2
-  { start: D2(13,0), rows:[
-    {court:'Soccer Field A', phase:'gf', round:'Grand Final', desc:'WBW7 vs LBW12'},
+  { start: D1(15,10), rows:[
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B2 vs B5', group:'B'},
+    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'B1 vs B3', group:'B'},
   ]},
-  { start: D2(13,25), rows:[
-    {court:'Soccer Field A', phase:'gf', round:'GF Reset', desc:'Reset Game (if needed)'},
+  // ── Day 2: Knockout ──
+  { start: D2(11, 0), rows:[
+    {court:'Soccer Field A', phase:'ko', round:'Semifinal 1', desc:'A1 vs B2'},
+    {court:'Soccer Field B', phase:'ko', round:'Semifinal 2', desc:'B1 vs A2'},
+  ]},
+  { start: D2(12, 0), rows:[
+    {court:'Soccer Field A', phase:'ko', round:'3rd Place',   desc:'SF1L vs SF2L'},
+  ]},
+  { start: D2(13, 0), rows:[
+    {court:'Soccer Field A', phase:'ko', round:'Final',       desc:'SF1W vs SF2W'},
   ]},
 ];
 
@@ -756,9 +790,10 @@ function defaultTeams() {
 function defaultState() {
   const s = {
     teams: defaultTeams(),
-    games: {},          // gameId -> game
-    courtDelays: {},    // courtName -> delayMinutes
-    simTime: null,      // null = real time
+    games: {},
+    courtDelays: {},
+    simTime: null,
+    soccerGroups: JSON.parse(JSON.stringify(DEFAULT_SOCCER_GROUPS)),
   };
   buildAllGames(s);
   return s;
@@ -777,8 +812,19 @@ function save() {
 // ══════════════════════════════════════════════════════════════
 // GAME BUILDING FROM SLOTS
 // ══════════════════════════════════════════════════════════════
+function resolveGroupToken(token, sg) {
+  const m = token.match(/^([AB])(\d+)$/);
+  if (m && sg) {
+    const grp = sg[m[1]];
+    const idx = parseInt(m[2]) - 1;
+    if (grp && grp[idx]) return grp[idx];
+  }
+  return token;
+}
+
 function buildAllGames(s) {
   let idx = 0;
+  const sgroups = s.soccerGroups || DEFAULT_SOCCER_GROUPS;
   const addGames = (slotArr, sport, slotMin) => {
     const courtOrder = {};
     slotArr.forEach(slot => {
@@ -786,11 +832,23 @@ function buildAllGames(s) {
         const courtIdx = (courtOrder[row.court] = (courtOrder[row.court]||0));
         courtOrder[row.court]++;
         const id = `${sport}_${row.court.replace(/\s+/g,'_')}_${courtIdx}`;
+        let t1, t2, desc;
+        if (row.group && sgroups) {
+          const parts = row.desc.split(' vs ');
+          t1 = resolveGroupToken(parts[0].trim(), sgroups);
+          t2 = resolveGroupToken(parts[1].trim(), sgroups);
+          desc = `${t1} vs ${t2}`;
+        } else {
+          const parts = row.desc.split(' vs ');
+          t1 = parts[0] || 'TBD';
+          t2 = parts[1] || 'TBD';
+          desc = row.desc;
+        }
         s.games[id] = {
           id, sport, court:row.court, phase:row.phase, round:row.round,
-          desc:row.desc, scheduledStart:slot.start, slotMin,
-          team1:row.desc.split(' vs ')[0]||'TBD',
-          team2:row.desc.split(' vs ')[1]||'TBD',
+          group: row.group || null,
+          desc, scheduledStart:slot.start, slotMin,
+          team1:t1, team2:t2,
           score1:0, score2:0, status:'upcoming',
           winner:null, loser:null, dq:null, ts:null,
         };
@@ -1230,25 +1288,105 @@ function updateBadges() {
   });
 }
 
+// Returns array of team stats for one group, sorted by standings.
+function computeGroupStandings(grp) {
+  const teams = (state.soccerGroups || {})[grp] || [];
+  const stats = {};
+  teams.forEach(t => { stats[t] = {name:t, pts:0, w:0, d:0, l:0, gf:0, ga:0, gd:0, h2h:{}}; });
+
+  Object.values(state.games).filter(g =>
+    g.sport === 'soccer' && g.phase === 'group' && g.group === grp && g.status === 'final'
+  ).forEach(g => {
+    const {team1:t1, team2:t2, score1:s1, score2:s2} = g;
+    if (!stats[t1] || !stats[t2]) return;
+    stats[t1].gf += s1; stats[t1].ga += s2; stats[t1].gd += (s1-s2);
+    stats[t2].gf += s2; stats[t2].ga += s1; stats[t2].gd += (s2-s1);
+    if (!stats[t1].h2h[t2]) stats[t1].h2h[t2] = 0;
+    if (!stats[t2].h2h[t1]) stats[t2].h2h[t1] = 0;
+    if (s1 > s2)      { stats[t1].pts += 3; stats[t1].w++; stats[t2].l++; stats[t1].h2h[t2] += 3; }
+    else if (s2 > s1) { stats[t2].pts += 3; stats[t2].w++; stats[t1].l++; stats[t2].h2h[t1] += 3; }
+    else              { stats[t1].pts++; stats[t1].d++; stats[t2].pts++; stats[t2].d++; stats[t1].h2h[t2]++; stats[t2].h2h[t1]++; }
+  });
+
+  return Object.values(stats).sort((a, b) => {
+    if (b.pts !== a.pts) return b.pts - a.pts;
+    if (b.gd  !== a.gd)  return b.gd  - a.gd;
+    if (b.gf  !== a.gf)  return b.gf  - a.gf;
+    return (b.h2h[a.name]||0) - (a.h2h[b.name]||0);
+  });
+}
+
+// Populate SF team slots from group standings once both games in a group are all final.
+function populateKnockoutTeams() {
+  if (!state.soccerGroups) return;
+  const resolved = {};
+  ['A','B'].forEach(grp => {
+    const gg = Object.values(state.games).filter(g =>
+      g.sport === 'soccer' && g.phase === 'group' && g.group === grp
+    );
+    if (!gg.length || gg.filter(g => g.status === 'final').length < gg.length) return;
+    const s = computeGroupStandings(grp);
+    resolved[grp] = { p1: (s[0]||{}).name, p2: (s[1]||{}).name };
+  });
+
+  const sf1 = Object.values(state.games).find(g => g.sport === 'soccer' && g.round === 'Semifinal 1');
+  if (sf1 && sf1.status !== 'final') {
+    if (resolved.A && resolved.A.p1) sf1.team1 = resolved.A.p1;
+    if (resolved.B && resolved.B.p2) sf1.team2 = resolved.B.p2;
+    sf1.desc = `${sf1.team1} vs ${sf1.team2}`;
+  }
+  const sf2 = Object.values(state.games).find(g => g.sport === 'soccer' && g.round === 'Semifinal 2');
+  if (sf2 && sf2.status !== 'final') {
+    if (resolved.B && resolved.B.p1) sf2.team1 = resolved.B.p1;
+    if (resolved.A && resolved.A.p2) sf2.team2 = resolved.A.p2;
+    sf2.desc = `${sf2.team1} vs ${sf2.team2}`;
+  }
+}
+
+// Render a group standing table for the public view.
+function renderGroupTable(grp) {
+  const standings = computeGroupStandings(grp);
+  const rows = standings.map((t, i) => {
+    const qualify = i < 2 ? ' class="grp-qualify"' : '';
+    const gdStr = t.gd > 0 ? `+${t.gd}` : String(t.gd);
+    return `<tr${qualify}>
+      <td class="grp-pos">${i+1}</td>
+      <td class="grp-name">${t.name}</td>
+      <td>${t.w+t.d+t.l}</td>
+      <td>${t.w}</td><td>${t.d}</td><td>${t.l}</td>
+      <td>${t.gf}</td><td>${t.ga}</td>
+      <td>${gdStr}</td>
+      <td class="grp-pts">${t.pts}</td>
+    </tr>`;
+  }).join('');
+  return `<div class="grp-table-wrap">
+    <div class="grp-header">Group ${grp}</div>
+    <table class="grp-table">
+      <thead><tr>
+        <th>#</th><th class="grp-name-th">Team</th>
+        <th title="Played">GP</th><th title="Wins">W</th><th title="Draws">D</th><th title="Losses">L</th>
+        <th title="Goals For">GF</th><th title="Goals Against">GA</th><th title="Goal Difference">GD</th>
+        <th title="Points">Pts</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  </div>`;
+}
+
 function renderSoccerBracket() {
   const el = document.getElementById('panel-soccer');
-  const byeCol = buildByeColumn('soccer', 2);
   el.innerHTML = `
-    <div class="sec-title">⚽ Soccer — Double Elimination <span class="sec-badge">${sportBadge('soccer')}</span>
-      <span class="sec-sub">Day 1: 10:20 AM–4:05 PM · Lunch 12:25–2 PM · Day 2 GF: 1:00 PM</span>
+    <div class="sec-title">⚽ Soccer — Group Stage + Knockout <span class="sec-badge">${sportBadge('soccer')}</span>
+      <span class="sec-sub">Day 1: Group Stage 11:00 AM–3:35 PM &middot; Day 2: Semis 11 AM, 3rd Place 12 PM, Final 1 PM</span>
     </div>
-    <div class="format-note">Play-in format: Top 2 seeds skip WB Prelim. Seeds 3–14 play 6 opening games — winners join seeds 1–2 in WB Round 1. Losers drop to the Losers Bracket. Double elimination throughout.</div>
+    <div class="format-note">2 groups of 7 — full round-robin within each group (21 games/group, 42 total) &middot; Top 2 from each group advance to Knockout &middot; Day 2: SF1 (A1 vs B2), SF2 (B1 vs A2), 3rd Place, Final</div>
     ${buildScheduleGrid('soccer')}
-    <div class="bracket-dual">
-      <div>
-        ${buildBracketSection('soccer','wb','Winners Bracket',{insertAfterRoundIndex:0,insertHtml:byeCol})}
-      </div>
-      <div>
-        ${buildBracketSection('soccer','lb','Losers Bracket')}
-        <hr class="sep">
-        ${buildBracketSection('soccer','gf','Grand Final')}
-      </div>
+    <div class="grp-tables-row">
+      ${renderGroupTable('A')}
+      ${renderGroupTable('B')}
     </div>
+    <hr class="sep">
+    ${buildBracketSection('soccer','ko','Knockout Stage')}
   `;
 }
 
@@ -1384,6 +1522,10 @@ function buildBracketSection(sport, phase, label, opts) {
   return html;
 }
 
+function isTbdToken(t) {
+  return /^T\d+$/.test(t) || t === 'TBD' || /^[AB]\d$/.test(t) || /^SF[12][WL]$/.test(t);
+}
+
 function matchupCard(g) {
   const isLv = (isLiveByTime(g) && g.status !== 'final') || g.status === 'live';
   const isDone = g.status === 'final';
@@ -1398,12 +1540,12 @@ function matchupCard(g) {
     <div class="match-time">${timeStr} · ${g.court}</div>
     <div class="tr ${t1w?'won':''} ${!t1w&&isDone?'lost':''} ${g.dq==='team1'?'dq-row':''}">
       <span class="tr-seed"></span>
-      <span class="tr-name ${g.team1.startsWith('T')||g.team1==='TBD'?'tbd':''}">${g.team1}${g.dq==='team1'?' 🚫':''}</span>
+      <span class="tr-name ${isTbdToken(g.team1)?'tbd':''}">${g.team1}${g.dq==='team1'?' 🚫':''}</span>
       <span class="tr-score">${isDone||isLv?g.score1:''}</span>
     </div>
     <div class="tr ${t2w?'won':''} ${!t2w&&isDone?'lost':''} ${g.dq==='team2'?'dq-row':''}">
       <span class="tr-seed"></span>
-      <span class="tr-name ${g.team2.startsWith('T')||g.team2==='TBD'?'tbd':''}">${g.team2}${g.dq==='team2'?' 🚫':''}</span>
+      <span class="tr-name ${isTbdToken(g.team2)?'tbd':''}">${g.team2}${g.dq==='team2'?' 🚫':''}</span>
       <span class="tr-score">${isDone||isLv?g.score2:''}</span>
     </div>
   </div>`;
@@ -1927,13 +2069,15 @@ function migrateCourtNames(data) {
 window.applyFirebaseState = (data) => {
   if (!window._appReady) return;
   migrateCourtNames(data);
-  state.courtDelays = data.courtDelays || {};
-  state.teams       = data.teams       || defaultTeams();
-  state.games       = data.games       || {};
-  state.timers      = data.timers      || {};
-  state.rosters     = data.rosters     || {soccer:{},basketball:{},volleyball:{}};
+  state.courtDelays  = data.courtDelays  || {};
+  state.teams        = data.teams        || defaultTeams();
+  state.games        = data.games        || {};
+  state.timers       = data.timers       || {};
+  state.rosters      = data.rosters      || {soccer:{},basketball:{},volleyball:{}};
   state.activeCourts = data.activeCourts !== undefined ? data.activeCourts : null;
-  state.simTime     = null; // public view always uses real clock
+  state.soccerGroups = data.soccerGroups || JSON.parse(JSON.stringify(DEFAULT_SOCCER_GROUPS));
+  state.simTime      = null; // public view always uses real clock
+  populateKnockoutTeams();
   renderAll();
   if (_tvHashKey) tvHashRender();
 };
