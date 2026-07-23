@@ -24,6 +24,7 @@
   --c-soccer: #22c55e;
   --c-basketball: #f97316;
   --c-volleyball: #a855f7;
+  --c-group-b: #3b82f6;
   --tap-min: 56px;
 }
 html { font-size: 16px; }
@@ -2389,6 +2390,99 @@ function renderBracketPanel() {
     ${content}`;
 }
 
+function adminRenderSoccerFixtures() {
+  const groupGames = Object.values(state.games)
+    .filter(g => g.sport === 'soccer' && g.phase === 'group')
+    .sort((a, b) => (getEffectiveStart(a) - getEffectiveStart(b)) || a.court.localeCompare(b.court));
+  if (!groupGames.length) return '';
+
+  const slotMap = new Map();
+  groupGames.forEach(g => {
+    const key = getEffectiveStart(g);
+    if (!slotMap.has(key)) slotMap.set(key, []);
+    slotMap.get(key).push(g);
+  });
+  const slots = [...slotMap.entries()].sort((a, b) => a[0] - b[0]);
+  const nowTs = Date.now();
+
+  function adminFmtTime(ms) {
+    return new Date(ms).toLocaleTimeString('en-CA', {hour:'2-digit', minute:'2-digit', hour12:true});
+  }
+
+  function adminScorePill(g) {
+    const s = getEffectiveStart(g);
+    const isLv = nowTs >= s && nowTs <= s + (g.slotMin || 15) * 60000 && g.status !== 'final';
+    if (g.status === 'final') {
+      const dqStr = g.dq ? ' · 🚫' : '';
+      return `<span style="background:rgba(255,255,255,.08);color:var(--fg);border-radius:10px;padding:2px 8px;font-size:11px;font-weight:700;white-space:nowrap">${g.score1} – ${g.score2}${dqStr}</span>`;
+    }
+    if (isLv || g.status === 'live') {
+      const sc = (g.score1 || g.score2) ? `${g.score1}–${g.score2} · ` : '';
+      return `<span style="background:rgba(224,80,80,.15);color:#f87171;border:1px solid #f87171;border-radius:10px;padding:2px 8px;font-size:11px;font-weight:700;white-space:nowrap">● ${sc}LIVE</span>`;
+    }
+    return `<span style="color:var(--dim);font-size:10px">upcoming</span>`;
+  }
+
+  const cards = slots.map(([startTs, games], idx) => {
+    const slotMin = games[0].slotMin || 15;
+    const endTs = startTs + slotMin * 60000;
+    const allFinal = games.every(g => g.status === 'final');
+    const isPast = allFinal && nowTs > endTs + 30 * 60000;
+    const hasLive = games.some(g => { const s = getEffectiveStart(g); return nowTs >= s && nowTs <= s + slotMin * 60000 && g.status !== 'final'; });
+    const liveTag = hasLive ? '<span style="font-size:9px;font-weight:800;color:#fff;background:#ef4444;border-radius:3px;padding:1px 5px;margin-left:6px">LIVE NOW</span>' : '';
+    const fieldLabels = [...new Set(games.map(g => g.court.replace('Soccer Field ', '')))].sort();
+    const fieldStr = fieldLabels.length === 4 ? 'all fields' : 'Fields ' + fieldLabels.join('/');
+
+    const rowsHtml = games.map(g => {
+      const grpColor = g.group === 'A' ? 'var(--c-soccer)' : 'var(--c-group-b)';
+      const t1Html = g.dq === g.team1 ? `<s>${g.team1}</s>` : g.team1;
+      const t2Html = g.dq === g.team2 ? `<s>${g.team2}</s>` : g.team2;
+      const fieldLabel = g.court.replace('Soccer ', '');
+      const dimOp = (g.status === 'upcoming' && !hasLive) ? 'opacity:.55' : '';
+      return `<div style="display:grid;grid-template-columns:60px 1fr auto 1fr;align-items:center;gap:0 8px;padding:5px 10px;border-top:1px solid var(--border);border-left:3px solid ${grpColor};${dimOp}">
+        <span style="font-size:10px;color:var(--dim)">${fieldLabel}</span>
+        <span style="text-align:right;font-size:11px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t1Html}</span>
+        ${adminScorePill(g)}
+        <span style="font-size:11px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t2Html}</span>
+      </div>`;
+    }).join('');
+
+    const liveStyle = hasLive ? 'border:1px solid rgba(224,80,80,.5);box-shadow:0 0 8px rgba(224,80,80,.15)' : 'border:1px solid var(--border)';
+    const hdrBorder = hasLive ? 'border-bottom:1px solid rgba(224,80,80,.4)' : '';
+    const bodyId = `adm-slot-${idx}`;
+
+    if (isPast) {
+      return `<div style="${liveStyle};border-radius:6px;overflow:hidden;margin-bottom:6px">
+        <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(0,0,0,.18);${hdrBorder}">
+          <span style="font-size:10px;font-weight:700;color:var(--gold)">Slot ${idx+1}</span>
+          <span style="font-size:11px;color:var(--fg);flex:1">${adminFmtTime(startTs)} – ${adminFmtTime(endTs)}</span>
+          <span style="font-size:10px;color:var(--dim)">${games.length} matches · ${fieldStr}</span>
+          <button onclick="(function(btn){document.getElementById('${bodyId}').style.display='block';btn.style.display='none';})(this)" style="background:none;border:1px solid var(--border);border-radius:4px;color:var(--dim);font-size:10px;padding:1px 6px;cursor:pointer;margin-left:6px">▸ show</button>
+        </div>
+        <div id="${bodyId}" style="display:none">${rowsHtml}</div>
+      </div>`;
+    }
+    return `<div style="${liveStyle};border-radius:6px;overflow:hidden;margin-bottom:6px">
+      <div style="display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(0,0,0,.18);${hdrBorder}">
+        <span style="font-size:10px;font-weight:700;color:var(--gold)">Slot ${idx+1}</span>
+        <span style="font-size:11px;color:var(--fg);flex:1">${adminFmtTime(startTs)} – ${adminFmtTime(endTs)}${liveTag}</span>
+        <span style="font-size:10px;color:var(--dim)">${games.length} matches · ${fieldStr}</span>
+      </div>
+      ${rowsHtml}
+    </div>`;
+  }).join('');
+
+  const played = groupGames.filter(g => g.status === 'final').length;
+  const liveN  = groupGames.filter(g => { const s=getEffectiveStart(g); return nowTs>=s&&nowTs<=s+(g.slotMin||15)*60000&&g.status!=='final'; }).length;
+  const upN    = groupGames.filter(g => g.status !== 'final' && nowTs < getEffectiveStart(g)).length;
+
+  return `<div style="font-size:10px;color:var(--dim);margin-bottom:8px;display:flex;gap:14px;align-items:center">
+    <span><span style="display:inline-block;width:9px;height:9px;background:var(--c-soccer);border-radius:2px;margin-right:3px;vertical-align:middle"></span>Group A</span>
+    <span><span style="display:inline-block;width:9px;height:9px;background:var(--c-group-b);border-radius:2px;margin-right:3px;vertical-align:middle"></span>Group B</span>
+    <span style="margin-left:auto">${played} played · ${liveN} live · ${upN} upcoming</span>
+  </div>${cards}`;
+}
+
 function renderAdminSoccerBracketContent() {
   // Warning: any group-stage game that is 'live' or past scheduled end but not final
   const now = Date.now();
@@ -2451,7 +2545,9 @@ function renderAdminSoccerBracketContent() {
   }
 
   return warnHtml +
-    `<div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Group Standings <span style="font-size:9px;color:var(--dim);font-weight:400">(read-only · updates after each goal)</span></div>` +
+    `<div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Group Fixtures <span style="font-size:9px;color:var(--dim);font-weight:400">(read-only)</span></div>` +
+    adminRenderSoccerFixtures() +
+    `<div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin:16px 0 10px">Group Standings <span style="font-size:9px;color:var(--dim);font-weight:400">(read-only · updates after each goal)</span></div>` +
     `<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px">${adminGroupTable('A')}${adminGroupTable('B')}</div>` +
     `<div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Knockout Bracket</div>` +
     `<div class="bracket-dual"><div>${adminBuildBracketSection('soccer','ko')}</div></div>`;
