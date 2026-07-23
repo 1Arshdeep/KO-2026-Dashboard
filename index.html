@@ -649,77 +649,95 @@ const SOCCER_SLOTS = [
   ]},
 ];
 
-// Basketball: 10 teams, Double Elimination, 2 courts, 25-min slots
+// Basketball: 14 teams, Double Elimination, 2 courts, 25-min slots
 const BB_SLOTS = [
-  // WB Prelim — seeds 7-10 play in (2 games), top 6 seeds get byes to WB R1
+  // WB Prelim — seeds 3-14 play in (6 games), top 2 seeds get byes to WB R1
   {start:D1(17,15), rows:[
-    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB Prelim', desc:'T9 vs T10'},
-    {court:'Gym 3 (Basketball)', phase:'wb', round:'WB Prelim', desc:'T7 vs T8'},
+    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB Prelim', desc:'T3 vs T14'},
+    {court:'Gym 3 (Basketball)', phase:'wb', round:'WB Prelim', desc:'T4 vs T13'},
   ]},
-  // WB R1 — 4 games (T1-T6 + 2 prelim winners = 8 teams)
   {start:D1(17,40), rows:[
-    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB R1', desc:'T1 vs BWP1'},
-    {court:'Gym 3 (Basketball)', phase:'wb', round:'WB R1', desc:'T2 vs BWP2'},
+    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB Prelim', desc:'T5 vs T12'},
+    {court:'Gym 3 (Basketball)', phase:'wb', round:'WB Prelim', desc:'T6 vs T11'},
   ]},
   {start:D1(18, 5), rows:[
-    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB R1', desc:'T3 vs T6'},
-    {court:'Gym 3 (Basketball)', phase:'wb', round:'WB R1', desc:'T4 vs T5'},
+    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB Prelim', desc:'T7 vs T10'},
+    {court:'Gym 3 (Basketball)', phase:'wb', round:'WB Prelim', desc:'T8 vs T9'},
   ]},
+  // WB R1 + LB R1 concurrent
   {start:D1(18,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB QF', desc:'BW1 vs BW4'},
-    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R1', desc:'BL1 vs BL4'},
+    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB R1', desc:'T1 vs BWP6'},
+    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R1', desc:'BLP1 vs BLP6'},
   ]},
   {start:D1(18,55), rows:[
-    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB QF', desc:'BW2 vs BW3'},
-    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R1', desc:'BL2 vs BL3'},
+    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB R1', desc:'T2 vs BWP5'},
+    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R1', desc:'BLP2 vs BLP5'},
   ]},
-  // WB Final + LB R2 G1 (prelim losers bypass LB R1)
   {start:D1(19,20), rows:[
-    {court:'Gym 2 (Basketball)', phase:'wb_f', round:'WB Final', desc:'BW5 vs BW6'},
-    {court:'Gym 3 (Basketball)', phase:'lb',   round:'LB R2',    desc:'BLW1 vs BLP1'},
+    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB R1', desc:'BWP1 vs BWP4'},
+    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R1', desc:'BLP3 vs BLP4'},
   ]},
   {start:D1(19,45), rows:[
-    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R2', desc:'BLW2 vs BLP2'},
+    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB R1', desc:'BWP2 vs BWP3'},
+    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R2', desc:'BLW3 vs BL2'},
   ]},
-  // LB R3 — WB QF losers (BBL1/BBL2) enter here
-  {start:D1(20,15), rows:[
-    {court:'Gym 2 (Basketball)', phase:'lb', round:'LB R3', desc:'BLW3 vs BBL1'},
-    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R3', desc:'BLW4 vs BBL2'},
+  // WB QF + LB R2 continues
+  {start:D1(20,10), rows:[
+    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB QF', desc:'BW1 vs BW4'},
+    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R2', desc:'BLW2 vs BL3'},
   ]},
-  // LB SF
-  {start:D1(20,45), rows:[
-    {court:'Gym 2 (Basketball)', phase:'lb_sf', round:'LB SF', desc:'BLW5 vs BLW6'},
+  {start:D1(20,35), rows:[
+    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB QF', desc:'BW2 vs BW3'},
+    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R2', desc:'BLW1 vs BL4'},
   ]},
-  // Day 2 — LB Final (WB Final loser BBL3 enters here)
-  {start:D2(15,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'lb_f', round:'LB Final', desc:'BLW7 vs BBL3'},
+  // WB Final + LB R3 G2
+  {start:D1(21, 0), rows:[
+    {court:'Gym 2 (Basketball)', phase:'wb_f', round:'WB Final', desc:'BW5 vs BW6'},
+    {court:'Gym 3 (Basketball)', phase:'lb',   round:'LB R3',    desc:'BLW5 vs BLW6'},
   ]},
-  // Grand Final
-  {start:D2(15,55), rows:[
-    {court:'Gym 2 (Basketball)', phase:'gf', round:'Grand Final', desc:'BW7 vs BLW8'},
+  // LB R3 G1
+  {start:D1(21,25), rows:[
+    {court:'Gym 2 (Basketball)', phase:'lb', round:'LB R3', desc:'BL1 vs BLW4'},
   ]},
-  {start:D2(16,20), rows:[
-    {court:'Gym 2 (Basketball)', phase:'gf', round:'GF Reset',    desc:'Reset Game (if needed)'},
+  // Day 2
+  {start:D2(14,30), rows:[
+    {court:'Gym 2 (Basketball)', phase:'lb', round:'LB R4', desc:'BLW7 vs BBL1'},
+    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R4', desc:'BLW8 vs BBL2'},
+  ]},
+  {start:D2(14,55), rows:[
+    {court:'Gym 2 (Basketball)', phase:'lb_sf', round:'LB SF', desc:'BLW9 vs BLW10'},
+  ]},
+  {start:D2(15,20), rows:[
+    {court:'Gym 2 (Basketball)', phase:'lb_f', round:'LB Final', desc:'BLW11 vs BBL3'},
+  ]},
+  {start:D2(15,45), rows:[
+    {court:'Gym 2 (Basketball)', phase:'gf', round:'Grand Final', desc:'BW7 vs BLW12'},
+  ]},
+  {start:D2(16,10), rows:[
+    {court:'Gym 2 (Basketball)', phase:'gf', round:'GF Reset', desc:'Reset Game (if needed)'},
   ]},
 ];
 
-// Volleyball: 11 teams, Single Elimination, 1 court, 20-min slots, Day 1
+// Volleyball: 14 teams, Single Elimination, 1 court, 20-min slots, Day 1
 const VB_SLOTS = [
-  // R1 — seeds 6-11 play in (3 games); seeds 1-5 get byes to QF
-  {start:D1(17,10), rows:[{court:'Gym 1 (Volleyball)', phase:'r1', round:'R1 Game 1',     desc:'T9 vs T11'}]},
-  {start:D1(17,30), rows:[{court:'Gym 1 (Volleyball)', phase:'r1', round:'R1 Game 2',     desc:'T8 vs T10'}]},
-  {start:D1(17,50), rows:[{court:'Gym 1 (Volleyball)', phase:'r1', round:'R1 Game 3',     desc:'T6 vs T7'}]},
-  // QF — 4 games (T1-T5 + VW1/VW2/VW3 = 8 teams)
-  {start:D1(18,20), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 1',desc:'T1 vs VW1'}]},
-  {start:D1(18,40), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 2',desc:'T2 vs VW2'}]},
-  {start:D1(19, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 3',desc:'T3 vs VW3'}]},
-  {start:D1(19,20), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 4',desc:'T4 vs T5'}]},
+  // R1 — seeds 3-14 play in (6 games); seeds 1-2 get byes to QF
+  {start:D1(17,10), rows:[{court:'Gym 1 (Volleyball)', phase:'r1', round:'R1 Game 1', desc:'T3 vs T14'}]},
+  {start:D1(17,30), rows:[{court:'Gym 1 (Volleyball)', phase:'r1', round:'R1 Game 2', desc:'T4 vs T13'}]},
+  {start:D1(17,50), rows:[{court:'Gym 1 (Volleyball)', phase:'r1', round:'R1 Game 3', desc:'T5 vs T12'}]},
+  {start:D1(18,10), rows:[{court:'Gym 1 (Volleyball)', phase:'r1', round:'R1 Game 4', desc:'T6 vs T11'}]},
+  {start:D1(18,30), rows:[{court:'Gym 1 (Volleyball)', phase:'r1', round:'R1 Game 5', desc:'T7 vs T10'}]},
+  {start:D1(18,50), rows:[{court:'Gym 1 (Volleyball)', phase:'r1', round:'R1 Game 6', desc:'T8 vs T9'}]},
+  // QF — 4 games (T1-T2 + VR1W1-6 = 8 teams)
+  {start:D1(19,20), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 1', desc:'T1 vs VR1W6'}]},
+  {start:D1(19,40), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 2', desc:'T2 vs VR1W5'}]},
+  {start:D1(20, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 3', desc:'VR1W1 vs VR1W4'}]},
+  {start:D1(20,20), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 4', desc:'VR1W2 vs VR1W3'}]},
   // SF + 3rd Place
-  {start:D1(19,40), rows:[{court:'Gym 1 (Volleyball)', phase:'sf', round:'Semifinal 1',   desc:'VQF1W vs VQF4W'}]},
-  {start:D1(20, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'sf', round:'Semifinal 2',   desc:'VQF2W vs VQF3W'}]},
-  {start:D1(20,20), rows:[{court:'Gym 1 (Volleyball)', phase:'sf', round:'3rd Place',     desc:'VSF1L vs VSF2L'}]},
+  {start:D1(20,40), rows:[{court:'Gym 1 (Volleyball)', phase:'sf', round:'Semifinal 1',   desc:'VQF1W vs VQF4W'}]},
+  {start:D1(21, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'sf', round:'Semifinal 2',   desc:'VQF2W vs VQF3W'}]},
+  {start:D1(21,20), rows:[{court:'Gym 1 (Volleyball)', phase:'sf', round:'3rd Place',     desc:'VSF1L vs VSF2L'}]},
   // Grand Final
-  {start:D1(20,40), rows:[{court:'Gym 1 (Volleyball)', phase:'gf', round:'Grand Final',   desc:'VSF1W vs VSF2W'}]},
+  {start:D1(21,40), rows:[{court:'Gym 1 (Volleyball)', phase:'gf', round:'Grand Final',   desc:'VSF1W vs VSF2W'}]},
 ];
 
 // ══════════════════════════════════════════════════════════════
@@ -730,8 +748,8 @@ const SK = 'ko2026_v3';
 function defaultTeams() {
   return {
     soccer: Array.from({length:14},(_,i)=>`Soccer T${i+1}`),
-    basketball: Array.from({length:10},(_,i)=>`BB Team ${i+1}`),
-    volleyball: Array.from({length:11},(_,i)=>`VB Team ${i+1}`),
+    basketball: Array.from({length:14},(_,i)=>`BB Team ${i+1}`),
+    volleyball: Array.from({length:14},(_,i)=>`VB Team ${i+1}`),
   };
 }
 
@@ -1236,12 +1254,12 @@ function renderSoccerBracket() {
 
 function renderBBPanel() {
   const el = document.getElementById('panel-basketball');
-  const byeCol = buildByeColumn('basketball', 6);
+  const byeCol = buildByeColumn('basketball', 2);
   el.innerHTML = `
     <div class="sec-title">🏀 Basketball — Double Elimination <span class="sec-badge">${sportBadge('basketball')}</span>
-      <span class="sec-sub">Day 1: 5:15 PM–11 PM · Day 2: 3:30 PM–6:45 PM</span>
+      <span class="sec-sub">Day 1: 5:15 PM–9:50 PM · Day 2: 2:30 PM–4:35 PM</span>
     </div>
-    <div class="format-note">Play-in format: Top 6 seeds skip WB Prelim. Seeds 7–10 play 2 opening games — winners join seeds 1–6 in WB Round 1. Losers drop to the Losers Bracket. Double elimination throughout.</div>
+    <div class="format-note">Play-in format: Top 2 seeds skip WB Prelim. Seeds 3–14 play 6 opening games — winners join seeds 1–2 in WB Round 1. Losers drop to the Losers Bracket. Double elimination throughout.</div>
     ${buildScheduleGrid('basketball')}
     <div class="bracket-dual">
       <div>
@@ -1260,9 +1278,9 @@ function renderVBPanel() {
   const el = document.getElementById('panel-volleyball');
   el.innerHTML = `
     <div class="sec-title">🏐 Volleyball — Single Elimination <span class="sec-badge">${sportBadge('volleyball')}</span>
-      <span class="sec-sub">Day 1 only: 5:10 PM–11:20 PM · Hard stop 8 PM Day 2 if overflow</span>
+      <span class="sec-sub">Day 1 only: 5:10 PM–10:00 PM</span>
     </div>
-    <div class="format-note">Play-in format: Top 5 seeds get first-round byes. Seeds 6–11 play 3 opening games — winners join seeds 1–5 in Quarterfinals. Single elimination; includes a separate 3rd Place match.</div>
+    <div class="format-note">Play-in format: Top 2 seeds get first-round byes. Seeds 3–14 play 6 opening games — winners join seeds 1–2 in Quarterfinals. Single elimination; includes a separate 3rd Place match.</div>
     ${buildScheduleGrid('volleyball')}
     <div class="bracket-dual">
       <div>
