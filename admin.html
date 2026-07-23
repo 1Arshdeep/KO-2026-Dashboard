@@ -1072,7 +1072,7 @@ const fmtTime = ms => {
 };
 
 // ===== SLOT DEFINITIONS (must match index.html exactly) =====
-const SOC_SLOT = 25, BB_SLOT = 25, VB_SLOT = 20;
+const SOC_SLOT = 25, BB_SLOT = 20, VB_SLOT = 15;
 
 const DEFAULT_SOCCER_GROUPS = {
   A: ['Babbar Khalsa Ballers','Sharomani Akaali Dal','KLF','NPSS','Humberwood','Brackish','Panjab Lions'],
@@ -1159,57 +1159,61 @@ const SOCCER_SLOTS = [
   ]},
 ];
 
-// Basketball: 14-team ROUND ROBIN standings play — every team plays exactly 2
-// fixed games (no brackets, no advancement). 14 games over 7 slots × 2 gyms.
-// Pairings: cycle 1 = T1vT2 … T13vT14; cycle 2 = T2vT3 … T14vT1 (no repeats).
+// Basketball: 14-team STANDINGS PLAY — exact pairings/times from the official
+// "KO2026 Evening Schedule" PDF. 20-min games + 10-min buffer, 5:00–10:20 PM.
+// Court A = Gym 2, Court B = Gym 3. "Open" slots are rest windows so
+// dual-sport teams (also playing volleyball) never double-book.
+// Seed order (DEFAULT_TEAMS.basketball): T1 Sher Elite · T2 Babbar Khalsa
+// Ballers · T3 Dixie United · T4 Sharomani Akaali Dal · T5 KLF · T6 Akaal Fauj
+// · T7 NPSS · T8 McMaster University · T9 Brackish · T10 Farmers Elite ·
+// T11 Icemen · T12 KGA · T13 Panjab Lions · T14 Kaurs United
 const BB_SLOTS = [
-  {start:D1(17,15), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 1',  desc:'T1 vs T2'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 2',  desc:'T3 vs T4'},
-  ]},
-  {start:D1(17,40), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 3',  desc:'T5 vs T6'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 4',  desc:'T7 vs T8'},
-  ]},
-  {start:D1(18, 5), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 5',  desc:'T9 vs T10'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 6',  desc:'T11 vs T12'},
-  ]},
+  {start:D1(17, 0), rows:[{court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 1',  desc:'T2 vs T1'}]},   // Babbar v Sher Elite
+  {start:D1(17,30), rows:[{court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 2',  desc:'T14 vs T2'}]},  // Kaurs v Babbar
+  {start:D1(18, 0), rows:[{court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 3',  desc:'T13 vs T14'}]}, // Panjab Lions v Kaurs
   {start:D1(18,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 7',  desc:'T13 vs T14'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 8',  desc:'T2 vs T3'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 4',  desc:'T10 vs T8'},   // Farmers v McMaster
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 5',  desc:'T12 vs T13'},  // KGA v Panjab Lions
   ]},
-  {start:D1(18,55), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 9',  desc:'T4 vs T5'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 10', desc:'T6 vs T7'},
+  {start:D1(19, 0), rows:[
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 6',  desc:'T5 vs T10'},   // KLF v Farmers
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 7',  desc:'T8 vs T11'},   // McMaster v Icemen
   ]},
-  {start:D1(19,20), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 11', desc:'T8 vs T9'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 12', desc:'T10 vs T11'},
+  {start:D1(19,30), rows:[{court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 8',  desc:'T7 vs T5'}]},   // NPSS v KLF
+  {start:D1(20,30), rows:[
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 9',  desc:'T3 vs T6'},    // Dixie v Akaal Fauj
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 10', desc:'T4 vs T7'},    // Sharomani v NPSS
   ]},
-  {start:D1(19,45), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 13', desc:'T12 vs T13'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 14', desc:'T14 vs T1'},
+  {start:D1(21, 0), rows:[{court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 11', desc:'T6 vs T4'}]},   // Akaal Fauj v Sharomani
+  {start:D1(21,30), rows:[
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 12', desc:'T11 vs T9'},   // Icemen v Brackish
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 13', desc:'T1 vs T3'},    // Sher Elite v Dixie
   ]},
+  {start:D1(22, 0), rows:[{court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 14', desc:'T9 vs T12'}]},  // Brackish v KGA
 ];
 
-// Volleyball: 13-team ROUND ROBIN standings play — every team plays exactly 2
-// fixed games (no bracket). Circle pairing: each team meets its two ring
-// neighbours → 13 unique games, one court, 20-min slots.
+// Volleyball: 13-team STANDINGS PLAY — exact pairings/times from the official
+// "KO2026 Evening Schedule" PDF. 15-min games + 5-min buffer, 5:00–10:35 PM,
+// Gym 1. "Open" slots are rest windows for dual-sport teams.
+// Seed order (DEFAULT_TEAMS.volleyball): T1 Babbar Khalsa Ballers · T2 Dixie
+// United · T3 Sharomani Akaali Dal · T4 Chinguacousy Ekta · T5 Vortex ·
+// T6 Palm Springs · T7 KLF · T8 McMaster University · T9 Brackish ·
+// T10 Brampton spikers · T11 Baba Bidhi Chand Chinna VC · T12 Panjab Lions ·
+// T13 Kaurs United
 const VB_SLOTS = [
-  {start:D1(17,10), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 1',  desc:'T1 vs T2'}]},
-  {start:D1(17,30), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 2',  desc:'T3 vs T4'}]},
-  {start:D1(17,50), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 3',  desc:'T5 vs T6'}]},
-  {start:D1(18,10), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 4',  desc:'T7 vs T8'}]},
-  {start:D1(18,30), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 5',  desc:'T9 vs T10'}]},
-  {start:D1(18,50), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 6',  desc:'T11 vs T12'}]},
-  {start:D1(19,10), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 7',  desc:'T13 vs T1'}]},
-  {start:D1(19,30), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 8',  desc:'T2 vs T3'}]},
-  {start:D1(19,50), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 9',  desc:'T4 vs T5'}]},
-  {start:D1(20,10), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 10', desc:'T6 vs T7'}]},
-  {start:D1(20,30), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 11', desc:'T8 vs T9'}]},
-  {start:D1(20,50), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 12', desc:'T10 vs T11'}]},
-  {start:D1(21,10), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 13', desc:'T12 vs T13'}]},
+  {start:D1(17, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 1',  desc:'T13 vs T11'}]}, // Kaurs v Baba Bidhi
+  {start:D1(17,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 2',  desc:'T6 vs T12'}]},  // Palm Springs v Panjab Lions
+  {start:D1(18,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 3',  desc:'T4 vs T1'}]},   // Chinguacousy v Babbar
+  {start:D1(18,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 4',  desc:'T10 vs T13'}]}, // Brampton v Kaurs
+  {start:D1(19, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 5',  desc:'T1 vs T5'}]},   // Babbar v Vortex
+  {start:D1(19,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 6',  desc:'T12 vs T10'}]}, // Panjab Lions v Brampton
+  {start:D1(19,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 7',  desc:'T8 vs T4'}]},   // McMaster v Chinguacousy
+  {start:D1(20, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 8',  desc:'T7 vs T6'}]},   // KLF v Palm Springs
+  {start:D1(20,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 9',  desc:'T9 vs T8'}]},   // Brackish v McMaster
+  {start:D1(20,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 10', desc:'T5 vs T7'}]},   // Vortex v KLF
+  {start:D1(21, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 11', desc:'T2 vs T9'}]},   // Dixie v Brackish
+  {start:D1(21,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 12', desc:'T11 vs T3'}]},  // Baba Bidhi v Sharomani
+  {start:D1(22,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 13', desc:'T3 vs T2'}]},   // Sharomani v Dixie
 ];
 
 // ===== SCHEDULE GENERATION =====
@@ -2895,7 +2899,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ===== INIT =====
-const BB_SCHEMA_V = 10;  // v10: BB/VB converted from brackets to round-robin standings
+const BB_SCHEMA_V = 11;  // v11: BB/VB games now match the official Evening Schedule PDF (exact pairings/times)
 
 function needsRebuild(games, schemaV) {
   const list = Object.values(games || {});
