@@ -1055,7 +1055,7 @@ let confirmCallback = null;
 const DEFAULT_TEAMS = {
   soccer: ['Babbar Khalsa Ballers','Dixie United','Sharomani Akaali Dal','Mohali fc','KLF','Akaal Fauj','NPSS','Punjab Kings','Humberwood','McMaster University','Brackish','Rebel FC','Panjab Lions','Kaurs United'],
   basketball: ['Sher Elite','Babbar Khalsa Ballers','Dixie United','Sharomani Akaali Dal','KLF','Akaal Fauj','NPSS','McMaster University','Brackish','Farmers Elite','Icemen','KGA','Panjab Lions','Kaurs United'],
-  volleyball: ['Sher Elite','Babbar Khalsa Ballers','Dixie United','Sharomani Akaali Dal','Chinguacousy Ekta','Vortex','Palm Springs','KLF','McMaster University','Brackish','Brampton spikers','Baba Bidhi Chand Chinna Volleyball club','Panjab Lions','Kaurs United'],
+  volleyball: ['Babbar Khalsa Ballers','Dixie United','Sharomani Akaali Dal','Chinguacousy Ekta','Vortex','Palm Springs','KLF','McMaster University','Brackish','Brampton spikers','Baba Bidhi Chand Chinna Volleyball club','Panjab Lions','Kaurs United'],
 };
 
 // ===== DATE/TIME HELPERS =====
@@ -1154,94 +1154,57 @@ const SOCCER_SLOTS = [
   ]},
 ];
 
+// Basketball: 14-team ROUND ROBIN standings play — every team plays exactly 2
+// fixed games (no brackets, no advancement). 14 games over 7 slots × 2 gyms.
+// Pairings: cycle 1 = T1vT2 … T13vT14; cycle 2 = T2vT3 … T14vT1 (no repeats).
 const BB_SLOTS = [
-  // WB Prelim — seeds 3-14 play in (6 games), top 2 seeds get byes to WB R1
   {start:D1(17,15), rows:[
-    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB Prelim', desc:'T3 vs T14', winnerSlot:'BWP1', loserSlot:'BLP1'},
-    {court:'Gym 3 (Basketball)', phase:'wb', round:'WB Prelim', desc:'T4 vs T13', winnerSlot:'BWP2', loserSlot:'BLP2'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 1',  desc:'T1 vs T2'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 2',  desc:'T3 vs T4'},
   ]},
   {start:D1(17,40), rows:[
-    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB Prelim', desc:'T5 vs T12', winnerSlot:'BWP3', loserSlot:'BLP3'},
-    {court:'Gym 3 (Basketball)', phase:'wb', round:'WB Prelim', desc:'T6 vs T11', winnerSlot:'BWP4', loserSlot:'BLP4'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 3',  desc:'T5 vs T6'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 4',  desc:'T7 vs T8'},
   ]},
   {start:D1(18, 5), rows:[
-    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB Prelim', desc:'T7 vs T10', winnerSlot:'BWP5', loserSlot:'BLP5'},
-    {court:'Gym 3 (Basketball)', phase:'wb', round:'WB Prelim', desc:'T8 vs T9',  winnerSlot:'BWP6', loserSlot:'BLP6'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 5',  desc:'T9 vs T10'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 6',  desc:'T11 vs T12'},
   ]},
-  // WB R1 — T1-T2 byes + 6 prelim winners; LB R1 runs concurrently on Gym 3
   {start:D1(18,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB R1', desc:'T1 vs BWP6',   winnerSlot:'BW1',  loserSlot:'BL1'},
-    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R1', desc:'BLP1 vs BLP6', winnerSlot:'BLW1', loserSlot:null},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 7',  desc:'T13 vs T14'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 8',  desc:'T2 vs T3'},
   ]},
   {start:D1(18,55), rows:[
-    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB R1', desc:'T2 vs BWP5',   winnerSlot:'BW2',  loserSlot:'BL2'},
-    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R1', desc:'BLP2 vs BLP5', winnerSlot:'BLW2', loserSlot:null},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 9',  desc:'T4 vs T5'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 10', desc:'T6 vs T7'},
   ]},
   {start:D1(19,20), rows:[
-    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB R1', desc:'BWP1 vs BWP4', winnerSlot:'BW3',  loserSlot:'BL3'},
-    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R1', desc:'BLP3 vs BLP4', winnerSlot:'BLW3', loserSlot:null},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 11', desc:'T8 vs T9'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 12', desc:'T10 vs T11'},
   ]},
-  // Last WB R1 game + LB R2 starts (BL1 gets bye through LB R2 into LB R3)
   {start:D1(19,45), rows:[
-    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB R1', desc:'BWP2 vs BWP3', winnerSlot:'BW4',  loserSlot:'BL4'},
-    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R2', desc:'BLW3 vs BL2',  winnerSlot:'BLW6', loserSlot:null},
-  ]},
-  // WB QF + LB R2 continues
-  {start:D1(20,10), rows:[
-    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB QF', desc:'BW1 vs BW4', winnerSlot:'BW5',  loserSlot:'BBL1'},
-    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R2', desc:'BLW2 vs BL3', winnerSlot:'BLW5', loserSlot:null},
-  ]},
-  {start:D1(20,35), rows:[
-    {court:'Gym 2 (Basketball)', phase:'wb', round:'WB QF', desc:'BW2 vs BW3', winnerSlot:'BW6',  loserSlot:'BBL2'},
-    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R2', desc:'BLW1 vs BL4', winnerSlot:'BLW4', loserSlot:null},
-  ]},
-  // WB Final + LB R3 G2
-  {start:D1(21, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'wb_f', round:'WB Final', desc:'BW5 vs BW6',   winnerSlot:'BW7',  loserSlot:'BBL3'},
-    {court:'Gym 3 (Basketball)', phase:'lb',   round:'LB R3',    desc:'BLW5 vs BLW6', winnerSlot:'BLW8', loserSlot:null},
-  ]},
-  // LB R3 G1 — BL1 (bye through LB R2) enters here
-  {start:D1(21,25), rows:[
-    {court:'Gym 2 (Basketball)', phase:'lb', round:'LB R3', desc:'BL1 vs BLW4', winnerSlot:'BLW7', loserSlot:null},
-  ]},
-  // Day 2 — LB R4, LB SF, LB Final, Grand Final
-  {start:D2(14,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'lb', round:'LB R4', desc:'BLW7 vs BBL1',  winnerSlot:'BLW9',  loserSlot:null},
-    {court:'Gym 3 (Basketball)', phase:'lb', round:'LB R4', desc:'BLW8 vs BBL2',  winnerSlot:'BLW10', loserSlot:null},
-  ]},
-  {start:D2(14,55), rows:[
-    {court:'Gym 2 (Basketball)', phase:'lb_sf', round:'LB SF',   desc:'BLW9 vs BLW10',  winnerSlot:'BLW11', loserSlot:null},
-  ]},
-  {start:D2(15,20), rows:[
-    {court:'Gym 2 (Basketball)', phase:'lb_f', round:'LB Final', desc:'BLW11 vs BBL3', winnerSlot:'BLW12', loserSlot:null},
-  ]},
-  {start:D2(15,45), rows:[
-    {court:'Gym 2 (Basketball)', phase:'gf', round:'Grand Final', desc:'BW7 vs BLW12',           winnerSlot:'BB Champion', loserSlot:null},
-  ]},
-  {start:D2(16,10), rows:[
-    {court:'Gym 2 (Basketball)', phase:'gf', round:'GF Reset',    desc:'Reset Game (if needed)', winnerSlot:'BB Champion', loserSlot:null},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 13', desc:'T12 vs T13'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 14', desc:'T14 vs T1'},
   ]},
 ];
 
+// Volleyball: 13-team ROUND ROBIN standings play — every team plays exactly 2
+// fixed games (no bracket). Circle pairing: each team meets its two ring
+// neighbours → 13 unique games, one court, 20-min slots.
 const VB_SLOTS = [
-  // R1 — seeds 3-14 play in (6 games); seeds 1-2 get byes to QF
-  {start:D1(17,10), rows:[{court:'Gym 1 (Volleyball)', phase:'r1', round:'R1 Game 1', desc:'T3 vs T14', winnerSlot:'VR1W1', loserSlot:null}]},
-  {start:D1(17,30), rows:[{court:'Gym 1 (Volleyball)', phase:'r1', round:'R1 Game 2', desc:'T4 vs T13', winnerSlot:'VR1W2', loserSlot:null}]},
-  {start:D1(17,50), rows:[{court:'Gym 1 (Volleyball)', phase:'r1', round:'R1 Game 3', desc:'T5 vs T12', winnerSlot:'VR1W3', loserSlot:null}]},
-  {start:D1(18,10), rows:[{court:'Gym 1 (Volleyball)', phase:'r1', round:'R1 Game 4', desc:'T6 vs T11', winnerSlot:'VR1W4', loserSlot:null}]},
-  {start:D1(18,30), rows:[{court:'Gym 1 (Volleyball)', phase:'r1', round:'R1 Game 5', desc:'T7 vs T10', winnerSlot:'VR1W5', loserSlot:null}]},
-  {start:D1(18,50), rows:[{court:'Gym 1 (Volleyball)', phase:'r1', round:'R1 Game 6', desc:'T8 vs T9',  winnerSlot:'VR1W6', loserSlot:null}]},
-  // QF — 4 games (T1-T2 + VR1W1-6 = 8 teams)
-  {start:D1(19,20), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 1', desc:'T1 vs VR1W6',    winnerSlot:'VQF1W', loserSlot:null}]},
-  {start:D1(19,40), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 2', desc:'T2 vs VR1W5',    winnerSlot:'VQF2W', loserSlot:null}]},
-  {start:D1(20, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 3', desc:'VR1W1 vs VR1W4', winnerSlot:'VQF3W', loserSlot:null}]},
-  {start:D1(20,20), rows:[{court:'Gym 1 (Volleyball)', phase:'qf', round:'Quarterfinal 4', desc:'VR1W2 vs VR1W3', winnerSlot:'VQF4W', loserSlot:null}]},
-  // SF + 3rd Place
-  {start:D1(20,40), rows:[{court:'Gym 1 (Volleyball)', phase:'sf', round:'Semifinal 1',   desc:'VQF1W vs VQF4W', winnerSlot:'VSF1W', loserSlot:'VSF1L'}]},
-  {start:D1(21, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'sf', round:'Semifinal 2',   desc:'VQF2W vs VQF3W', winnerSlot:'VSF2W', loserSlot:'VSF2L'}]},
-  {start:D1(21,20), rows:[{court:'Gym 1 (Volleyball)', phase:'sf', round:'3rd Place',     desc:'VSF1L vs VSF2L', winnerSlot:'VB 3rd',      loserSlot:null}]},
-  // Grand Final
-  {start:D1(21,40), rows:[{court:'Gym 1 (Volleyball)', phase:'gf', round:'Grand Final',   desc:'VSF1W vs VSF2W', winnerSlot:'VB Champion', loserSlot:null}]},
+  {start:D1(17,10), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 1',  desc:'T1 vs T2'}]},
+  {start:D1(17,30), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 2',  desc:'T3 vs T4'}]},
+  {start:D1(17,50), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 3',  desc:'T5 vs T6'}]},
+  {start:D1(18,10), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 4',  desc:'T7 vs T8'}]},
+  {start:D1(18,30), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 5',  desc:'T9 vs T10'}]},
+  {start:D1(18,50), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 6',  desc:'T11 vs T12'}]},
+  {start:D1(19,10), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 7',  desc:'T13 vs T1'}]},
+  {start:D1(19,30), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 8',  desc:'T2 vs T3'}]},
+  {start:D1(19,50), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 9',  desc:'T4 vs T5'}]},
+  {start:D1(20,10), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 10', desc:'T6 vs T7'}]},
+  {start:D1(20,30), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 11', desc:'T8 vs T9'}]},
+  {start:D1(20,50), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 12', desc:'T10 vs T11'}]},
+  {start:D1(21,10), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 13', desc:'T12 vs T13'}]},
 ];
 
 // ===== SCHEDULE GENERATION =====
@@ -1951,40 +1914,41 @@ function showConfirm(msg, cb) {
   document.getElementById('confirm-overlay').classList.add('visible');
 }
 
+function dqMessage(g, dqTeam, winTeam) {
+  return g.phase === 'rr'
+    ? `Disqualify ${dqTeam} (no-show)? ${winTeam} is credited the win with a +${RR_DQ_DIFF} score differential in the standings.`
+    : `Disqualify ${dqTeam}? This will set ${winTeam} as winner.`;
+}
+
+function applyDQ(g, side) {
+  g.dq = side;
+  g.winner = side === 'team1' ? g.team2 : g.team1;
+  g.loser  = side === 'team1' ? g.team1 : g.team2;
+  g.status = 'final';
+  g.ts = Date.now();
+  // Round-robin forfeits carry no scoreline — the +10/−10 differential is
+  // applied inside computeRRStandings. Clear any partially-entered score so
+  // a stale number can't show on game cards.
+  if (g.phase === 'rr') { g.score1 = 0; g.score2 = 0; }
+  if (state.timers[g.id]) pauseTimer(g.id);
+  propagateResult(g.id);
+  populateKnockoutTeams();
+  saveState();
+  refresh();
+}
+
 document.getElementById('btn-dq1').addEventListener('click', () => {
   if (!currentGameId) return;
   const g = state.games[currentGameId];
   if (!g) return;
-  showConfirm(`Disqualify ${g.team1}? This will set ${g.team2} as winner.`, () => {
-    g.dq = 'team1';
-    g.winner = g.team2;
-    g.loser = g.team1;
-    g.status = 'final';
-    g.ts = Date.now();
-    if (state.timers[currentGameId]) pauseTimer(currentGameId);
-    propagateResult(currentGameId);
-    populateKnockoutTeams();
-    saveState();
-    refresh();
-  });
+  showConfirm(dqMessage(g, g.team1, g.team2), () => applyDQ(g, 'team1'));
 });
 
 document.getElementById('btn-dq2').addEventListener('click', () => {
   if (!currentGameId) return;
   const g = state.games[currentGameId];
   if (!g) return;
-  showConfirm(`Disqualify ${g.team2}? This will set ${g.team1} as winner.`, () => {
-    g.dq = 'team2';
-    g.winner = g.team1;
-    g.loser = g.team2;
-    g.status = 'final';
-    g.ts = Date.now();
-    if (state.timers[currentGameId]) pauseTimer(currentGameId);
-    propagateResult(currentGameId);
-    populateKnockoutTeams();
-    saveState();
-    refresh();
-  });
+  showConfirm(dqMessage(g, g.team2, g.team1), () => applyDQ(g, 'team2'));
 });
 
 document.getElementById('btn-confirm-yes').addEventListener('click', () => {
@@ -2391,16 +2355,9 @@ function renderBracketPanel() {
   const sp = bracketSport;
   if (sp === 'soccer') {
     content = renderAdminSoccerBracketContent();
-  } else if (sp === 'basketball') {
-    content = `<div class="bracket-dual">
-      <div>${sectionHtml('Winners Bracket')}${adminBuildBracketSection('basketball','wb')}</div>
-      <div>${sectionHtml('Losers Bracket')}${adminBuildBracketSection('basketball','lb')}${sectionHtml('Championship')}${adminBuildBracketSection('basketball','gf')}</div>
-    </div>`;
   } else {
-    content = `<div class="bracket-dual">
-      <div>${sectionHtml('Round 1')}${adminBuildBracketSection('volleyball','r1')}${sectionHtml('Quarterfinals')}${adminBuildBracketSection('volleyball','qf')}</div>
-      <div>${sectionHtml('Semifinals')}${adminBuildBracketSection('volleyball','sf')}${sectionHtml('Grand Final')}${adminBuildBracketSection('volleyball','gf')}</div>
-    </div>`;
+    // Basketball & volleyball are round-robin standings play — no brackets
+    content = renderAdminRRStandingsContent(sp);
   }
 
   view.innerHTML = `
@@ -2477,6 +2434,104 @@ function renderAdminSoccerBracketContent() {
     `<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px">${adminGroupTable('A')}${adminGroupTable('B')}</div>` +
     `<div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Knockout Bracket</div>` +
     `<div class="bracket-dual"><div>${adminBuildBracketSection('soccer','ko')}</div></div>`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// ROUND-ROBIN STANDINGS (basketball + volleyball)
+// Rank by wins, tiebreak by cumulative score differential.
+// DQ games: no scoreline — winner is credited +10 diff, DQ'd team −10.
+// ══════════════════════════════════════════════════════════════
+const RR_DQ_DIFF = 10;
+
+function computeRRStandings(sport) {
+  const teams = (state.teams && state.teams[sport]) || [];
+  const stats = {};
+  teams.forEach(t => {
+    stats[t] = { team:t, played:0, won:0, lost:0, drawn:0, pf:0, pa:0, diff:0, rank:0 };
+  });
+
+  Object.values(state.games).filter(g =>
+    g.sport === sport && g.phase === 'rr' && g.status === 'final'
+  ).forEach(g => {
+    const s1 = stats[g.team1], s2 = stats[g.team2];
+    if (!s1 || !s2) return;
+    s1.played++; s2.played++;
+    if (g.dq) {
+      // Forfeit: blank scoreline; winner +10 differential, DQ'd team −10
+      const w = g.dq === 'team1' ? s2 : s1;
+      const l = g.dq === 'team1' ? s1 : s2;
+      w.won++; w.pf += RR_DQ_DIFF; w.diff += RR_DQ_DIFF;
+      l.lost++; l.pa += RR_DQ_DIFF; l.diff -= RR_DQ_DIFF;
+      return;
+    }
+    s1.pf += g.score1; s1.pa += g.score2; s1.diff += (g.score1 - g.score2);
+    s2.pf += g.score2; s2.pa += g.score1; s2.diff += (g.score2 - g.score1);
+    if (g.score1 > g.score2)      { s1.won++; s2.lost++; }
+    else if (g.score2 > g.score1) { s2.won++; s1.lost++; }
+    else                          { s1.drawn++; s2.drawn++; }
+  });
+
+  const arr = Object.values(stats).sort((a, b) => {
+    if (b.won !== a.won) return b.won - a.won;
+    if (b.diff !== a.diff) return b.diff - a.diff;
+    if (b.pf !== a.pf) return b.pf - a.pf;
+    return a.team.localeCompare(b.team);
+  });
+  arr.forEach((t, i) => { t.rank = i + 1; });
+  return arr;
+}
+
+function renderAdminRRStandingsContent(sport) {
+  const icon = sport === 'basketball' ? '🏀' : '🏐';
+  const label = sport === 'basketball' ? 'Basketball' : 'Volleyball';
+  const standings = computeRRStandings(sport);
+  const games = Object.values(state.games).filter(g => g.sport === sport && g.phase === 'rr');
+  const played = games.filter(g => g.status === 'final').length;
+
+  // Warn on overrun games (mirrors soccer behavior)
+  const nowMs = Date.now();
+  const overrun = games.filter(g => g.status !== 'final' &&
+    nowMs > (getEffectiveStart(g) + (g.slotMin || 25) * 60000));
+  const warnHtml = overrun.length
+    ? `<div style="background:rgba(224,80,80,.12);border:1px solid rgba(224,80,80,.4);border-radius:6px;padding:8px 12px;margin-bottom:14px;font-size:12px;color:#f87171;">
+        ⚠️ ${overrun.length} game${overrun.length>1?'s':''} past scheduled end — still not marked Final:
+        ${overrun.map(g=>`<strong>${g.court}</strong> ${g.team1} vs ${g.team2}`).join(', ')}
+       </div>`
+    : '';
+
+  const rows = standings.map(t => {
+    const diffStr = t.diff > 0 ? `+${t.diff}` : String(t.diff);
+    const medal = t.rank === 1 ? '🥇' : t.rank === 2 ? '🥈' : t.rank === 3 ? '🥉' : String(t.rank);
+    return `<tr style="${t.rank<=3?'background:rgba(212,160,23,.05);':''}">
+      <td style="text-align:center;padding:6px 4px;font-size:13px">${medal}</td>
+      <td style="text-align:left;padding:6px 8px;font-weight:${t.rank<=3?600:400};font-size:12px">${t.team}</td>
+      <td style="text-align:right;padding:6px 6px;font-size:12px">${t.played}</td>
+      <td style="text-align:right;padding:6px 6px;font-size:12px;font-weight:700;color:#86efac">${t.won}</td>
+      <td style="text-align:right;padding:6px 6px;font-size:12px;color:#fca5a5">${t.lost}</td>
+      <td style="text-align:right;padding:6px 6px;font-size:12px">${t.pf}</td>
+      <td style="text-align:right;padding:6px 6px;font-size:12px">${t.pa}</td>
+      <td style="text-align:right;padding:6px 8px;font-size:12px;font-weight:700;color:var(--gold)">${diffStr}</td>
+    </tr>`;
+  }).join('');
+
+  return warnHtml +
+    `<div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:4px">${icon} ${label} Standings <span style="font-size:9px;color:var(--dim);font-weight:400">(read-only · updates after each score)</span></div>` +
+    `<div style="font-size:11px;color:var(--dim);margin-bottom:10px">Round-robin: every team plays 2 games · Rank = Wins, tie broken by score differential · ${played}/${games.length} games final · DQ = win by +${RR_DQ_DIFF} differential</div>` +
+    `<div style="max-width:640px;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden">
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:rgba(0,0,0,.1)">
+          <th style="padding:5px 4px;font-size:10px;color:var(--dim);text-align:center">#</th>
+          <th style="padding:5px 8px;font-size:10px;color:var(--dim);text-align:left">Team</th>
+          <th style="padding:5px 6px;font-size:10px;color:var(--dim);text-align:right" title="Games Played">GP</th>
+          <th style="padding:5px 6px;font-size:10px;color:var(--dim);text-align:right" title="Wins">W</th>
+          <th style="padding:5px 6px;font-size:10px;color:var(--dim);text-align:right" title="Losses">L</th>
+          <th style="padding:5px 6px;font-size:10px;color:var(--dim);text-align:right" title="Points For">PF</th>
+          <th style="padding:5px 6px;font-size:10px;color:var(--dim);text-align:right" title="Points Against">PA</th>
+          <th style="padding:5px 8px;font-size:10px;color:var(--dim);text-align:right" title="Score Differential">Diff</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
 }
 
 function sectionHtml(label) {
@@ -2835,7 +2890,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ===== INIT =====
-const BB_SCHEMA_V = 9;  // increment when slot naming changes to force rebuild
+const BB_SCHEMA_V = 10;  // v10: BB/VB converted from brackets to round-robin standings
 
 function needsRebuild(games, schemaV) {
   const list = Object.values(games || {});
