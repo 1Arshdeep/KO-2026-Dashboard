@@ -2390,10 +2390,7 @@ function renderBracketPanel() {
   let content = '';
   const sp = bracketSport;
   if (sp === 'soccer') {
-    content = `<div class="bracket-dual">
-      <div>${sectionHtml('Winners Bracket')}${adminBuildBracketSection('soccer','wb')}</div>
-      <div>${sectionHtml('Losers Bracket')}${adminBuildBracketSection('soccer','lb')}${sectionHtml('Grand Final')}${adminBuildBracketSection('soccer','gf')}</div>
-    </div>`;
+    content = renderAdminSoccerBracketContent();
   } else if (sp === 'basketball') {
     content = `<div class="bracket-dual">
       <div>${sectionHtml('Winners Bracket')}${adminBuildBracketSection('basketball','wb')}</div>
@@ -2412,6 +2409,74 @@ function renderBracketPanel() {
       <button onclick="leaveBrackets()" style="padding:8px 16px;border:1px solid var(--border);border-radius:6px;background:var(--surface2);color:var(--fg);cursor:pointer;font-size:13px;">← Back to Scoring</button>
     </div>
     ${content}`;
+}
+
+function renderAdminSoccerBracketContent() {
+  // Warning: any group-stage game that is 'live' or past scheduled end but not final
+  const now = Date.now();
+  const overrunGames = Object.values(state.games).filter(g =>
+    g.sport === 'soccer' && g.phase === 'group' && g.status !== 'final' &&
+    now > (getEffectiveStart(g) + (g.slotMin || 25) * 60000)
+  );
+  const warnHtml = overrunGames.length
+    ? `<div style="background:rgba(224,80,80,.12);border:1px solid rgba(224,80,80,.4);border-radius:6px;padding:8px 12px;margin-bottom:14px;font-size:12px;color:#f87171;">
+        ⚠️ ${overrunGames.length} group-stage game${overrunGames.length>1?'s':''} past scheduled end — still not marked Final:
+        ${overrunGames.map(g=>`<strong>${g.court}</strong> ${g.team1} vs ${g.team2}`).join(', ')}
+       </div>`
+    : '';
+
+  function adminGroupTable(grp) {
+    const standings = computeGroupStandings(grp);
+    const rows = standings.map((t, i) => {
+      const qualify = i < 2;
+      const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : String(t.rank);
+      const gdStr = t.gd > 0 ? `+${t.gd}` : String(t.gd);
+      const h2hTag = t.h2hTbd ? ` <span style="font-size:9px;color:var(--dim);border:1px solid var(--border);border-radius:3px;padding:0 3px;">H2H?</span>` : '';
+      return `<tr style="${qualify ? 'border-left:3px solid var(--gold);' : ''}background:${qualify ? 'rgba(212,160,23,.05)' : 'transparent'}">
+        <td style="text-align:center;padding:5px 4px;font-size:13px">${medal}</td>
+        <td style="text-align:left;padding:5px 8px;font-weight:${qualify?600:400};font-size:12px">${t.team}${h2hTag}</td>
+        <td style="text-align:right;padding:5px 6px;font-size:12px">${t.played}</td>
+        <td style="text-align:right;padding:5px 6px;font-size:12px">${t.won}</td>
+        <td style="text-align:right;padding:5px 6px;font-size:12px">${t.drawn}</td>
+        <td style="text-align:right;padding:5px 6px;font-size:12px">${t.lost}</td>
+        <td style="text-align:right;padding:5px 6px;font-size:12px">${t.gf}</td>
+        <td style="text-align:right;padding:5px 6px;font-size:12px">${t.ga}</td>
+        <td style="text-align:right;padding:5px 6px;font-size:12px">${gdStr}</td>
+        <td style="text-align:right;padding:5px 6px;font-size:12px;font-weight:700;color:var(--gold)">${t.points}</td>
+      </tr>`;
+    }).join('');
+
+    const played = standings.reduce((s,t) => s + t.played, 0) / 2;
+    const total = 21;
+    const pct = Math.round(played / total * 100);
+    return `<div style="flex:1;min-width:260px;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden">
+      <div style="padding:7px 10px;background:rgba(0,0,0,.2);display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:11px;font-weight:700;color:var(--gold);letter-spacing:.5px">GROUP ${grp}</span>
+        <span style="font-size:10px;color:var(--dim)">${Math.round(played)}/${total} played (${pct}%)</span>
+      </div>
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr style="background:rgba(0,0,0,.1)">
+          <th style="padding:4px 4px;font-size:10px;color:var(--dim);text-align:center">#</th>
+          <th style="padding:4px 8px;font-size:10px;color:var(--dim);text-align:left">Team</th>
+          <th style="padding:4px 6px;font-size:10px;color:var(--dim);text-align:right" title="Played">P</th>
+          <th style="padding:4px 6px;font-size:10px;color:var(--dim);text-align:right" title="Won">W</th>
+          <th style="padding:4px 6px;font-size:10px;color:var(--dim);text-align:right" title="Drawn">D</th>
+          <th style="padding:4px 6px;font-size:10px;color:var(--dim);text-align:right" title="Lost">L</th>
+          <th style="padding:4px 6px;font-size:10px;color:var(--dim);text-align:right" title="Goals For">GF</th>
+          <th style="padding:4px 6px;font-size:10px;color:var(--dim);text-align:right" title="Goals Against">GA</th>
+          <th style="padding:4px 6px;font-size:10px;color:var(--dim);text-align:right" title="Goal Difference">GD</th>
+          <th style="padding:4px 6px;font-size:10px;color:var(--dim);text-align:right" title="Points">Pts</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+  }
+
+  return warnHtml +
+    `<div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Group Standings <span style="font-size:9px;color:var(--dim);font-weight:400">(read-only · updates after each goal)</span></div>` +
+    `<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px">${adminGroupTable('A')}${adminGroupTable('B')}</div>` +
+    `<div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:8px">Knockout Bracket</div>` +
+    `<div class="bracket-dual"><div>${adminBuildBracketSection('soccer','ko')}</div></div>`;
 }
 
 function sectionHtml(label) {
@@ -2469,8 +2534,8 @@ function adminMatchupCard(g) {
   const t1w = isDone && g.score1 > g.score2;
   const t2w = isDone && g.score2 > g.score1;
   const timeStr = formatTs(eff);
-  const isTbd1 = !isDone && (g.team1 === 'TBD' || /^(T\d+|WBW\d+|LBW?\d+|L\d+|WBL\d+|BW\d+|BLW\d+|BL\d+|BBL\d+|VW\d+|VSF\d+[WL]|VQF\d+W|WB (Winner|Semifinal)|LB Winner|W\d+|QF\d+W|SF\d+[WL])$/.test(g.team1));
-  const isTbd2 = !isDone && (g.team2 === 'TBD' || /^(T\d+|WBW\d+|LBW?\d+|L\d+|WBL\d+|BW\d+|BLW\d+|BL\d+|BBL\d+|VW\d+|VSF\d+[WL]|VQF\d+W|WB (Winner|Semifinal)|LB Winner|W\d+|QF\d+W|SF\d+[WL])$/.test(g.team2));
+  const isTbd1 = !isDone && (g.team1 === 'TBD' || /^(T\d+|[AB][1-7]|SF[12][WL]|WBW\d+|LBW?\d+|L\d+|WBL\d+|BW\d+|BLW\d+|BL\d+|BBL\d+|VW\d+|VSF\d+[WL]|VQF\d+W|W\d+|QF\d+W)$/.test(g.team1));
+  const isTbd2 = !isDone && (g.team2 === 'TBD' || /^(T\d+|[AB][1-7]|SF[12][WL]|WBW\d+|LBW?\d+|L\d+|WBL\d+|BW\d+|BLW\d+|BL\d+|BBL\d+|VW\d+|VSF\d+[WL]|VQF\d+W|W\d+|QF\d+W)$/.test(g.team2));
   return `<div class="matchup-card ${isLv?'is-live':''}" onclick="openGameFromBracket('${g.id}')" style="cursor:pointer;" title="Click to open scorecard">
     <div class="match-time-line">${timeStr} · ${g.court}</div>
     <div class="tr-row ${t1w?'won':''} ${!t1w&&isDone?'lost':''} ${g.dq==='team1'?'dq-row':''}">
@@ -2788,35 +2853,64 @@ function propagateAll() {
     .forEach(g => propagateResult(g.id));
 }
 
-// Compute group standings for one group ('A' or 'B').
-// Returns array sorted by: Pts → GD → GF → H2H → (coin-flip stable sort).
+// Returns [{team, name, played, won, drawn, lost, gf, ga, gd, points, pts, rank, h2hTbd}]
+// sorted by: Pts → GD → GF → H2H winner → stable sort
 function computeGroupStandings(grp) {
   const teams = (state.soccerGroups || {})[grp] || [];
   const stats = {};
-  teams.forEach(t => { stats[t] = {name:t, pts:0, w:0, d:0, l:0, gf:0, ga:0, gd:0, h2h:{}}; });
+  teams.forEach(t => {
+    stats[t] = {team:t, name:t, played:0, won:0, drawn:0, lost:0, gf:0, ga:0, gd:0,
+                points:0, pts:0, h2h:{}, rank:0, h2hTbd:false};
+  });
 
   Object.values(state.games).filter(g =>
     g.sport === 'soccer' && g.phase === 'group' && g.group === grp && g.status === 'final'
   ).forEach(g => {
     const {team1:t1, team2:t2, score1:s1, score2:s2} = g;
     if (!stats[t1] || !stats[t2]) return;
+    stats[t1].played++; stats[t2].played++;
     stats[t1].gf += s1; stats[t1].ga += s2; stats[t1].gd += (s1-s2);
     stats[t2].gf += s2; stats[t2].ga += s1; stats[t2].gd += (s2-s1);
-    if (!stats[t1].h2h[t2]) stats[t1].h2h[t2] = 0;
-    if (!stats[t2].h2h[t1]) stats[t2].h2h[t1] = 0;
-    if (s1 > s2)      { stats[t1].pts += 3; stats[t1].w++; stats[t2].l++; stats[t1].h2h[t2] += 3; }
-    else if (s2 > s1) { stats[t2].pts += 3; stats[t2].w++; stats[t1].l++; stats[t2].h2h[t1] += 3; }
-    else              { stats[t1].pts++; stats[t1].d++; stats[t2].pts++; stats[t2].d++; stats[t1].h2h[t2]++; stats[t2].h2h[t1]++; }
+    if (s1 > s2) {
+      stats[t1].points += 3; stats[t1].pts += 3; stats[t1].won++;
+      stats[t2].lost++;
+      stats[t1].h2h[t2] = {pts:3, winner:t1};
+      stats[t2].h2h[t1] = {pts:0, winner:t1};
+    } else if (s2 > s1) {
+      stats[t2].points += 3; stats[t2].pts += 3; stats[t2].won++;
+      stats[t1].lost++;
+      stats[t2].h2h[t1] = {pts:3, winner:t2};
+      stats[t1].h2h[t2] = {pts:0, winner:t2};
+    } else {
+      stats[t1].points++; stats[t1].pts++; stats[t1].drawn++;
+      stats[t2].points++; stats[t2].pts++; stats[t2].drawn++;
+      stats[t1].h2h[t2] = {pts:1, winner:null};
+      stats[t2].h2h[t1] = {pts:1, winner:null};
+    }
   });
 
-  return Object.values(stats).sort((a, b) => {
-    if (b.pts !== a.pts) return b.pts - a.pts;
-    if (b.gd  !== a.gd)  return b.gd  - a.gd;
-    if (b.gf  !== a.gf)  return b.gf  - a.gf;
-    const h2hA = a.h2h[b.name] || 0;
-    const h2hB = b.h2h[a.name] || 0;
-    return h2hB - h2hA; // remaining ties: coin-flip (sort stability)
+  const arr = Object.values(stats).sort((a, b) => {
+    if (b.points !== a.points) return b.points - a.points;
+    if (b.gd !== a.gd) return b.gd - a.gd;
+    if (b.gf !== a.gf) return b.gf - a.gf;
+    const ha = (a.h2h[b.team] || {}).winner;
+    const hb = (b.h2h[a.team] || {}).winner;
+    if (ha === b.team) return 1;
+    if (ha === a.team) return -1;
+    return 0;
   });
+
+  arr.forEach((t, i) => {
+    t.rank = i + 1;
+    if (i > 0) {
+      const prev = arr[i - 1];
+      if (prev.points === t.points && prev.gd === t.gd && prev.gf === t.gf) {
+        const h2h = prev.h2h[t.team];
+        if (!h2h || h2h.winner === null) { prev.h2hTbd = true; t.h2hTbd = true; }
+      }
+    }
+  });
+  return arr;
 }
 
 // After all games in a group are final, fill the SF team slots from standings.
@@ -2832,7 +2926,7 @@ function populateKnockoutTeams() {
     if (!groupGames.length) return;
     if (groupGames.filter(g => g.status === 'final').length < groupGames.length) return;
     const s = computeGroupStandings(grp);
-    resolved[grp] = { p1: (s[0]||{}).name, p2: (s[1]||{}).name };
+    resolved[grp] = { p1: (s[0]||{}).team, p2: (s[1]||{}).team };
   });
 
   const sf1 = Object.values(state.games).find(g => g.sport === 'soccer' && g.round === 'Semifinal 1');

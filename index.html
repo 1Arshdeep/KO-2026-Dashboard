@@ -141,16 +141,37 @@ hr.sep{border:none;border-top:1px solid var(--gray3);margin:16px 0}
 .grp-tables-row{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:16px}
 @media(min-width:760px){.grp-tables-row{grid-template-columns:1fr 1fr}}
 .grp-table-wrap{background:var(--gray);border:1px solid var(--gray3);border-radius:var(--radius-sm);overflow:hidden}
-.grp-header{font-size:12px;font-weight:700;color:var(--gold);padding:7px 10px;background:rgba(0,0,0,.25);letter-spacing:.5px;text-transform:uppercase}
+.grp-header{font-size:11px;font-weight:700;color:var(--gold);padding:6px 10px;background:rgba(0,0,0,.25);letter-spacing:.8px;text-transform:uppercase}
 .grp-table{width:100%;border-collapse:collapse;font-size:11px}
 .grp-table thead tr{background:rgba(0,0,0,.15)}
-.grp-table th{padding:5px 6px;color:var(--dim);font-weight:600;text-align:center;white-space:nowrap}
+.grp-table th{padding:4px 5px;color:var(--dim);font-weight:600;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
 .grp-table th.grp-name-th{text-align:left}
-.grp-table td{padding:5px 6px;text-align:center;border-top:1px solid var(--gray3)}
-.grp-table td.grp-name{text-align:left;font-weight:500;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.grp-table td.grp-pos{color:var(--dim);font-size:10px;width:18px}
+.grp-table td{padding:5px 5px;text-align:right;border-top:1px solid var(--gray3);font-variant-numeric:tabular-nums}
+.grp-table td.grp-name-cell{text-align:left;padding:5px 6px}
+.grp-table td.grp-pos{color:var(--dim);font-size:12px;width:22px;text-align:center}
 .grp-table td.grp-pts{font-weight:700;color:var(--gold)}
-.grp-table tr.grp-qualify{background:rgba(0,180,90,.07)}
+.grp-table tr.grp-qualify{border-left:3px solid var(--gold)}
+.grp-team-name{font-weight:500;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:inline-block;vertical-align:middle}
+.grp-advance-tag{display:inline-block;font-size:8px;font-weight:700;color:var(--gold);background:rgba(212,160,23,.15);border:1px solid rgba(212,160,23,.3);border-radius:3px;padding:0 4px;margin-left:5px;vertical-align:middle;white-space:nowrap}
+.grp-h2h-tbd{display:inline-block;font-size:8px;color:var(--dim);border:1px solid var(--gray3);border-radius:3px;padding:0 3px;margin-left:4px;vertical-align:middle;white-space:nowrap;cursor:help}
+/* ── KO BRACKET (soccer) ── */
+.soc-ko-section{margin-top:4px}
+.soc-ko-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:10px}
+/* ── TV STANDINGS SCREEN ── */
+.tvs-body{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:20px;padding:16px 32px;overflow:hidden;align-content:start}
+.tvs-group-wrap{display:flex;flex-direction:column;gap:0;background:rgba(255,255,255,.04);border:1px solid rgba(212,160,23,.2);border-radius:12px;overflow:hidden}
+.tvs-group-hdr{background:linear-gradient(90deg,rgba(212,160,23,.18),transparent);border-bottom:2px solid var(--gold);padding:10px 20px;font-size:22px;font-weight:900;color:var(--gold);letter-spacing:.05em;text-transform:uppercase}
+.tvs-table{width:100%;border-collapse:collapse}
+.tvs-table thead th{font-size:14px;font-weight:700;color:rgba(255,255,255,.45);padding:8px 10px;text-align:right;border-bottom:1px solid rgba(255,255,255,.1);white-space:nowrap;font-variant-numeric:tabular-nums}
+.tvs-table thead th.tvs-th-team{text-align:left}
+.tvs-table tbody td{font-size:26px;font-weight:500;color:var(--text);padding:8px 10px;text-align:right;border-bottom:1px solid rgba(255,255,255,.06);font-variant-numeric:tabular-nums}
+.tvs-table tbody td.tvs-td-pos{font-size:22px;text-align:center;width:40px;color:rgba(255,255,255,.45)}
+.tvs-table tbody td.tvs-td-team{text-align:left;font-size:28px;font-weight:600;max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tvs-table tbody td.tvs-td-pts{font-weight:900;color:var(--gold);font-size:30px}
+.tvs-table tr.tvs-qualify{background:rgba(212,160,23,.07)}
+.tvs-advances-badge{display:inline-block;font-size:10px;font-weight:800;color:var(--navy);background:var(--gold);border-radius:3px;padding:1px 5px;margin-left:8px;vertical-align:middle;white-space:nowrap;letter-spacing:.03em}
+.tvs-footer{background:rgba(0,0,0,.3);border-top:1px solid rgba(212,160,23,.2);padding:8px 32px;font-size:16px;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:20px;flex-shrink:0;min-height:40px}
+.tvs-footer-live{color:var(--live);font-weight:700}
 
 /* ── BYE COLUMN ── */
 .br-round-byes{opacity:.6;flex:.7!important;min-width:110px!important}
@@ -505,6 +526,10 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
       <a class="tvp-link" href="#tv/gym-1" onclick="closeTVPicker()">🏐 Gym 1 (Volleyball)</a>
       <a class="tvp-link" href="#tv/gym-2" onclick="closeTVPicker()">🏀 Gym 2 (Basketball)</a>
       <a class="tvp-link" href="#tv/gym-3" onclick="closeTVPicker()">🏀 Gym 3 (Basketball)</a>
+    </div>
+    <div class="tvp-section-lbl">⚽ Soccer Live</div>
+    <div class="tvp-grid">
+      <a class="tvp-link" href="#tv/standings-soccer" onclick="closeTVPicker()">📊 Soccer Group Standings</a>
     </div>
     <div class="tvp-section-lbl">🏟 Gallery Views</div>
     <div class="tvp-grid">
@@ -1288,32 +1313,64 @@ function updateBadges() {
   });
 }
 
-// Returns array of team stats for one group, sorted by standings.
+// Returns [{team, name, played, won, drawn, lost, gf, ga, gd, points, pts, rank, h2hTbd}]
+// sorted by: Pts → GD → GF → H2H winner → stable sort
 function computeGroupStandings(grp) {
   const teams = (state.soccerGroups || {})[grp] || [];
   const stats = {};
-  teams.forEach(t => { stats[t] = {name:t, pts:0, w:0, d:0, l:0, gf:0, ga:0, gd:0, h2h:{}}; });
+  teams.forEach(t => {
+    stats[t] = {team:t, name:t, played:0, won:0, drawn:0, lost:0, gf:0, ga:0, gd:0,
+                points:0, pts:0, h2h:{}, rank:0, h2hTbd:false};
+  });
 
   Object.values(state.games).filter(g =>
     g.sport === 'soccer' && g.phase === 'group' && g.group === grp && g.status === 'final'
   ).forEach(g => {
     const {team1:t1, team2:t2, score1:s1, score2:s2} = g;
     if (!stats[t1] || !stats[t2]) return;
+    stats[t1].played++; stats[t2].played++;
     stats[t1].gf += s1; stats[t1].ga += s2; stats[t1].gd += (s1-s2);
     stats[t2].gf += s2; stats[t2].ga += s1; stats[t2].gd += (s2-s1);
-    if (!stats[t1].h2h[t2]) stats[t1].h2h[t2] = 0;
-    if (!stats[t2].h2h[t1]) stats[t2].h2h[t1] = 0;
-    if (s1 > s2)      { stats[t1].pts += 3; stats[t1].w++; stats[t2].l++; stats[t1].h2h[t2] += 3; }
-    else if (s2 > s1) { stats[t2].pts += 3; stats[t2].w++; stats[t1].l++; stats[t2].h2h[t1] += 3; }
-    else              { stats[t1].pts++; stats[t1].d++; stats[t2].pts++; stats[t2].d++; stats[t1].h2h[t2]++; stats[t2].h2h[t1]++; }
+    if (s1 > s2) {
+      stats[t1].points += 3; stats[t1].pts += 3; stats[t1].won++;
+      stats[t2].lost++;
+      stats[t1].h2h[t2] = {pts:3, winner:t1};
+      stats[t2].h2h[t1] = {pts:0, winner:t1};
+    } else if (s2 > s1) {
+      stats[t2].points += 3; stats[t2].pts += 3; stats[t2].won++;
+      stats[t1].lost++;
+      stats[t2].h2h[t1] = {pts:3, winner:t2};
+      stats[t1].h2h[t2] = {pts:0, winner:t2};
+    } else {
+      stats[t1].points++; stats[t1].pts++; stats[t1].drawn++;
+      stats[t2].points++; stats[t2].pts++; stats[t2].drawn++;
+      stats[t1].h2h[t2] = {pts:1, winner:null};
+      stats[t2].h2h[t1] = {pts:1, winner:null};
+    }
   });
 
-  return Object.values(stats).sort((a, b) => {
-    if (b.pts !== a.pts) return b.pts - a.pts;
-    if (b.gd  !== a.gd)  return b.gd  - a.gd;
-    if (b.gf  !== a.gf)  return b.gf  - a.gf;
-    return (b.h2h[a.name]||0) - (a.h2h[b.name]||0);
+  const arr = Object.values(stats).sort((a, b) => {
+    if (b.points !== a.points) return b.points - a.points;
+    if (b.gd !== a.gd) return b.gd - a.gd;
+    if (b.gf !== a.gf) return b.gf - a.gf;
+    const ha = (a.h2h[b.team] || {}).winner;
+    const hb = (b.h2h[a.team] || {}).winner;
+    if (ha === b.team) return 1;
+    if (ha === a.team) return -1;
+    return 0;
   });
+
+  arr.forEach((t, i) => {
+    t.rank = i + 1;
+    if (i > 0) {
+      const prev = arr[i - 1];
+      if (prev.points === t.points && prev.gd === t.gd && prev.gf === t.gf) {
+        const h2h = prev.h2h[t.team];
+        if (!h2h || h2h.winner === null) { prev.h2hTbd = true; t.h2hTbd = true; }
+      }
+    }
+  });
+  return arr;
 }
 
 // Populate SF team slots from group standings once both games in a group are all final.
@@ -1326,7 +1383,7 @@ function populateKnockoutTeams() {
     );
     if (!gg.length || gg.filter(g => g.status === 'final').length < gg.length) return;
     const s = computeGroupStandings(grp);
-    resolved[grp] = { p1: (s[0]||{}).name, p2: (s[1]||{}).name };
+    resolved[grp] = { p1: (s[0]||{}).team, p2: (s[1]||{}).team };
   });
 
   const sf1 = Object.values(state.games).find(g => g.sport === 'soccer' && g.round === 'Semifinal 1');
@@ -1347,26 +1404,30 @@ function populateKnockoutTeams() {
 function renderGroupTable(grp) {
   const standings = computeGroupStandings(grp);
   const rows = standings.map((t, i) => {
-    const qualify = i < 2 ? ' class="grp-qualify"' : '';
+    const qualify = i < 2;
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : String(t.rank);
     const gdStr = t.gd > 0 ? `+${t.gd}` : String(t.gd);
-    return `<tr${qualify}>
-      <td class="grp-pos">${i+1}</td>
-      <td class="grp-name">${t.name}</td>
-      <td>${t.w+t.d+t.l}</td>
-      <td>${t.w}</td><td>${t.d}</td><td>${t.l}</td>
+    const advTag = qualify ? `<span class="grp-advance-tag">▲ Advances</span>` : '';
+    const h2hTag = t.h2hTbd ? `<span class="grp-h2h-tbd" title="Rank pending head-to-head result">H2H</span>` : '';
+    return `<tr class="${qualify ? 'grp-qualify' : ''}">
+      <td class="grp-pos">${medal}</td>
+      <td class="grp-name-cell"><span class="grp-team-name">${t.team}</span>${advTag}${h2hTag}</td>
+      <td>${t.played}</td>
+      <td>${t.won}</td><td>${t.drawn}</td><td>${t.lost}</td>
       <td>${t.gf}</td><td>${t.ga}</td>
       <td>${gdStr}</td>
-      <td class="grp-pts">${t.pts}</td>
+      <td class="grp-pts">${t.points}</td>
     </tr>`;
   }).join('');
   return `<div class="grp-table-wrap">
     <div class="grp-header">Group ${grp}</div>
     <table class="grp-table">
       <thead><tr>
-        <th>#</th><th class="grp-name-th">Team</th>
-        <th title="Played">GP</th><th title="Wins">W</th><th title="Draws">D</th><th title="Losses">L</th>
-        <th title="Goals For">GF</th><th title="Goals Against">GA</th><th title="Goal Difference">GD</th>
-        <th title="Points">Pts</th>
+        <th style="text-align:center">#</th>
+        <th class="grp-name-th">Team</th>
+        <th title="Played">P</th><th title="Won">W</th><th title="Drawn">D</th><th title="Lost">L</th>
+        <th title="Goals For">GF</th><th title="Goals Against">GA</th>
+        <th title="Goal Difference">GD</th><th title="Points">Pts</th>
       </tr></thead>
       <tbody>${rows}</tbody>
     </table>
@@ -1377,16 +1438,18 @@ function renderSoccerBracket() {
   const el = document.getElementById('panel-soccer');
   el.innerHTML = `
     <div class="sec-title">⚽ Soccer — Group Stage + Knockout <span class="sec-badge">${sportBadge('soccer')}</span>
-      <span class="sec-sub">Day 1: Group Stage 11:00 AM–3:35 PM &middot; Day 2: Semis 11 AM, 3rd Place 12 PM, Final 1 PM</span>
+      <span class="sec-sub">Day 1: Group Stage 11:00 AM–3:35 PM &middot; Day 2: Semis 11 AM · 3rd Place 12 PM · Final 1 PM</span>
     </div>
-    <div class="format-note">2 groups of 7 — full round-robin within each group (21 games/group, 42 total) &middot; Top 2 from each group advance to Knockout &middot; Day 2: SF1 (A1 vs B2), SF2 (B1 vs A2), 3rd Place, Final</div>
+    <div class="format-note">2 groups of 7 — every team plays all 6 others (21 games/group, 42 total Day 1) &middot; Top 2 from each group advance &middot; Day 2: SF1 (A1 vs B2) · SF2 (B1 vs A2) · 3rd Place · Final</div>
     ${buildScheduleGrid('soccer')}
+    <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0 0 10px">⚽ Group Standings</div>
     <div class="grp-tables-row">
       ${renderGroupTable('A')}
       ${renderGroupTable('B')}
     </div>
     <hr class="sep">
-    ${buildBracketSection('soccer','ko','Knockout Stage')}
+    <div class="soc-ko-label">🏆 Knockout Stage</div>
+    ${buildBracketSection('soccer','ko',null)}
   `;
 }
 
@@ -1691,12 +1754,13 @@ const COURTS_TV = [
 const SPORT_COLOR = {soccer:'#27ae60', basketball:'#e67e22', volleyball:'#8e44ad'};
 
 const TV_PANELS = [
-  {id:'all',          label:'ALL COURTS — LIVE'},
-  {id:'soccer',       label:'⚽ SOCCER'},
-  {id:'basketball',   label:'🏀 BASKETBALL'},
-  {id:'volleyball',   label:'🏐 VOLLEYBALL'},
-  {id:'upcoming',     label:'COMING UP NEXT'},
-  {id:'results',      label:'RECENT RESULTS'},
+  {id:'all',               label:'ALL COURTS — LIVE'},
+  {id:'soccer',            label:'⚽ SOCCER'},
+  {id:'standings-soccer',  label:'⚽ SOCCER STANDINGS'},
+  {id:'basketball',        label:'🏀 BASKETBALL'},
+  {id:'volleyball',        label:'🏐 VOLLEYBALL'},
+  {id:'upcoming',          label:'COMING UP NEXT'},
+  {id:'results',           label:'RECENT RESULTS'},
 ];
 const TV_CYCLE_MS = 12000;
 let tvCurrentPanel = 0;
@@ -1714,7 +1778,8 @@ function activePanels() {
   const active = tvActiveCourts();
   const sportsWithCourts = new Set(active.map(c => c.sport));
   return TV_PANELS.filter(p => {
-    if (p.id === 'soccer' || p.id === 'basketball' || p.id === 'volleyball') return sportsWithCourts.has(p.id);
+    if (p.id === 'soccer' || p.id === 'standings-soccer') return sportsWithCourts.has('soccer');
+    if (p.id === 'basketball' || p.id === 'volleyball') return sportsWithCourts.has(p.id);
     return true;
   });
 }
@@ -2149,6 +2214,7 @@ const TV_HASH_MAP = {
   'finals-soccer':     {type:'final',  court:'Soccer Field A',     sport:'soccer',     label:'⚽ SOCCER GRAND FINAL'},
   'finals-basketball': {type:'final',  court:'Gym 2 (Basketball)', sport:'basketball', label:'🏀 BASKETBALL GRAND FINAL'},
   'finals-volleyball': {type:'final',  court:'Gym 1 (Volleyball)', sport:'volleyball', label:'🏐 VOLLEYBALL GRAND FINAL'},
+  'standings-soccer':  {type:'standings-soccer', label:'⚽ Soccer Standings'},
   'list':              {type:'list'},
 };
 
@@ -2181,10 +2247,11 @@ function tvHashRender() {
   if (!_tvHashKey) return;
   const screen = TV_HASH_MAP[_tvHashKey];
   if (!screen) { tvHashRenderList(); return; }
-  if (screen.type === 'court')        tvHashRenderCourt(screen);
-  else if (screen.type === 'gallery') tvHashRenderGallery(screen);
-  else if (screen.type === 'final')   tvHashRenderFinal(screen);
-  else                                tvHashRenderList();
+  if (screen.type === 'court')              tvHashRenderCourt(screen);
+  else if (screen.type === 'gallery')       tvHashRenderGallery(screen);
+  else if (screen.type === 'final')         tvHashRenderFinal(screen);
+  else if (screen.type === 'standings-soccer') tvHashRenderSoccerStandings();
+  else                                      tvHashRenderList();
 }
 
 function tvHashHdr(title) {
@@ -2329,6 +2396,57 @@ function tvHashRenderFinal(screen) {
   el.innerHTML = tvHashHdr(label) + `<div class="tvh-final-body">${body}</div>`;
 }
 
+function tvHashRenderSoccerStandings() {
+  const el = document.getElementById('tvHashScreen');
+
+  function buildTvStandingsTable(grp) {
+    const standings = computeGroupStandings(grp);
+    const rows = standings.map((t, i) => {
+      const qualify = i < 2;
+      const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : String(t.rank);
+      const gdStr = t.gd > 0 ? `+${t.gd}` : String(t.gd);
+      const badge = qualify ? `<span class="tvs-advances-badge">ADVANCES</span>` : '';
+      return `<tr class="${qualify ? 'tvs-qualify' : ''}">
+        <td class="tvs-td-pos">${medal}</td>
+        <td class="tvs-td-team">${t.team}${badge}</td>
+        <td>${t.played}</td>
+        <td>${t.won}</td><td>${t.drawn}</td><td>${t.lost}</td>
+        <td>${t.gf}</td><td>${t.ga}</td>
+        <td>${gdStr}</td>
+        <td class="tvs-td-pts">${t.points}</td>
+      </tr>`;
+    }).join('');
+    return `<div class="tvs-group-wrap">
+      <div class="tvs-group-hdr">Group ${grp}</div>
+      <table class="tvs-table">
+        <thead><tr>
+          <th style="text-align:center;width:40px">#</th>
+          <th class="tvs-th-team">Team</th>
+          <th title="Played">P</th><th title="Won">W</th><th title="Drawn">D</th><th title="Lost">L</th>
+          <th title="Goals For">GF</th><th title="Goals Against">GA</th>
+          <th title="Goal Difference">GD</th><th title="Points">Pts</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>`;
+  }
+
+  // Footer: live group-stage games
+  const liveGroupGames = Object.values(state.games).filter(g =>
+    g.sport === 'soccer' && g.phase === 'group' &&
+    (g.status === 'live' || (isLiveByTime(g) && g.status !== 'final'))
+  );
+  const footerHtml = liveGroupGames.length
+    ? liveGroupGames.map(g =>
+        `<span class="tvs-footer-live">● ${g.court}: ${g.team1} ${g.score1}–${g.score2} ${g.team2}</span>`
+      ).join('<span style="color:rgba(255,255,255,.3)"> &nbsp;|&nbsp; </span>')
+    : '<span>No group-stage games currently live</span>';
+
+  el.innerHTML = tvHashHdr('⚽ Soccer Group Standings') +
+    `<div class="tvs-body">${buildTvStandingsTable('A')}${buildTvStandingsTable('B')}</div>` +
+    `<div class="tvs-footer">${footerHtml}</div>`;
+}
+
 function tvHashRenderList() {
   const el = document.getElementById('tvHashScreen');
   const links = [
@@ -2341,6 +2459,7 @@ function tvHashRenderList() {
     ['gym-3',             '🏀 Gym 3 (Basketball)'],
     ['gallery-soccer',    '⚽ Soccer Gallery — All 4 Fields'],
     ['gallery-gyms',      '🏟 Gym Gallery — All 3 Gyms'],
+    ['standings-soccer',  '⚽ Soccer Group Standings'],
     ['gallery-semis',     '🔥 Semifinals — Fields A & B'],
     ['finals-soccer',     '🏆 Soccer Grand Final'],
     ['finals-basketball', '🏆 Basketball Grand Final'],
