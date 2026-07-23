@@ -1,0 +1,249 @@
+/* ═══════════════════════════════════════════════════════════════
+   KHALSA OLYMPICS 2026 — BRAND STYLESHEET
+   One shared sheet for index.html (Live Dashboard) + admin.html
+   (Scorekeeper). Loaded AFTER each page's inline styles so the
+   token remaps win the cascade. Visual restyle only — no behavior.
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Royal navy scale */
+  --navy-950:#060F24; --navy-900:#081226; --navy-800:#0C1D3F;
+  --navy-700:#112A5C; --navy-600:#17357A; --navy-500:#1B3A8F;
+  --navy-400:#2E56B5; --navy-300:#6E88C4;
+  /* Gold scale */
+  --gold-700:#9A6E1E; --gold-600:#B78829; --gold-500:#CE9E3A;
+  --gold-400:#E0B54E; --gold-300:#F0CE72; --gold-200:#F7E4A8;
+  /* Cream / paper */
+  --cream-50:#FBF6EC; --cream-100:#F6EEDD; --cream-200:#ECDFC6;
+  /* Warm ink (arena) */
+  --ink-950:#0A0A0B; --ink-900:#141215; --ink-800:#1E1A16; --ink-700:#2B2620;
+
+  /* Semantic */
+  --color-bg:var(--navy-800);
+  --color-bg-ink:var(--ink-950);
+  --surface-navy:var(--navy-700);
+  --surface-ink:var(--ink-900);
+  --surface-glass:rgba(18,42,92,.55);
+  --color-accent:var(--gold-500);
+  --color-accent-bright:var(--gold-400);
+  --text-on-dark:var(--cream-100);
+  --text-on-dark-strong:#FFFFFF;
+  --text-muted-dark:#9FB0CE;
+  --text-gold:var(--gold-400);
+  --line-gold:rgba(206,158,58,.45);
+  --line-gold-soft:rgba(206,158,58,.22);
+  --line-on-dark:rgba(246,238,221,.14);
+  --color-success:#4FA96A; --color-danger:#C6503E; --color-info:var(--navy-400);
+  --color-live:#C6503E;
+
+  /* Backgrounds, gradients, effects */
+  --bg-navy-glow:radial-gradient(115% 90% at 80% 8%,#17357A 0%,#0C1D3F 42%,#081226 78%,#060F24 100%);
+  --bg-ink-gold:radial-gradient(90% 70% at 50% 118%,#3A2C10 0%,#1A1610 40%,#0F0D0C 68%,#0A0A0B 100%);
+  --grad-gold:linear-gradient(180deg,#F0CE72 0%,#CE9E3A 48%,#A9781F 100%);
+  --grad-gold-line:linear-gradient(90deg,rgba(206,158,58,0) 0%,#CE9E3A 50%,rgba(206,158,58,0) 100%);
+  --scrim-bottom:linear-gradient(0deg,rgba(6,15,36,.92) 0%,rgba(6,15,36,.55) 40%,rgba(6,15,36,0) 100%);
+  --tex-halftone:radial-gradient(rgba(224,181,78,.20) 1.1px,transparent 1.4px);
+  --tex-halftone-size:12px 12px;
+  --shadow-card:0 20px 50px -22px rgba(0,0,0,.62);
+  --glow-gold:0 0 40px rgba(224,181,78,.32);
+  --glow-gold-strong:0 0 30px rgba(224,181,78,.55),0 0 70px rgba(224,181,78,.25);
+  --ring-gold-inset:inset 0 0 0 1px var(--line-gold);
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --dur-fast:140ms; --dur:240ms;
+
+  /* ── REMAP: index.html legacy variables → brand tokens ── */
+  --navy:var(--navy-900);
+  --blue:var(--navy-700);
+  --blue-light:var(--navy-600);
+  --gray:var(--navy-900);
+  --gray2:var(--navy-800);
+  --gray3:var(--navy-700);
+  --gold:var(--gold-500);
+  --gold-light:var(--gold-400);
+  --text:var(--cream-100);
+  --dim:var(--text-muted-dark);
+  --live:var(--color-live);
+  --win-bg:rgba(79,169,106,.16);
+  --loss-bg:rgba(198,80,62,.12);
+
+  /* ── REMAP: admin.html legacy variables → brand tokens (ARENA mood) ── */
+  --bg:var(--ink-950);
+  --surface:var(--ink-900);
+  --card:var(--ink-800);
+  --border:var(--line-gold-soft);
+  --red:var(--color-danger);
+  --green:var(--color-success);
+  --amber:var(--gold-600);
+}
+
+/* ═══ GLOBAL TYPE ═══ */
+body{
+  font-family:'Barlow',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif !important;
+  background-image:var(--bg-navy-glow);
+  background-attachment:fixed;
+  color:var(--text-on-dark);
+}
+/* Arena mood for the scorekeeper */
+body.admin-body{ background-image:var(--bg-ink-gold); }
+
+/* Ceremonial display type — Cinzel */
+.ko-logo, .ko-info strong,
+#header-title, #pin-title,
+.tvh-logo, .tvp-title, .tv-logo,
+#modal-header h2, .modal h2 {
+  font-family:'Cinzel',serif !important;
+  letter-spacing:.06em;
+}
+
+/* Athletic impact type — Anton: scores, timers, team names, LIVE */
+.score-display, #timer-main, #live-clock, .lb-clock, #tvClock,
+.tv-team-score, .tv-lc-score, .lb-team-score,
+.tvh-final-score, .tvh-score, .tvh-single-score,
+.team-name, .tv-team-name, .tv-lc-name, .tvh-final-tname,
+.lb-title, #lbTitle, .tvh-title, .lc-score, .lc-timer-num {
+  font-family:'Anton',sans-serif !important;
+  font-weight:400 !important;
+  letter-spacing:.02em;
+}
+
+/* Eyebrows / labels: wide tracking */
+.sec-title, .card-title, .tvp-section-lbl, .grp-header, .tv-section-hdr,
+.sport-tab, .agenda-day {
+  letter-spacing:.12em;
+}
+
+/* ═══ CHROME ═══ */
+.header, #header {
+  background:linear-gradient(90deg,var(--navy-800),var(--navy-900)) !important;
+  border-bottom:1px solid var(--line-gold) !important;
+}
+.ko-logo{ color:var(--text-gold) !important; }
+.ko-logo::before{
+  content:''; display:inline-block; vertical-align:-18%;
+  width:1.25em; height:1.25em; margin-right:.4em;
+  background:url('../assets/brand/crest-color.png') center/contain no-repeat;
+}
+#header-left::before{
+  content:''; display:inline-block; vertical-align:middle;
+  width:26px; height:26px; margin-right:8px;
+  background:url('../assets/brand/crest-color.png') center/contain no-repeat;
+}
+
+/* Pills — nav, tabs, buttons */
+.nav-btn, .tvp-link, .tv-pause-btn, .tvh-list-link,
+#btn-view-live, #btn-setup, #btn-lock, #btn-exit-test,
+.btn-event-type, .btn-event-team, .btn-delay, .btn-status,
+#btn-log-event, #btn-import-roster, #btn-save-roster, #btn-save-teams,
+#btn-test-mode, .np-preset, .lc-sport-btn, .lc-all, .btn {
+  border-radius:999px !important;
+  font-family:'Barlow',sans-serif !important;
+  font-weight:600;
+  transition:transform var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out);
+}
+.nav-btn.active, .sport-tab.active{ color:var(--gold-300) !important; }
+.nav-btn:hover, .tvp-link:hover, #btn-view-live:hover, #btn-setup:hover{
+  transform:translateY(-2px); box-shadow:var(--glow-gold);
+}
+.nav-btn:active, .btn-score:active, .pin-key:active{ transform:translateY(1px) scale(.985); }
+
+/* Cards: gold hairline + deep shadow */
+.card, .grp-table-wrap, .matchup-card, .lb-card, .tv-court,
+.tvs-group-wrap, .agenda-tbl, .lc-card, #modal-box, #confirm-box, .format-note {
+  border:1px solid var(--line-gold-soft) !important;
+  box-shadow:var(--shadow-card);
+  border-radius:10px;
+}
+.matchup-card.is-live, .lb-card, .tv-court.is-live, .lc-card.live {
+  box-shadow:var(--shadow-card), var(--glow-gold);
+  border-color:var(--line-gold) !important;
+}
+
+/* Gold dividers with centre diamond */
+hr.sep, .sep {
+  border:none !important; height:1px;
+  background:var(--grad-gold-line) !important;
+  position:relative; overflow:visible;
+}
+hr.sep::after, .sep::after {
+  content:'◆'; position:absolute; left:50%; top:50%;
+  transform:translate(-50%,-50%);
+  color:var(--gold-500); font-size:9px;
+  background:transparent; padding:0 6px;
+}
+
+/* Score buttons — courtside thumb targets */
+.btn-score{ min-height:56px !important; border-radius:14px !important; font-family:'Barlow',sans-serif; font-weight:700; }
+.btn-plus{ background:var(--grad-gold) !important; color:var(--navy-950) !important; border:none !important; }
+.btn-minus{ background:transparent !important; color:var(--color-danger) !important; border:1px solid var(--color-danger) !important; }
+.pin-key{ min-width:64px; min-height:64px; border-radius:16px !important; border:1px solid var(--line-gold-soft) !important; font-family:'Barlow',sans-serif; }
+.pin-key.del{ border-color:var(--line-gold) !important; color:var(--gold-400) !important; }
+.pin-dot.filled{ background:var(--gold-500) !important; border-color:var(--gold-500) !important; }
+
+/* Inputs: gold focus ring */
+input:focus, select:focus, textarea:focus {
+  outline:none !important;
+  box-shadow:0 0 0 3px var(--line-gold-soft) !important;
+  border-color:var(--gold-500) !important;
+}
+:is(a,button,select,input,textarea,[tabindex]):focus-visible {
+  outline:2px solid var(--gold-400) !important; outline-offset:2px;
+}
+
+/* ═══ TV / BIG-SCREEN ═══ */
+body.tv-hash-on{ background-image:var(--bg-ink-gold); }
+#tvHashScreen{ position:relative; }
+#tvHashScreen::before{
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:url('../assets/brand/crest-watermark-ghost.png') center/min(62vh,62vw) no-repeat;
+  opacity:.05;
+}
+#tvHashScreen > *{ position:relative; z-index:1; }
+.tvh-hdr{ border-bottom:1px solid var(--line-gold) !important;
+  background:linear-gradient(90deg,var(--navy-800),var(--navy-900)) !important; }
+.tvh-logo{ color:var(--gold-400) !important; }
+.tvs-td-pts, .tvs-td-pos{ color:var(--gold-300); }
+.tvs-qualify{ box-shadow:inset 3px 0 0 var(--gold-500); }
+
+/* PIN overlay — ceremonial */
+#pin-overlay{
+  background-image:var(--bg-ink-gold) !important;
+}
+#pin-overlay::before{
+  content:''; display:block; width:110px; height:110px; margin:0 auto 14px;
+  background:url('../assets/brand/crest-color.png') center/contain no-repeat;
+}
+#pin-title{ color:var(--gold-400) !important; }
+
+/* Live pulse — the only looping animation */
+@keyframes koLivePulse{ 0%,100%{opacity:1} 50%{opacity:.4} }
+.lb-dot, .live-dot, #live-badge, .sg-live-dot, .tvs-footer-live {
+  animation:koLivePulse 1.6s ease-in-out infinite;
+}
+
+/* Status pills in schedule/agenda */
+.sg-status-live{ background:var(--color-live) !important; border-radius:999px; }
+.sg-status-final{ border:1px solid var(--gold-500) !important; color:var(--gold-300) !important; border-radius:999px; }
+.sg-status-upcoming{ border:1px solid var(--navy-400) !important; border-radius:999px; }
+
+/* Format notes / info strips */
+.format-note{
+  background:var(--surface-glass) !important;
+  border-left:3px solid var(--gold-500) !important;
+}
+
+/* Test-mode ribbon */
+#test-mode-bar{
+  background:repeating-linear-gradient(45deg,var(--gold-600) 0 14px,var(--ink-900) 14px 28px) !important;
+  color:var(--cream-50) !important; text-shadow:0 1px 2px rgba(0,0,0,.7);
+  border-bottom:1px solid var(--line-gold) !important;
+}
+
+/* Danger zone */
+#btn-reset-scores{ background:transparent !important; color:var(--color-danger) !important;
+  border:1px solid var(--color-danger) !important; border-radius:999px !important; }
+.btn-dq{ border-radius:999px !important; }
+
+/* Motion restraint */
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{ animation:none !important; transition:none !important; }
+}

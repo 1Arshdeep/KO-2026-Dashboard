@@ -489,6 +489,11 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
 .ag-loc{color:var(--dim);font-size:13px}
 @media(max-width:640px){.agenda-tbl{font-size:12px}.agenda-tbl th,.agenda-tbl td{padding:8px 9px}}
 </style>
+<!-- Khalsa Olympics brand: fonts, icons, tokens (visual restyle only) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Anton&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<link rel="stylesheet" href="../styles/brand.css">
 </head>
 <body>
 
@@ -516,32 +521,32 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
     <div class="tvp-divider">or pick a screen</div>
     <div class="tvp-section-lbl">⚽ Soccer Fields</div>
     <div class="tvp-grid">
-      <a class="tvp-link" href="#tv/field-a" onclick="closeTVPicker()">⚽ Field A</a>
-      <a class="tvp-link" href="#tv/field-b" onclick="closeTVPicker()">⚽ Field B</a>
-      <a class="tvp-link" href="#tv/field-c" onclick="closeTVPicker()">⚽ Field C</a>
-      <a class="tvp-link" href="#tv/field-d" onclick="closeTVPicker()">⚽ Field D</a>
+      <a class="tvp-link" href="#tv/field-a" onclick="closeTVPicker()"><i class="fa-solid fa-futbol"></i> Field A</a>
+      <a class="tvp-link" href="#tv/field-b" onclick="closeTVPicker()"><i class="fa-solid fa-futbol"></i> Field B</a>
+      <a class="tvp-link" href="#tv/field-c" onclick="closeTVPicker()"><i class="fa-solid fa-futbol"></i> Field C</a>
+      <a class="tvp-link" href="#tv/field-d" onclick="closeTVPicker()"><i class="fa-solid fa-futbol"></i> Field D</a>
     </div>
     <div class="tvp-section-lbl">🏀🏐 Gyms</div>
     <div class="tvp-grid">
-      <a class="tvp-link" href="#tv/gym-1" onclick="closeTVPicker()">🏐 Gym 1 (Volleyball)</a>
-      <a class="tvp-link" href="#tv/gym-2" onclick="closeTVPicker()">🏀 Gym 2 (Basketball)</a>
-      <a class="tvp-link" href="#tv/gym-3" onclick="closeTVPicker()">🏀 Gym 3 (Basketball)</a>
+      <a class="tvp-link" href="#tv/gym-1" onclick="closeTVPicker()"><i class="fa-solid fa-volleyball"></i> Gym 1 (Volleyball)</a>
+      <a class="tvp-link" href="#tv/gym-2" onclick="closeTVPicker()"><i class="fa-solid fa-basketball"></i> Gym 2 (Basketball)</a>
+      <a class="tvp-link" href="#tv/gym-3" onclick="closeTVPicker()"><i class="fa-solid fa-basketball"></i> Gym 3 (Basketball)</a>
     </div>
     <div class="tvp-section-lbl">📊 Standings</div>
     <div class="tvp-grid">
-      <a class="tvp-link" href="#tv/standings-soccer" onclick="closeTVPicker()">⚽ Soccer Group Standings</a>
-      <a class="tvp-link" href="#tv/standings-basketball" onclick="closeTVPicker()">🏀 Basketball Standings</a>
-      <a class="tvp-link" href="#tv/standings-volleyball" onclick="closeTVPicker()">🏐 Volleyball Standings</a>
+      <a class="tvp-link" href="#tv/standings-soccer" onclick="closeTVPicker()"><i class="fa-solid fa-futbol"></i> Soccer Group Standings</a>
+      <a class="tvp-link" href="#tv/standings-basketball" onclick="closeTVPicker()"><i class="fa-solid fa-basketball"></i> Basketball Standings</a>
+      <a class="tvp-link" href="#tv/standings-volleyball" onclick="closeTVPicker()"><i class="fa-solid fa-volleyball"></i> Volleyball Standings</a>
     </div>
     <div class="tvp-section-lbl">🏟 Gallery Views</div>
     <div class="tvp-grid">
-      <a class="tvp-link" href="#tv/gallery-soccer" onclick="closeTVPicker()">⚽ All Soccer Fields</a>
-      <a class="tvp-link" href="#tv/gallery-gyms" onclick="closeTVPicker()">🏟 All Gyms</a>
-      <a class="tvp-link" href="#tv/gallery-semis" onclick="closeTVPicker()">🔥 Semifinals</a>
+      <a class="tvp-link" href="#tv/gallery-soccer" onclick="closeTVPicker()"><i class="fa-solid fa-futbol"></i> All Soccer Fields</a>
+      <a class="tvp-link" href="#tv/gallery-gyms" onclick="closeTVPicker()"><i class="fa-solid fa-table-cells-large"></i> All Gyms</a>
+      <a class="tvp-link" href="#tv/gallery-semis" onclick="closeTVPicker()"><i class="fa-solid fa-fire"></i> Semifinals</a>
     </div>
     <div class="tvp-section-lbl">🏆 Finals</div>
     <div class="tvp-grid">
-      <a class="tvp-link" href="#tv/finals-soccer" onclick="closeTVPicker()">🏆 Soccer Grand Final</a>
+      <a class="tvp-link" href="#tv/finals-soccer" onclick="closeTVPicker()"><i class="fa-solid fa-trophy"></i> Soccer Grand Final</a>
     </div>
   </div>
 </div>
@@ -552,7 +557,7 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
   <div class="tv-hdr">
     <div>
       <div class="tv-logo">🏆 KHALSA OLYMPICS 2026</div>
-      <div class="tv-sub">July 25–26 · Paramount Fine Foods Centre, Brampton</div>
+      <div class="tv-sub">4th Annual · July 25–26 · Paramount Fine Foods Centre, Mississauga</div>
     </div>
     <div class="tv-time" id="tvClock"></div>
   </div>
@@ -571,19 +576,19 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
 <!-- ── HEADER ── -->
 <div class="header">
   <div class="ko-logo">KO 2026</div>
-  <div class="ko-info"><strong>KHALSA OLYMPICS 2026</strong>July 25–26 · Paramount Fine Foods Centre</div>
+  <div class="ko-info"><strong>KHALSA OLYMPICS 2026</strong>4th Annual · July 25–26 · Paramount Fine Foods Centre, Mississauga</div>
   <div class="header-nav">
-    <button class="nav-btn active" onclick="showView('dashboard')" id="nav-dashboard">📊 Brackets</button>
-    <button class="nav-btn" onclick="showView('schedule')" id="nav-schedule">📅 Schedule</button>
-    <button class="nav-btn" onclick="openTVPicker()">📺 TV</button>
+    <button class="nav-btn active" onclick="showView('dashboard')" id="nav-dashboard"><i class="fa-solid fa-trophy"></i> Brackets</button>
+    <button class="nav-btn" onclick="showView('schedule')" id="nav-schedule"><i class="fa-solid fa-calendar"></i> Schedule</button>
+    <button class="nav-btn" onclick="openTVPicker()"><i class="fa-solid fa-tv"></i> TV</button>
   </div>
 </div>
 
 <!-- ── SPORT TABS ── -->
 <div class="sport-tabs">
-  <div class="sport-tab active" onclick="showSport('soccer')" id="tab-soccer">⚽ Soccer <span class="tab-badge" id="tbadge-soccer">—</span></div>
-  <div class="sport-tab" onclick="showSport('basketball')" id="tab-basketball">🏀 Basketball <span class="tab-badge" id="tbadge-basketball">—</span></div>
-  <div class="sport-tab" onclick="showSport('volleyball')" id="tab-volleyball">🏐 Volleyball <span class="tab-badge" id="tbadge-volleyball">—</span></div>
+  <div class="sport-tab active" onclick="showSport('soccer')" id="tab-soccer"><i class="fa-solid fa-futbol"></i> Soccer <span class="tab-badge" id="tbadge-soccer">—</span></div>
+  <div class="sport-tab" onclick="showSport('basketball')" id="tab-basketball"><i class="fa-solid fa-basketball"></i> Basketball <span class="tab-badge" id="tbadge-basketball">—</span></div>
+  <div class="sport-tab" onclick="showSport('volleyball')" id="tab-volleyball"><i class="fa-solid fa-volleyball"></i> Volleyball <span class="tab-badge" id="tbadge-volleyball">—</span></div>
 </div>
 
 <!-- ── DASHBOARD VIEW ── -->
