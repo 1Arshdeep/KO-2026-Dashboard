@@ -58,3 +58,13 @@ round-robin), TV picker, rotating carousel — all working; no console errors.
 ## `KO-2026-Brackers/index.html`
 Kept as an exact copy of `index.html` with asset/stylesheet paths adjusted
 (`styles/…` → `../styles/…`) since it lives one directory down.
+
+## Design handoff v2 additions
+- `assets/brand/ko-logo-primary.png` — THE primary logo (crest + wordmark on
+  navy). Now used in both page headers and on the PIN screen (navy surfaces,
+  per the handoff). Crest-only asset retained for compact uses.
+- Admin event log: Yellow/Red card buttons now show **only for soccer games**
+  (small JS addition in `renderEventLog`); basketball/volleyball keep
+  Goal + Foul. If a card type was selected when switching sports, selection
+  resets to Goal.
+- Confirmed: no Tug of War anywhere; venue copy is Mississauga.

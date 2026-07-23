@@ -1058,9 +1058,9 @@ let timerInterval = null;
 let confirmCallback = null;
 
 const DEFAULT_TEAMS = {
-  soccer: ['Babbar Khalsa Ballers','Dixie United','Sharomani Akaali Dal','Mohali fc','KLF','Akaal Fauj','NPSS','Punjab Kings','Humberwood','McMaster University','Brackish','Rebel FC','Panjab Lions','Kaurs United'],
-  basketball: ['Sher Elite','Babbar Khalsa Ballers','Dixie United','Sharomani Akaali Dal','KLF','Akaal Fauj','NPSS','McMaster University','Brackish','Farmers Elite','Icemen','KGA','Panjab Lions','Kaurs United'],
-  volleyball: ['Babbar Khalsa Ballers','Dixie United','Sharomani Akaali Dal','Chinguacousy Ekta','Vortex','Palm Springs','KLF','McMaster University','Brackish','Brampton spikers','Baba Bidhi Chand Chinna Volleyball club','Panjab Lions','Kaurs United'],
+  soccer: ['Babbar Khalsa Ballers','Dixie United','Sharomani Akaali Dal','Mohali fc','KLF','Akaal Fauj','NPSS','Punjab Kings','Humberwood','McMaster University','Brockish','Rebel FC','Panjab Lions','Kaurs United FC'],
+  basketball: ['Sher Elite','Babbar Khalsa Ballers','Dixie United','Sharomani Akaali Dal','KLF','Akaal Fauj','NPSS','McMaster University','Brockish','Farmers Elite','Icemen','KGA','Panjab Lions','Kaurs United'],
+  volleyball: ['Babbar Khalsa Ballers','Dixie United','Sharomani Akaali Dal','Chinguacousy Ekta','Vortex','Palm Springs','KLF','McMaster University','Brockish','Brampton spikers','Baba Bidhi Chand Chinna Volleyball club','Panjab Lions','Kaurs United'],
 };
 
 // ===== DATE/TIME HELPERS =====
@@ -1075,8 +1075,8 @@ const fmtTime = ms => {
 const SOC_SLOT = 25, BB_SLOT = 20, VB_SLOT = 15;
 
 const DEFAULT_SOCCER_GROUPS = {
-  A: ['Babbar Khalsa Ballers','Sharomani Akaali Dal','KLF','NPSS','Humberwood','Brackish','Panjab Lions'],
-  B: ['Dixie United','Mohali fc','Akaal Fauj','Punjab Kings','McMaster University','Rebel FC','Kaurs United'],
+  A: ['Babbar Khalsa Ballers','Sharomani Akaali Dal','KLF','NPSS','Humberwood','Brockish','Panjab Lions'],
+  B: ['Dixie United','Mohali fc','Akaal Fauj','Punjab Kings','McMaster University','Rebel FC','Kaurs United FC'],
 };
 
 // Soccer: Group Stage + Knockout — 2 groups of 7, full round-robin (42 games), 4 fields, 25-min slots
@@ -1086,65 +1086,65 @@ const SOCCER_SLOTS = [
     {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'A2 vs A7', group:'A'},
     {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'A3 vs A6', group:'A'},
     {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'A4 vs A5', group:'A'},
-    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B2 vs B7', group:'B'},
+    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B1 vs B2', group:'B'},
   ]},
   { start: D1(11,25), rows:[
-    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B3 vs B6', group:'B'},
-    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'B4 vs B5', group:'B'},
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B1 vs B3', group:'B'},
+    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'B2 vs B4', group:'B'},
     {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'A1 vs A7', group:'A'},
     {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'A2 vs A5', group:'A'},
   ]},
   { start: D1(11,50), rows:[
     {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'A3 vs A4', group:'A'},
-    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'B1 vs B7', group:'B'},
-    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B3 vs B4', group:'B'},
-    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B5 vs B6', group:'B'},
+    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'B1 vs B4', group:'B'},
+    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B2 vs B3', group:'B'},
+    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B5 vs B7', group:'B'},
   ]},
   { start: D1(12,15), rows:[
     {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'A1 vs A6', group:'A'},
     {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'A7 vs A5', group:'A'},
-    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B1 vs B2', group:'B'},
-    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B6 vs B4', group:'B'},
+    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B1 vs B5', group:'B'},
+    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B2 vs B7', group:'B'},
   ]},
   { start: D1(12,40), rows:[
-    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B5 vs B3', group:'B'},
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B1 vs B7', group:'B'},
     {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'A2 vs A3', group:'A'},
     {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'A1 vs A5', group:'A'},
     {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'A6 vs A7', group:'A'},
   ]},
   { start: D1(13, 5), rows:[
     {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B1 vs B6', group:'B'},
-    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'B4 vs B2', group:'B'},
+    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'B2 vs B5', group:'B'},
     {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'A4 vs A2', group:'A'},
-    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B7 vs B5', group:'B'},
+    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B3 vs B4', group:'B'},
   ]},
   { start: D1(13,30), rows:[
     {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'A5 vs A6', group:'A'},
     {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'A7 vs A3', group:'A'},
-    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B1 vs B4', group:'B'},
-    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B6 vs B2', group:'B'},
+    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B2 vs B6', group:'B'},
+    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B3 vs B5', group:'B'},
   ]},
   { start: D1(13,55), rows:[
-    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B7 vs B3', group:'B'},
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B3 vs B6', group:'B'},
     {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'A1 vs A2', group:'A'},
     {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'A5 vs A3', group:'A'},
     {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'A6 vs A4', group:'A'},
   ]},
   { start: D1(14,20), rows:[
-    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B1 vs B5', group:'B'},
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B4 vs B6', group:'B'},
     {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'A1 vs A4', group:'A'},
-    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B6 vs B7', group:'B'},
+    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B3 vs B7', group:'B'},
     {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'A6 vs A2', group:'A'},
   ]},
   { start: D1(14,45), rows:[
-    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B2 vs B3', group:'B'},
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B5 vs B6', group:'B'},
     {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'A1 vs A3', group:'A'},
     {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B4 vs B7', group:'B'},
     {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'A4 vs A7', group:'A'},
   ]},
   { start: D1(15,10), rows:[
-    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B2 vs B5', group:'B'},
-    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'B1 vs B3', group:'B'},
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B6 vs B7', group:'B'},
+    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'B4 vs B5', group:'B'},
   ]},
   // ── Day 2: Knockout ──
   { start: D2(11, 0), rows:[
@@ -1165,7 +1165,7 @@ const SOCCER_SLOTS = [
 // dual-sport teams (also playing volleyball) never double-book.
 // Seed order (DEFAULT_TEAMS.basketball): T1 Sher Elite · T2 Babbar Khalsa
 // Ballers · T3 Dixie United · T4 Sharomani Akaali Dal · T5 KLF · T6 Akaal Fauj
-// · T7 NPSS · T8 McMaster University · T9 Brackish · T10 Farmers Elite ·
+// · T7 NPSS · T8 McMaster University · T9 Brockish · T10 Farmers Elite ·
 // T11 Icemen · T12 KGA · T13 Panjab Lions · T14 Kaurs United
 const BB_SLOTS = [
   {start:D1(17, 0), rows:[{court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 1',  desc:'T2 vs T1'}]},   // Babbar v Sher Elite
@@ -1197,7 +1197,7 @@ const BB_SLOTS = [
 // Gym 1. "Open" slots are rest windows for dual-sport teams.
 // Seed order (DEFAULT_TEAMS.volleyball): T1 Babbar Khalsa Ballers · T2 Dixie
 // United · T3 Sharomani Akaali Dal · T4 Chinguacousy Ekta · T5 Vortex ·
-// T6 Palm Springs · T7 KLF · T8 McMaster University · T9 Brackish ·
+// T6 Palm Springs · T7 KLF · T8 McMaster University · T9 Brockish ·
 // T10 Brampton spikers · T11 Baba Bidhi Chand Chinna VC · T12 Panjab Lions ·
 // T13 Kaurs United
 const VB_SLOTS = [
@@ -1752,6 +1752,18 @@ function renderEventLog() {
   // Update goal button icon to match sport
   document.querySelector('.btn-event-type[data-type="goal"]').textContent =
     (SPORT_ICON_MAP[sport] || '⚽') + ' Goal';
+
+  // Yellow/Red cards are soccer-specific — hide them for basketball/volleyball
+  const isSoccer = sport === 'soccer';
+  ['yellow','red'].forEach(t => {
+    const btn = document.querySelector(`.btn-event-type[data-type="${t}"]`);
+    if (btn) btn.style.display = isSoccer ? '' : 'none';
+  });
+  if (!isSoccer && (selectedEventType === 'yellow' || selectedEventType === 'red')) {
+    selectedEventType = 'goal';
+    document.querySelectorAll('.btn-event-type').forEach(b => b.classList.remove('active'));
+    document.querySelector('.btn-event-type[data-type="goal"]').classList.add('active');
+  }
 
   const list = document.getElementById('event-log-list');
   if (!g || !g.events || !g.events.length) {
@@ -2899,7 +2911,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ===== INIT =====
-const BB_SCHEMA_V = 11;  // v11: BB/VB games now match the official Evening Schedule PDF (exact pairings/times)
+const BB_SCHEMA_V = 12;  // v12: Rebel FC late soccer slots + Brockish / Kaurs United FC renames
 
 function needsRebuild(games, schemaV) {
   const list = Object.values(games || {});
