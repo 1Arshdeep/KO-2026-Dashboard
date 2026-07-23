@@ -629,8 +629,8 @@ const BB_SLOT  = 20;
 const VB_SLOT  = 15;
 
 const DEFAULT_SOCCER_GROUPS = {
-  A: ['Babbar Khalsa Ballers','Sharomani Akaali Dal','KLF','NPSS','Humberwood','Brackish','Panjab Lions'],
-  B: ['Dixie United','Mohali fc','Akaal Fauj','Punjab Kings','McMaster University','Rebel FC','Kaurs United'],
+  A: ['Babbar Khalsa Ballers','Sharomani Akaali Dal','KLF','NPSS','Humberwood','Brockish','Panjab Lions'],
+  B: ['Dixie United','Mohali fc','Akaal Fauj','Punjab Kings','McMaster University','Rebel FC','Kaurs United FC'],
 };
 
 // Soccer: Group Stage + Knockout — 2 groups of 7, full round-robin, 4 fields, 25-min slots
@@ -640,65 +640,65 @@ const SOCCER_SLOTS = [
     {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'A2 vs A7', group:'A'},
     {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'A3 vs A6', group:'A'},
     {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'A4 vs A5', group:'A'},
-    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B2 vs B7', group:'B'},
+    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B1 vs B2', group:'B'},
   ]},
   { start: D1(11,25), rows:[
-    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B3 vs B6', group:'B'},
-    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'B4 vs B5', group:'B'},
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B1 vs B3', group:'B'},
+    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'B2 vs B4', group:'B'},
     {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'A1 vs A7', group:'A'},
     {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'A2 vs A5', group:'A'},
   ]},
   { start: D1(11,50), rows:[
     {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'A3 vs A4', group:'A'},
-    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'B1 vs B7', group:'B'},
-    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B3 vs B4', group:'B'},
-    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B5 vs B6', group:'B'},
+    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'B1 vs B4', group:'B'},
+    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B2 vs B3', group:'B'},
+    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B5 vs B7', group:'B'},
   ]},
   { start: D1(12,15), rows:[
     {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'A1 vs A6', group:'A'},
     {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'A7 vs A5', group:'A'},
-    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B1 vs B2', group:'B'},
-    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B6 vs B4', group:'B'},
+    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B1 vs B5', group:'B'},
+    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B2 vs B7', group:'B'},
   ]},
   { start: D1(12,40), rows:[
-    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B5 vs B3', group:'B'},
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B1 vs B7', group:'B'},
     {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'A2 vs A3', group:'A'},
     {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'A1 vs A5', group:'A'},
     {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'A6 vs A7', group:'A'},
   ]},
   { start: D1(13, 5), rows:[
     {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B1 vs B6', group:'B'},
-    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'B4 vs B2', group:'B'},
+    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'B2 vs B5', group:'B'},
     {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'A4 vs A2', group:'A'},
-    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B7 vs B5', group:'B'},
+    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B3 vs B4', group:'B'},
   ]},
   { start: D1(13,30), rows:[
     {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'A5 vs A6', group:'A'},
     {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'A7 vs A3', group:'A'},
-    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B1 vs B4', group:'B'},
-    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B6 vs B2', group:'B'},
+    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B2 vs B6', group:'B'},
+    {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'B3 vs B5', group:'B'},
   ]},
   { start: D1(13,55), rows:[
-    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B7 vs B3', group:'B'},
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B3 vs B6', group:'B'},
     {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'A1 vs A2', group:'A'},
     {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'A5 vs A3', group:'A'},
     {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'A6 vs A4', group:'A'},
   ]},
   { start: D1(14,20), rows:[
-    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B1 vs B5', group:'B'},
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B4 vs B6', group:'B'},
     {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'A1 vs A4', group:'A'},
-    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B6 vs B7', group:'B'},
+    {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B3 vs B7', group:'B'},
     {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'A6 vs A2', group:'A'},
   ]},
   { start: D1(14,45), rows:[
-    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B2 vs B3', group:'B'},
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B5 vs B6', group:'B'},
     {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'A1 vs A3', group:'A'},
     {court:'Soccer Field C', phase:'group', round:'Group Stage', desc:'B4 vs B7', group:'B'},
     {court:'Soccer Field D', phase:'group', round:'Group Stage', desc:'A4 vs A7', group:'A'},
   ]},
   { start: D1(15,10), rows:[
-    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B2 vs B5', group:'B'},
-    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'B1 vs B3', group:'B'},
+    {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B6 vs B7', group:'B'},
+    {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'B4 vs B5', group:'B'},
   ]},
   // ── Day 2: Knockout ──
   { start: D2(11, 0), rows:[

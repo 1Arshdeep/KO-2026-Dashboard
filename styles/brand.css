@@ -118,15 +118,17 @@ body.admin-body{ background-image:var(--bg-ink-gold); }
   border-bottom:1px solid var(--line-gold) !important;
 }
 .ko-logo{ color:var(--text-gold) !important; }
+/* Primary logo (crest + wordmark on navy) in headers — per Design 2 handoff.
+   Header surfaces are navy, matching the logo's field. */
 .ko-logo::before{
-  content:''; display:inline-block; vertical-align:-18%;
-  width:1.25em; height:1.25em; margin-right:.4em;
-  background:url('../assets/brand/crest-color.png') center/contain no-repeat;
+  content:''; display:inline-block; vertical-align:-22%;
+  width:1.5em; height:1.5em; margin-right:.45em; border-radius:6px;
+  background:url('../assets/brand/ko-logo-primary.png') center/contain no-repeat;
 }
 #header-left::before{
   content:''; display:inline-block; vertical-align:middle;
-  width:26px; height:26px; margin-right:8px;
-  background:url('../assets/brand/crest-color.png') center/contain no-repeat;
+  width:32px; height:32px; margin-right:8px; border-radius:6px;
+  background:url('../assets/brand/ko-logo-primary.png') center/contain no-repeat;
 }
 
 /* Pills — nav, tabs, buttons */
@@ -209,8 +211,9 @@ body.tv-hash-on{ background-image:var(--bg-ink-gold); }
   background-image:var(--bg-ink-gold) !important;
 }
 #pin-overlay::before{
-  content:''; display:block; width:110px; height:110px; margin:0 auto 14px;
-  background:url('../assets/brand/crest-color.png') center/contain no-repeat;
+  content:''; display:block; width:150px; height:150px; margin:0 auto 14px;
+  border-radius:12px;
+  background:url('../assets/brand/ko-logo-primary.png') center/contain no-repeat;
 }
 #pin-title{ color:var(--gold-400) !important; }
 
