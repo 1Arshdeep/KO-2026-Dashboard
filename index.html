@@ -1588,7 +1588,7 @@ function renderSoccerFixtures() {
       const bodyId = `soc-body-${idx}`;
       return `<div class="${cardClass}" data-start="${startTs}">
         <div class="soc-slot-hdr">
-          <span class="soc-slot-num">Slot ${idx + 1}</span>
+          <span class="soc-slot-num">Round ${idx + 1}</span>
           <span class="soc-slot-time">${fmtTime(startTs)} – ${fmtTime(endTs)}</span>
           <span class="soc-slot-meta">${matchStr} · ${fieldStr}
             <button class="soc-slot-toggle" onclick="(function(btn){document.getElementById('${bodyId}').style.display='flex';btn.style.display='none';})(this)">▸ show ${games.length} results</button>
@@ -1599,7 +1599,7 @@ function renderSoccerFixtures() {
     }
     return `<div class="${cardClass}" data-start="${startTs}" data-active="1">
       <div class="soc-slot-hdr">
-        <span class="soc-slot-num">Slot ${idx + 1}</span>
+        <span class="soc-slot-num">Round ${idx + 1}</span>
         <span class="soc-slot-time">${fmtTime(startTs)} – ${fmtTime(endTs)}${liveTag}</span>
         <span class="soc-slot-meta">${matchStr} · ${fieldStr}</span>
       </div>
@@ -1886,7 +1886,7 @@ function renderBBSlotFixtures() {
       const bodyId = `bb-body-${idx}`;
       return `<div class="${cardClass}" data-start="${startTs}">
         <div class="soc-slot-hdr">
-          <span class="soc-slot-num">Slot ${idx + 1}</span>
+          <span class="soc-slot-num">Round ${idx + 1}</span>
           <span class="soc-slot-time">${fmtTime(startTs)} – ${fmtTime(endTs)}</span>
           <span class="soc-slot-meta">${matchStr}
             <button class="soc-slot-toggle" onclick="(function(btn){document.getElementById('${bodyId}').style.display='flex';btn.style.display='none';})(this)">▸ show ${games.length} results</button>
@@ -1897,7 +1897,7 @@ function renderBBSlotFixtures() {
     }
     return `<div class="${cardClass}" data-start="${startTs}" data-active="1">
       <div class="soc-slot-hdr">
-        <span class="soc-slot-num">Slot ${idx + 1}</span>
+        <span class="soc-slot-num">Round ${idx + 1}</span>
         <span class="soc-slot-time">${fmtTime(startTs)} – ${fmtTime(endTs)}${liveTag}</span>
         <span class="soc-slot-meta">${matchStr}</span>
       </div>
@@ -2937,7 +2937,7 @@ function tvHashRenderFixturesBasketball() {
     const liveTag = hasLive ? '<span class="tvf-live-tag">LIVE NOW</span>' : '';
     return `<div class="tvf-slot-card${hasLive ? ' tvf-slot-live' : ''}">
       <div class="tvf-slot-hdr">
-        <span class="tvf-slot-num">Slot ${slotNum}</span>
+        <span class="tvf-slot-num">Round ${slotNum}</span>
         <span class="tvf-slot-time">${fmtTime(startTs)} – ${fmtTime(endTs)}</span>
         ${liveTag}
       </div>
@@ -3006,7 +3006,7 @@ function tvHashRenderFixturesSoccer() {
     const liveTag = hasLive ? '<span class="tvf-live-tag">LIVE NOW</span>' : '';
     return `<div class="tvf-slot-card${hasLive ? ' tvf-slot-live' : ''}">
       <div class="tvf-slot-hdr">
-        <span class="tvf-slot-num">Slot ${slotNum}</span>
+        <span class="tvf-slot-num">Round ${slotNum}</span>
         <span class="tvf-slot-time">${fmtTime(startTs)} – ${fmtTime(endTs)}</span>
         ${liveTag}
       </div>
