@@ -683,7 +683,7 @@ const fmtDateTime = ms => {
 // ══════════════════════════════════════════════════════════════
 // Soccer: 20-min games, 4 fields, July 25 + Day 2 GF
 const SOC_SLOT = 20;
-const BB_SLOT  = 15;
+const BB_SLOT  = 20;
 const VB_SLOT  = 15;
 
 const DEFAULT_SOCCER_GROUPS = {
@@ -773,128 +773,85 @@ const SOCCER_SLOTS = [
   ]},
 ];
 
-// Basketball: 14 teams, Double Elimination, 2 courts, 25-min slots
-// Basketball: 14-team STANDINGS PLAY — exact pairings/times from the official
-// "KO2026 Evening Schedule" PDF. 20-min games, 5:00–10:20 PM.
-// Court A = Gym 2, Court B = Gym 3. Gaps are rest windows for dual-sport
-// teams (also playing volleyball). MUST MATCH admin.html exactly.
+// Basketball: 14-team round-robin — 3 games/team (21 games), 20-min games,
+// 5:00–10:50 PM, 2 courts (Gym 2 & Gym 3). No overlap with any dual-sport
+// team's volleyball games. Day 2: top-4 knockout, 3:30/4:00/4:30 PM.
+// MUST MATCH admin.html exactly.
 const BB_SLOTS = [
   {start:D1(17, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 1',  desc:'T1 vs T2'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 2',  desc:'T3 vs T4'},
-  ]},
-  {start:D1(17,15), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 3',  desc:'T5 vs T6'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 4',  desc:'T7 vs T8'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 1',  desc:'T7 vs T10'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 2',  desc:'T9 vs T11'},
   ]},
   {start:D1(17,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 5',  desc:'T9 vs T10'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 6',  desc:'T11 vs T12'},
-  ]},
-  {start:D1(17,45), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 7',  desc:'T13 vs T14'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 8',  desc:'T1 vs T3'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 3',  desc:'T5 vs T12'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 4',  desc:'T8 vs T14'},
   ]},
   {start:D1(18, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 9',  desc:'T2 vs T4'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 10', desc:'T5 vs T7'},
-  ]},
-  {start:D1(18,15), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 11', desc:'T6 vs T8'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 12', desc:'T9 vs T11'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 5',  desc:'T4 vs T10'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 6',  desc:'T7 vs T11'},
   ]},
   {start:D1(18,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 13', desc:'T10 vs T12'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 14', desc:'T1 vs T13'},
-  ]},
-  {start:D1(18,45), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 15', desc:'T4 vs T5'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 16', desc:'T2 vs T14'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 7',  desc:'T2 vs T3'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 8',  desc:'T1 vs T5'},
   ]},
   {start:D1(19, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 17', desc:'T3 vs T7'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 18', desc:'T8 vs T9'},
-  ]},
-  {start:D1(19,15), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 19', desc:'T12 vs T13'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 20', desc:'T10 vs T11'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 9',  desc:'T4 vs T9'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 10', desc:'T8 vs T13'},
   ]},
   {start:D1(19,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 21', desc:'T4 vs T6'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 22', desc:'T1 vs T14'},
-  ]},
-  {start:D1(19,45), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 23', desc:'T7 vs T9'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 24', desc:'T2 vs T3'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 11', desc:'T1 vs T6'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 12', desc:'T2 vs T14'},
   ]},
   {start:D1(20, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 25', desc:'T5 vs T8'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 26', desc:'T11 vs T12'},
-  ]},
-  {start:D1(20,15), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 27', desc:'T1 vs T4'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 28', desc:'T10 vs T14'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 13', desc:'T3 vs T4'},
   ]},
   {start:D1(20,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 29', desc:'T2 vs T13'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 30', desc:'T3 vs T6'},
-  ]},
-  {start:D1(20,45), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 31', desc:'T9 vs T12'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 32', desc:'T7 vs T10'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 14', desc:'T12 vs T13'},
   ]},
   {start:D1(21, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 33', desc:'T1 vs T5'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 34', desc:'T4 vs T8'},
-  ]},
-  {start:D1(21,15), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 35', desc:'T11 vs T14'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 36', desc:'T2 vs T6'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 15', desc:'T5 vs T14'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 16', desc:'T6 vs T10'},
   ]},
   {start:D1(21,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 37', desc:'T9 vs T13'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 38', desc:'T3 vs T5'},
-  ]},
-  {start:D1(21,45), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 39', desc:'T8 vs T10'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 40', desc:'T12 vs T14'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 17', desc:'T1 vs T2'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 18', desc:'T11 vs T13'},
   ]},
   {start:D1(22, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 41', desc:'T6 vs T7'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 42', desc:'T11 vs T13'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 19', desc:'T9 vs T12'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 20', desc:'T3 vs T7'},
+  ]},
+  {start:D1(22,30), rows:[
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 21', desc:'T6 vs T8'},
   ]},
   // Day 2 Knockout — top 4 advance
   {start:D2(15,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'ko', round:'Semifinal 1', desc:'BBSF1 vs BBSF4', slotMin:25},
+    {court:'Gym 2 (Basketball)', phase:'ko', round:'Semifinal 1', desc:'BBSF1 vs BBSF4', slotMin:20},
+    {court:'Gym 3 (Basketball)', phase:'ko', round:'Semifinal 2', desc:'BBSF2 vs BBSF3', slotMin:20},
   ]},
   {start:D2(16, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'ko', round:'Semifinal 2', desc:'BBSF2 vs BBSF3', slotMin:25},
+    {court:'Gym 2 (Basketball)', phase:'ko', round:'3rd Place', desc:'BBSF1L vs BBSF2L', slotMin:20},
   ]},
   {start:D2(16,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'ko', round:'3rd Place', desc:'BBSF1L vs BBSF2L', slotMin:25},
-  ]},
-  {start:D2(17, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'ko', round:'Final', desc:'BBSF1W vs BBSF2W', slotMin:25},
+    {court:'Gym 2 (Basketball)', phase:'ko', round:'Final', desc:'BBSF1W vs BBSF2W', slotMin:20},
   ]},
 ];
 
-// Volleyball: 13-team STANDINGS PLAY — exact pairings/times from the official
-// "KO2026 Evening Schedule" PDF. 15-min games, 5:00–10:35 PM, Gym 1.
-// MUST MATCH admin.html exactly.
+// Volleyball: 13-team round-robin — 2 games/team (13 games), 15-min games +
+// 5-min buffer, Saturday 5:00 PM–10:35 PM, Gym 1. MUST MATCH admin.html exactly.
 const VB_SLOTS = [
-  {start:D1(17, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 1',  desc:'T13 vs T11'}]},
-  {start:D1(17,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 2',  desc:'T6 vs T12'}]},
-  {start:D1(18,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 3',  desc:'T4 vs T1'}]},
-  {start:D1(18,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 4',  desc:'T10 vs T13'}]},
-  {start:D1(19, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 5',  desc:'T1 vs T5'}]},
-  {start:D1(19,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 6',  desc:'T12 vs T10'}]},
-  {start:D1(19,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 7',  desc:'T8 vs T4'}]},
-  {start:D1(20, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 8',  desc:'T7 vs T6'}]},
-  {start:D1(20,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 9',  desc:'T9 vs T8'}]},
-  {start:D1(20,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 10', desc:'T5 vs T7'}]},
-  {start:D1(21, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 11', desc:'T2 vs T9'}]},
-  {start:D1(21,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 12', desc:'T11 vs T3'}]},
-  {start:D1(22,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 13', desc:'T3 vs T2'}]},
+  {start:D1(17,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 1',  desc:'T4 vs T1'}]},
+  {start:D1(17,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 2',  desc:'T2 vs T9'}]},
+  {start:D1(18, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 3',  desc:'T12 vs T10'}]},
+  {start:D1(18,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 4',  desc:'T8 vs T4'}]},
+  {start:D1(18,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 5',  desc:'T13 vs T11'}]},
+  {start:D1(19,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 6',  desc:'T6 vs T12'}]},
+  {start:D1(20, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 7',  desc:'T9 vs T8'}]},
+  {start:D1(20,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 8',  desc:'T1 vs T5'}]},
+  {start:D1(20,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 9',  desc:'T3 vs T2'}]},
+  {start:D1(21,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 10', desc:'T11 vs T3'}]},
+  {start:D1(21,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 11', desc:'T7 vs T6'}]},
+  {start:D1(22, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 12', desc:'T10 vs T13'}]},
+  {start:D1(22,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 13', desc:'T5 vs T7'}]},
 ];
 
 // ══════════════════════════════════════════════════════════════
@@ -905,7 +862,7 @@ const SK = 'ko2026_v3';
 function defaultTeams() {
   return {
     soccer: Array.from({length:14},(_,i)=>`Soccer T${i+1}`),
-    basketball: ['Sher Elite','Babbar Khalsa Ballers','Dixie United','Sharomani Akaali Dal','KLF','Akaal Fauj','NPSS','McMaster University','Brockish','Farmers Elite','Icemen','KGA','Panjab Lions','Kaurs United'],
+    basketball: ['Sher Elite','Babbar Khalsa Ballers','Dixie United','Sharomani Akaali Dal','KLF','Akaal Fauj','NPSS','McMaster University','Brockish','Farmers Elite','Icemen','KGA','Panjab Lions','Kaurs United FC'],
     volleyball: Array.from({length:13},(_,i)=>`VB Team ${i+1}`),
   };
 }
@@ -1152,7 +1109,7 @@ function renderSchedule() {
   } else if (currentSport === 'basketball') {
     html += renderScheduleTable('basketball', BB_SLOTS, BB_SLOT,
       ['Gym 2 (Basketball)','Gym 3 (Basketball)'],
-      '🏀 Basketball — 2 Courts · 25-min slots');
+      '🏀 Basketball — 2 Courts · 20-min games');
   } else if (currentSport === 'volleyball') {
     html += renderScheduleTable('volleyball', VB_SLOTS, VB_SLOT,
       ['Gym 1 (Volleyball)'],
@@ -1944,16 +1901,16 @@ function renderBBPanel() {
   const fixturesHtml = renderBBSlotFixtures();
   el.innerHTML = `
     <div class="sec-title">🏀 Basketball — Group Stage + Knockout <span class="sec-badge">${sportBadge('basketball')}</span>
-      <span class="sec-sub">Day 1: 5:00 PM–10:10 PM · 2 Gyms · 10-min games &middot; Day 2: Semis 3:30 PM · 3rd Place 4:30 PM · Final 5:00 PM</span>
+      <span class="sec-sub">Day 1: 5:00 PM–10:50 PM · 2 Gyms · 20-min games &middot; Day 2: Semis 3:30 PM · 3rd Place 4:00 PM · Final 4:30 PM</span>
     </div>
-    <div class="format-note">42 games · every team plays 6 · rank by Wins, ties broken by score differential (DQ = opponent wins by +${RR_DQ_DIFF}) · Top 4 advance to Day 2 knockouts: Semis, 3rd Place match, Final.</div>
+    <div class="format-note">21 games · every team plays 3 · rank by Wins, ties broken by score differential (DQ = opponent wins by +${RR_DQ_DIFF}) · Top 4 advance to Day 2 knockouts: Semis, 3rd Place match, Final.</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0 0 6px">🏀 Group Fixtures</div>
     ${fixturesHtml}
     <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0 0 10px">🏀 Live Standings</div>
     ${renderRRStandingsTable('basketball')}
     <hr class="sep">
     <div class="soc-ko-label">🏆 Knockout Stage</div>
-    <div class="format-note" style="margin-bottom:8px">Fills after all 42 group-stage games are final — top 4 by wins advance.</div>
+    <div class="format-note" style="margin-bottom:8px">Fills after all 21 group-stage games are final — top 4 by wins advance.</div>
     ${buildBracketSection('basketball','ko',null)}
   `;
   const stack = el.querySelector('.soc-slot-stack');
