@@ -216,6 +216,11 @@ hr.sep{border:none;border-top:1px solid var(--gray3);margin:16px 0}
 .tvs-advances-badge{display:inline-block;font-size:10px;font-weight:800;color:var(--navy);background:var(--gold);border-radius:3px;padding:1px 5px;margin-left:8px;vertical-align:middle;white-space:nowrap;letter-spacing:.03em}
 .tvs-footer{background:rgba(0,0,0,.3);border-top:1px solid rgba(212,160,23,.2);padding:8px 32px;font-size:16px;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:20px;flex-shrink:0;min-height:40px}
 .tvs-footer-live{color:var(--live);font-weight:700}
+.tvsc-rows{display:flex;flex-direction:column;overflow-y:auto}
+.tvsc-row{padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.08)}
+.tvsc-time{font-size:19px;font-weight:800;color:var(--gold)}
+.tvsc-event{font-size:22px;font-weight:700;color:var(--text);margin-top:2px}
+.tvsc-loc{font-size:14px;color:rgba(255,255,255,.5);margin-top:2px}
 
 /* ── BYE COLUMN ── */
 .br-round-byes{opacity:.6;flex:.7!important;min-width:110px!important}
@@ -583,6 +588,7 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
       <a class="tvp-link" href="#tv/fixtures-basketball" onclick="closeTVPicker()"><i class="fa-solid fa-basketball"></i> Basketball Group Fixtures</a>
       <a class="tvp-link" href="#tv/standings-basketball" onclick="closeTVPicker()"><i class="fa-solid fa-basketball"></i> Basketball Standings</a>
       <a class="tvp-link" href="#tv/standings-volleyball" onclick="closeTVPicker()"><i class="fa-solid fa-volleyball"></i> Volleyball Standings</a>
+      <a class="tvp-link" href="#tv/schedule" onclick="closeTVPicker()"><i class="fa-solid fa-calendar-days"></i> Official Schedule</a>
     </div>
     <div class="tvp-section-lbl">🏟 Gallery Views</div>
     <div class="tvp-grid">
@@ -1102,19 +1108,19 @@ function renderBanner() {
 // ===== EVENT AGENDA (2-day run of show) =====
 const EVENT_AGENDA = [
   { day:'Saturday · July 25', items:[
-    {time:'10:00 – 11:00 AM', event:'Team Check-In',                              loc:'Cafeteria',                 type:'other'},
-    {time:'11:00 AM – 1:00 PM', event:'⚽ Soccer — Prelim & Winners Bracket',      loc:'Soccer Fields A–D',         type:'soccer'},
-    {time:'1:00 – 2:00 PM',    event:'🍽 Lunch',                                   loc:'Cafeteria',                 type:'break'},
-    {time:'2:00 – 5:00 PM',    event:'⚽ Soccer — Losers Bracket & Finals',        loc:'Soccer Fields A–D',         type:'soccer'},
+    {time:'10:00 – 10:30 AM',  event:'✅ Soccer Team Check-In',                     loc:'Cafeteria',                 type:'other'},
+    {time:'11:00 AM – 5:00 PM', event:'⚽ Soccer Tournament',                       loc:'Soccer Fields A–D',         type:'soccer'},
+    {time:'1:00 – 3:00 PM',    event:'🍽 Lunch Time',                               loc:'Cafeteria',                 type:'break'},
+    {time:'3:30 – 4:00 PM',    event:'✅ Basketball & Volleyball Team Check-In',    loc:'Cafeteria',                 type:'other'},
     {time:'5:00 – 11:00 PM',   event:'🏀 Basketball & 🏐 Volleyball Tournaments',  loc:'Gym 1 (VB) · Gym 2 & 3 (BB)', type:'bbvb'},
   ]},
   { day:'Sunday · July 26', items:[
-    {time:'12:30 – 1:00 PM',   event:'Team Check-In',                              loc:'Cafeteria',                 type:'other'},
-    {time:'1:00 – 1:30 PM',    event:'🎤 Opening Remarks',                          loc:'Main Hall',                 type:'ceremony'},
-    {time:'1:30 – 3:00 PM',    event:'⚽ Soccer Finals (60-min games)',             loc:'Soccer Fields',             type:'soccer'},
+    {time:'12:30 – 1:00 PM',   event:'✅ Team Check-In',                            loc:'Cafeteria',                 type:'other'},
+    {time:'1:00 – 1:10 PM',    event:'🎤 Opening Remarks',                          loc:'Main Hall',                 type:'ceremony'},
+    {time:'1:30 – 3:00 PM',    event:'⚽ Soccer Semi-Finals & Finals',              loc:'Soccer Fields',             type:'soccer'},
     {time:'3:00 – 3:30 PM',    event:'🎤 Theme Speech',                             loc:'Cafeteria',                 type:'ceremony'},
-    {time:'3:30 – 6:30 PM',    event:'🏀 Basketball & 🏐 Volleyball — Semis & Finals', loc:'Gym 1 (VB) · Gym 2 & 3 (BB)', type:'bbvb'},
-    {time:'6:30 – 7:30 PM',    event:'🏆 Award Ceremony',                           loc:'Main Hall',                 type:'ceremony'},
+    {time:'3:30 – 6:30 PM',    event:'🏀 Basketball & 🏐 Volleyball — Semi-Finals & Finals', loc:'Gym 1 (VB) · Gym 2 & 3 (BB)', type:'bbvb'},
+    {time:'6:30 – 7:30 PM',    event:'🏆 Awards Ceremony',                          loc:'Main Hall',                 type:'ceremony'},
   ]},
 ];
 const AGENDA_COLOR = {soccer:'#22c55e', bbvb:'#f97316', break:'#eab308', ceremony:'#d4a017', other:'#64748b'};
@@ -2697,6 +2703,7 @@ const TV_HASH_MAP = {
   'standings-soccer':  {type:'standings-soccer', label:'⚽ Soccer Standings'},
   'standings-basketball': {type:'standings-rr', sport:'basketball', label:'🏀 Basketball Standings'},
   'standings-volleyball': {type:'standings-rr', sport:'volleyball', label:'🏐 Volleyball Standings'},
+  'schedule':          {type:'schedule', label:'🗓 Official Schedule'},
   'list':              {type:'list'},
 };
 
@@ -2736,6 +2743,7 @@ function tvHashRender() {
   else if (screen.type === 'fixtures-basketball')  tvHashRenderFixturesBasketball();
   else if (screen.type === 'standings-soccer') tvHashRenderSoccerStandings();
   else if (screen.type === 'standings-rr')  tvHashRenderRRStandings(screen.sport);
+  else if (screen.type === 'schedule')      tvHashRenderSchedule();
   else                                      tvHashRenderList();
 }
 
@@ -3121,6 +3129,26 @@ function tvHashRenderRRStandings(sport) {
     `<div class="tvs-footer">${footerHtml}</div>`;
 }
 
+function tvHashRenderSchedule() {
+  const el = document.getElementById('tvHashScreen');
+  const dayCards = EVENT_AGENDA.map(day => `
+    <div class="tvs-group-wrap">
+      <div class="tvs-group-hdr">${day.day}</div>
+      <div class="tvsc-rows">
+        ${day.items.map(it => `
+          <div class="tvsc-row">
+            <div class="tvsc-time">${it.time}</div>
+            <div class="tvsc-event">${it.event}</div>
+            <div class="tvsc-loc">${it.loc}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+  el.innerHTML = tvHashHdr('🗓 Official Schedule') +
+    `<div class="tvs-body">${dayCards}</div>`;
+}
+
 function tvHashRenderList() {
   const el = document.getElementById('tvHashScreen');
   const links = [
@@ -3138,6 +3166,7 @@ function tvHashRenderList() {
     ['standings-soccer',  '⚽ Soccer Group Standings'],
     ['standings-basketball', '🏀 Basketball Standings'],
     ['standings-volleyball', '🏐 Volleyball Standings'],
+    ['schedule',          '🗓 Official Schedule'],
     ['gallery-semis',     '🔥 Semifinals — Fields A & B'],
     ['finals-soccer',     '🏆 Soccer Grand Final'],
   ].map(([k,l]) => `<a class="tvh-list-link" href="#tv/${k}">${l}</a>`).join('');
