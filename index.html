@@ -746,16 +746,15 @@ const SOCCER_SLOTS = [
     {court:'Soccer Field A', phase:'group', round:'Group Stage', desc:'B6 vs B7', group:'B'},
     {court:'Soccer Field B', phase:'group', round:'Group Stage', desc:'B4 vs B5', group:'B'},
   ]},
-  // ── Day 2: Knockout ──
-  { start: D2(11, 0), rows:[
-    {court:'Soccer Field A', phase:'ko', round:'Semifinal 1', desc:'A1 vs B2'},
-    {court:'Soccer Field B', phase:'ko', round:'Semifinal 2', desc:'B1 vs A2'},
-  ]},
-  { start: D2(12, 0), rows:[
-    {court:'Soccer Field A', phase:'ko', round:'3rd Place',   desc:'SF1L vs SF2L'},
-  ]},
+  // ── Day 2: Knockout — 1:00–3:00 PM, 60-min games, 2 fields ──
+  // Semis in parallel (1–2 PM); Final + 3rd Place in parallel (2–3 PM).
   { start: D2(13, 0), rows:[
-    {court:'Soccer Field A', phase:'ko', round:'Final',       desc:'SF1W vs SF2W'},
+    {court:'Soccer Field A', phase:'ko', round:'Semifinal 1', desc:'A1 vs B2', slotMin:60},
+    {court:'Soccer Field B', phase:'ko', round:'Semifinal 2', desc:'B1 vs A2', slotMin:60},
+  ]},
+  { start: D2(14, 0), rows:[
+    {court:'Soccer Field A', phase:'ko', round:'Final',       desc:'SF1W vs SF2W', slotMin:60},
+    {court:'Soccer Field B', phase:'ko', round:'3rd Place',   desc:'SF1L vs SF2L', slotMin:60},
   ]},
 ];
 
@@ -1676,7 +1675,7 @@ function renderSoccerBracket() {
   const fixturesHtml = renderSoccerFixtures();
   el.innerHTML = `
     <div class="sec-title">⚽ Soccer — Group Stage + Knockout <span class="sec-badge">${sportBadge('soccer')}</span>
-      <span class="sec-sub">Day 1: Group Stage 11:00 AM–3:35 PM &middot; Day 2: Semis 11 AM · 3rd Place 12 PM · Final 1 PM</span>
+      <span class="sec-sub">Day 1: Group Stage 11:00 AM–3:35 PM &middot; Day 2: Semis 1 PM · Final &amp; 3rd Place 2 PM (60-min games)</span>
     </div>
     <div class="format-note">2 groups of 7 — every team plays all 6 others (21 games/group, 42 total Day 1) &middot; Top 2 from each group advance &middot; Day 2: SF1 (A1 vs B2) · SF2 (B1 vs A2) · 3rd Place · Final</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0 0 6px">⚽ Group Fixtures</div>
