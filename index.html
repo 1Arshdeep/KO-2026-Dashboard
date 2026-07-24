@@ -580,7 +580,6 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
     <div class="tvp-grid">
       <a class="tvp-link" href="#tv/fixtures-soccer" onclick="closeTVPicker()"><i class="fa-solid fa-calendar-days"></i> Soccer Group Fixtures</a>
       <a class="tvp-link" href="#tv/standings-soccer" onclick="closeTVPicker()"><i class="fa-solid fa-futbol"></i> Soccer Group Standings</a>
-      <a class="tvp-link" href="#tv/fixtures-basketball" onclick="closeTVPicker()"><i class="fa-solid fa-basketball"></i> Basketball Group Fixtures</a>
       <a class="tvp-link" href="#tv/standings-basketball" onclick="closeTVPicker()"><i class="fa-solid fa-basketball"></i> Basketball Standings</a>
       <a class="tvp-link" href="#tv/standings-volleyball" onclick="closeTVPicker()"><i class="fa-solid fa-volleyball"></i> Volleyball Standings</a>
     </div>
@@ -671,7 +670,7 @@ const fmtDateTime = ms => {
 // ══════════════════════════════════════════════════════════════
 // Soccer: 25-min slots, 4 fields, July 25 + Day 2 GF
 const SOC_SLOT = 25;
-const BB_SLOT  = 15;
+const BB_SLOT  = 20;
 const VB_SLOT  = 15;
 
 const DEFAULT_SOCCER_GROUPS = {
@@ -765,102 +764,56 @@ const SOCCER_SLOTS = [
 // Court A = Gym 2, Court B = Gym 3. Gaps are rest windows for dual-sport
 // teams (also playing volleyball). MUST MATCH admin.html exactly.
 const BB_SLOTS = [
+  // Basketball STANDINGS PLAY — official Saturday Evening Schedule (3 BB games/team).
+  // 21 games, 20-min slots, 5:00–10:50 PM. Court A = Gym 2, Court B = Gym 3.
+  // Seeds (DEFAULT_TEAMS.basketball): 1 Sher Elite · 2 Babbar Khalsa Ballers ·
+  // 3 Dixie United · 4 Sharomani Akaali Dal · 5 KLF · 6 Akaal Fauj · 7 NPSS ·
+  // 8 McMaster University · 9 Brockish · 10 Farmers Elite · 11 Icemen · 12 KGA ·
+  // 13 Panjab Lions · 14 Kaurs United
   {start:D1(17, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 1',  desc:'T1 vs T2'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 2',  desc:'T3 vs T4'},
-  ]},
-  {start:D1(17,15), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 3',  desc:'T5 vs T6'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 4',  desc:'T7 vs T8'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 1',  desc:'T7 vs T10'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 2',  desc:'T9 vs T11'},
   ]},
   {start:D1(17,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 5',  desc:'T9 vs T10'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 6',  desc:'T11 vs T12'},
-  ]},
-  {start:D1(17,45), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 7',  desc:'T13 vs T14'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 8',  desc:'T1 vs T3'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 3',  desc:'T5 vs T12'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 4',  desc:'T8 vs T14'},
   ]},
   {start:D1(18, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 9',  desc:'T2 vs T4'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 10', desc:'T5 vs T7'},
-  ]},
-  {start:D1(18,15), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 11', desc:'T6 vs T8'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 12', desc:'T9 vs T11'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 5',  desc:'T4 vs T10'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 6',  desc:'T7 vs T11'},
   ]},
   {start:D1(18,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 13', desc:'T10 vs T12'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 14', desc:'T1 vs T13'},
-  ]},
-  {start:D1(18,45), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 15', desc:'T4 vs T5'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 16', desc:'T2 vs T14'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 7',  desc:'T2 vs T3'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 8',  desc:'T1 vs T5'},
   ]},
   {start:D1(19, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 17', desc:'T3 vs T7'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 18', desc:'T8 vs T9'},
-  ]},
-  {start:D1(19,15), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 19', desc:'T12 vs T13'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 20', desc:'T10 vs T11'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 9',  desc:'T4 vs T9'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 10', desc:'T8 vs T13'},
   ]},
   {start:D1(19,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 21', desc:'T4 vs T6'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 22', desc:'T1 vs T14'},
-  ]},
-  {start:D1(19,45), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 23', desc:'T7 vs T9'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 24', desc:'T2 vs T3'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 11', desc:'T1 vs T6'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 12', desc:'T2 vs T14'},
   ]},
   {start:D1(20, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 25', desc:'T5 vs T8'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 26', desc:'T11 vs T12'},
-  ]},
-  {start:D1(20,15), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 27', desc:'T1 vs T4'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 28', desc:'T10 vs T14'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 13', desc:'T3 vs T4'},
   ]},
   {start:D1(20,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 29', desc:'T2 vs T13'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 30', desc:'T3 vs T6'},
-  ]},
-  {start:D1(20,45), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 31', desc:'T9 vs T12'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 32', desc:'T7 vs T10'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 14', desc:'T12 vs T13'},
   ]},
   {start:D1(21, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 33', desc:'T1 vs T5'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 34', desc:'T4 vs T8'},
-  ]},
-  {start:D1(21,15), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 35', desc:'T11 vs T14'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 36', desc:'T2 vs T6'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 15', desc:'T5 vs T14'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 16', desc:'T6 vs T10'},
   ]},
   {start:D1(21,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 37', desc:'T9 vs T13'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 38', desc:'T3 vs T5'},
-  ]},
-  {start:D1(21,45), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 39', desc:'T8 vs T10'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 40', desc:'T12 vs T14'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 17', desc:'T1 vs T2'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 18', desc:'T11 vs T13'},
   ]},
   {start:D1(22, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 41', desc:'T6 vs T7'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 42', desc:'T11 vs T13'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 19', desc:'T9 vs T12'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 20', desc:'T3 vs T7'},
   ]},
-  // Day 2 Knockout — top 4 advance
-  {start:D2(15,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'ko', round:'Semifinal 1', desc:'BBSF1 vs BBSF4', slotMin:25},
-  ]},
-  {start:D2(16, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'ko', round:'Semifinal 2', desc:'BBSF2 vs BBSF3', slotMin:25},
-  ]},
-  {start:D2(16,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'ko', round:'3rd Place', desc:'BBSF1L vs BBSF2L', slotMin:25},
-  ]},
-  {start:D2(17, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'ko', round:'Final', desc:'BBSF1W vs BBSF2W', slotMin:25},
+  {start:D1(22,30), rows:[
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 21', desc:'T6 vs T8'},
   ]},
 ];
 
@@ -868,19 +821,25 @@ const BB_SLOTS = [
 // "KO2026 Evening Schedule" PDF. 15-min games, 5:00–10:35 PM, Gym 1.
 // MUST MATCH admin.html exactly.
 const VB_SLOTS = [
-  {start:D1(17, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 1',  desc:'T13 vs T11'}]},
-  {start:D1(17,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 2',  desc:'T6 vs T12'}]},
-  {start:D1(18,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 3',  desc:'T4 vs T1'}]},
-  {start:D1(18,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 4',  desc:'T10 vs T13'}]},
-  {start:D1(19, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 5',  desc:'T1 vs T5'}]},
-  {start:D1(19,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 6',  desc:'T12 vs T10'}]},
-  {start:D1(19,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 7',  desc:'T8 vs T4'}]},
-  {start:D1(20, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 8',  desc:'T7 vs T6'}]},
-  {start:D1(20,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 9',  desc:'T9 vs T8'}]},
-  {start:D1(20,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 10', desc:'T5 vs T7'}]},
-  {start:D1(21, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 11', desc:'T2 vs T9'}]},
-  {start:D1(21,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 12', desc:'T11 vs T3'}]},
-  {start:D1(22,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 13', desc:'T3 vs T2'}]},
+  // Volleyball STANDINGS PLAY — official Saturday Evening Schedule (2 VB games/team).
+  // 13 games, 15-min slots, 5:20–10:35 PM, Gym 1.
+  // Seeds (DEFAULT_TEAMS.volleyball): 1 Babbar Khalsa Ballers · 2 Dixie United ·
+  // 3 Sharomani Akaali Dal · 4 Chinguacousy Ekta · 5 Vortex · 6 Palm Springs ·
+  // 7 KLF · 8 McMaster University · 9 Brockish · 10 Brampton spikers ·
+  // 11 Baba Bidhi Chand Chinna Volleyball club · 12 Panjab Lions · 13 Kaurs United
+  {start:D1(17,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 1',  desc:'T4 vs T1'}]},
+  {start:D1(17,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 2',  desc:'T2 vs T9'}]},
+  {start:D1(18, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 3',  desc:'T12 vs T10'}]},
+  {start:D1(18,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 4',  desc:'T8 vs T4'}]},
+  {start:D1(18,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 5',  desc:'T13 vs T11'}]},
+  {start:D1(19,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 6',  desc:'T6 vs T12'}]},
+  {start:D1(20, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 7',  desc:'T9 vs T8'}]},
+  {start:D1(20,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 8',  desc:'T1 vs T5'}]},
+  {start:D1(20,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 9',  desc:'T3 vs T2'}]},
+  {start:D1(21,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 10', desc:'T11 vs T3'}]},
+  {start:D1(21,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 11', desc:'T7 vs T6'}]},
+  {start:D1(22, 0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 12', desc:'T10 vs T13'}]},
+  {start:D1(22,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 13', desc:'T5 vs T7'}]},
 ];
 
 // ══════════════════════════════════════════════════════════════
@@ -891,7 +850,7 @@ const SK = 'ko2026_v3';
 function defaultTeams() {
   return {
     soccer: Array.from({length:14},(_,i)=>`Soccer T${i+1}`),
-    basketball: ['Sher Elite','Babbar Khalsa Ballers','Dixie United','Sharomani Akaali Dal','KLF','Akaal Fauj','NPSS','McMaster University','Brockish','Farmers Elite','Icemen','KGA','Panjab Lions','Kaurs United'],
+    basketball: Array.from({length:14},(_,i)=>`BB Team ${i+1}`),
     volleyball: Array.from({length:13},(_,i)=>`VB Team ${i+1}`),
   };
 }
@@ -956,7 +915,7 @@ function buildAllGames(s) {
         s.games[id] = {
           id, sport, court:row.court, phase:row.phase, round:row.round,
           group: row.group || null,
-          desc, scheduledStart:slot.start, slotMin: row.slotMin || slotMin,
+          desc, scheduledStart:slot.start, slotMin,
           team1:t1, team2:t2,
           score1:0, score2:0, status:'upcoming',
           winner:null, loser:null, dq:null, ts:null,
@@ -1457,28 +1416,6 @@ function computeGroupStandings(grp) {
   return arr;
 }
 
-function populateBBKnockoutTeams() {
-  const rrGames = Object.values(state.games).filter(g =>
-    g.sport === 'basketball' && g.phase === 'rr'
-  );
-  if (!rrGames.length) return;
-  if (rrGames.filter(g => g.status === 'final').length < rrGames.length) return;
-
-  const s = computeRRStandings('basketball');
-  const seeds = [0, 1, 2, 3].map(i => (s[i] || {}).team || 'TBD');
-
-  const sf1 = Object.values(state.games).find(g => g.sport === 'basketball' && g.round === 'Semifinal 1');
-  if (sf1 && sf1.status !== 'final') {
-    sf1.team1 = seeds[0]; sf1.team2 = seeds[3];
-    sf1.desc = `${sf1.team1} vs ${sf1.team2}`;
-  }
-  const sf2 = Object.values(state.games).find(g => g.sport === 'basketball' && g.round === 'Semifinal 2');
-  if (sf2 && sf2.status !== 'final') {
-    sf2.team1 = seeds[1]; sf2.team2 = seeds[2];
-    sf2.desc = `${sf2.team1} vs ${sf2.team2}`;
-  }
-}
-
 // Populate SF team slots from group standings once both games in a group are all final.
 function populateKnockoutTeams() {
   if (!state.soccerGroups) return;
@@ -1815,130 +1752,29 @@ function renderRRFixtures(sport) {
   </div>`;
 }
 
-let _bbScrolledSlot = null;
-
-function renderBBSlotFixtures() {
-  const rrGames = Object.values(state.games)
-    .filter(g => g.sport === 'basketball' && g.phase === 'rr')
-    .sort((a, b) => a.scheduledStart - b.scheduledStart || a.court.localeCompare(b.court));
-  if (!rrGames.length) return '';
-
-  const slotMap = new Map();
-  rrGames.forEach(g => {
-    if (!slotMap.has(g.scheduledStart)) slotMap.set(g.scheduledStart, []);
-    slotMap.get(g.scheduledStart).push(g);
-  });
-  const slots = [...slotMap.entries()].sort((a, b) => a[0] - b[0]);
-  const n = now();
-
-  const played   = rrGames.filter(g => g.status === 'final').length;
-  const liveN    = rrGames.filter(g => isLiveByTime(g) && g.status !== 'final').length;
-  const upcomingN = rrGames.filter(g => g.status !== 'final' && !isLiveByTime(g)).length;
-
-  const summaryHtml = `<div class="soc-legend">
-    <span class="soc-summary-strip">${played} played · ${liveN} live · ${upcomingN} upcoming</span>
-  </div>`;
-
-  let firstActiveStart = null;
-  const cards = slots.map(([startTs, games], idx) => {
-    const slotMin = games[0].slotMin || 15;
-    const endTs = startTs + slotMin * 60000;
-    const allFinal = games.every(g => g.status === 'final');
-    const isPast = allFinal && n > endTs + 30 * 60000;
-    const hasLive = games.some(g => isLiveByTime(g) && g.status !== 'final');
-    if (!isPast && firstActiveStart === null) firstActiveStart = String(startTs);
-
-    const matchStr = `${games.length} match${games.length > 1 ? 'es' : ''}`;
-    const liveTag = hasLive ? '<span class="soc-slot-live-tag">LIVE NOW</span>' : '';
-    const rowsHtml = games.map(g => {
-      const isLv = (isLiveByTime(g) && g.status !== 'final') || g.status === 'live';
-      const isDim = g.status === 'upcoming' && !isLv;
-      const t1Dq = g.dq === 'team1', t2Dq = g.dq === 'team2';
-      const t1Html = t1Dq ? `<s>${g.team1}</s>` : g.team1;
-      const t2Html = t2Dq ? `<s>${g.team2}</s>` : g.team2;
-      const gymLabel = g.court.replace(' (Basketball)', '');
-      let pill;
-      if (g.status === 'final') {
-        const dqStr = g.dq ? ' · 🚫 DQ' : '';
-        pill = `<span class="soc-pill soc-pill-final">${g.score1} – ${g.score2}${dqStr}</span>`;
-      } else if (isLv) {
-        const sc = (g.score1 || g.score2) ? `${g.score1} – ${g.score2} · ` : '';
-        pill = `<span class="soc-pill soc-pill-live"><span class="soc-pulse">●</span> ${sc}LIVE</span>`;
-      } else {
-        pill = `<span class="soc-pill soc-pill-upcoming">upcoming</span>`;
-      }
-      return `<div class="soc-slot-row${isDim ? ' soc-slot-row--dim' : ''}" style="border-left:3px solid var(--c-basketball)">
-        <span class="soc-slot-field">${gymLabel}</span>
-        <span class="soc-slot-team1">${t1Html}</span>
-        ${pill}
-        <span class="soc-slot-team2">${t2Html}</span>
-      </div>`;
-    }).join('');
-    const cardClass = `soc-slot-card${hasLive ? ' soc-slot-card--live' : ''}${isPast ? ' soc-slot-card--past' : ''}`;
-
-    if (isPast) {
-      const bodyId = `bb-body-${idx}`;
-      return `<div class="${cardClass}" data-start="${startTs}">
-        <div class="soc-slot-hdr">
-          <span class="soc-slot-num">Slot ${idx + 1}</span>
-          <span class="soc-slot-time">${fmtTime(startTs)} – ${fmtTime(endTs)}</span>
-          <span class="soc-slot-meta">${matchStr}
-            <button class="soc-slot-toggle" onclick="(function(btn){document.getElementById('${bodyId}').style.display='flex';btn.style.display='none';})(this)">▸ show ${games.length} results</button>
-          </span>
-        </div>
-        <div id="${bodyId}" class="soc-slot-body" style="display:none">${rowsHtml}</div>
-      </div>`;
-    }
-    return `<div class="${cardClass}" data-start="${startTs}" data-active="1">
-      <div class="soc-slot-hdr">
-        <span class="soc-slot-num">Slot ${idx + 1}</span>
-        <span class="soc-slot-time">${fmtTime(startTs)} – ${fmtTime(endTs)}${liveTag}</span>
-        <span class="soc-slot-meta">${matchStr}</span>
-      </div>
-      <div class="soc-slot-body">${rowsHtml}</div>
-    </div>`;
-  }).join('');
-
-  const stackAttr = firstActiveStart ? ` data-first="${firstActiveStart}"` : '';
-  return summaryHtml + `<div class="soc-slot-stack"${stackAttr}>${cards}</div>`;
-}
-
 function renderBBPanel() {
   const el = document.getElementById('panel-basketball');
-  const fixturesHtml = renderBBSlotFixtures();
   el.innerHTML = `
-    <div class="sec-title">🏀 Basketball — Group Stage + Knockout <span class="sec-badge">${sportBadge('basketball')}</span>
-      <span class="sec-sub">Day 1: 5:00 PM–10:10 PM · 2 Gyms · 10-min games &middot; Day 2: Semis 3:30 PM · 3rd Place 4:30 PM · Final 5:00 PM</span>
+    <div class="sec-title">🏀 Basketball — Standings Play <span class="sec-badge">${sportBadge('basketball')}</span>
+      <span class="sec-sub">Day 1: 5:00 PM–10:50 PM · 2 Gyms · 20-min games</span>
     </div>
-    <div class="format-note">42 games · every team plays 6 · rank by Wins, ties broken by score differential (DQ = opponent wins by +${RR_DQ_DIFF}) · Top 4 advance to Day 2 knockouts: Semis, 3rd Place match, Final.</div>
-    <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0 0 6px">🏀 Group Fixtures</div>
-    ${fixturesHtml}
+    <div class="format-note">Round robin: all 14 teams play exactly 3 games. Rank by <strong>Wins</strong>, then <strong>score differential</strong> (points for − points against), then <strong>points scored</strong>. A forfeit (DQ) credits the opponent a win with a +${RR_DQ_DIFF} differential.</div>
+    ${buildScheduleGrid('basketball')}
     <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0 0 10px">🏀 Live Standings</div>
-    ${renderRRStandingsTable('basketball')}
-    <hr class="sep">
-    <div class="soc-ko-label">🏆 Knockout Stage</div>
-    <div class="format-note" style="margin-bottom:8px">Fills after all 42 group-stage games are final — top 4 by wins advance.</div>
-    ${buildBracketSection('basketball','ko',null)}
+    <div class="grp-tables-row">
+      ${renderRRStandingsTable('basketball')}
+      ${renderRRFixtures('basketball')}
+    </div>
   `;
-  const stack = el.querySelector('.soc-slot-stack');
-  const firstStart = stack && stack.dataset.first;
-  if (firstStart && firstStart !== _bbScrolledSlot) {
-    _bbScrolledSlot = firstStart;
-    const target = el.querySelector('[data-active="1"]');
-    if (target) setTimeout(() => {
-      const top = target.getBoundingClientRect().top + window.scrollY - 80;
-      window.scrollTo({ top, behavior: 'smooth' });
-    }, 120);
-  }
 }
 
 function renderVBPanel() {
   const el = document.getElementById('panel-volleyball');
   el.innerHTML = `
     <div class="sec-title">🏐 Volleyball — Standings Play <span class="sec-badge">${sportBadge('volleyball')}</span>
-      <span class="sec-sub">Day 1: 5:00 PM–10:35 PM · Gym 1 · 15-min games</span>
+      <span class="sec-sub">Day 1: 5:20 PM–10:35 PM · Gym 1 · 15-min games</span>
     </div>
-    <div class="format-note">Round robin: all 13 teams play exactly 2 games. Rank by <strong>Wins</strong>, ties broken by <strong>score differential</strong>. A forfeit (DQ) credits the opponent a win with a +${RR_DQ_DIFF} differential.</div>
+    <div class="format-note">Round robin: all 13 teams play exactly 2 games. Rank by <strong>Wins</strong>, then <strong>score differential</strong>, then <strong>points scored</strong>. A forfeit (DQ) credits the opponent a win with a +${RR_DQ_DIFF} differential.</div>
     ${buildScheduleGrid('volleyball')}
     <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0 0 10px">🏐 Live Standings</div>
     <div class="grp-tables-row">
@@ -2034,8 +1870,7 @@ function buildBracketSection(sport, phase, label, opts) {
 }
 
 function isTbdToken(t) {
-  return /^T\d+$/.test(t) || t === 'TBD' || /^[AB]\d$/.test(t) || /^SF[12][WL]$/.test(t) ||
-    /^BBSF\d+[WL]?$/.test(t);
+  return /^T\d+$/.test(t) || t === 'TBD' || /^[AB]\d$/.test(t) || /^SF[12][WL]$/.test(t);
 }
 
 function matchupCard(g) {
@@ -2205,8 +2040,7 @@ const SPORT_COLOR = {soccer:'#27ae60', basketball:'#e67e22', volleyball:'#8e44ad
 const TV_PANELS = [
   {id:'all',               label:'ALL COURTS — LIVE'},
   {id:'soccer',            label:'⚽ SOCCER'},
-  {id:'fixtures-soccer',      label:'⚽ SOCCER FIXTURES'},
-  {id:'fixtures-basketball',  label:'🏀 BASKETBALL FIXTURES'},
+  {id:'fixtures-soccer',   label:'⚽ SOCCER FIXTURES'},
   {id:'standings-soccer',  label:'⚽ SOCCER STANDINGS'},
   {id:'standings-basketball', label:'🏀 BASKETBALL STANDINGS'},
   {id:'standings-volleyball', label:'🏐 VOLLEYBALL STANDINGS'},
@@ -2232,7 +2066,7 @@ function activePanels() {
   const sportsWithCourts = new Set(active.map(c => c.sport));
   return TV_PANELS.filter(p => {
     if (p.id === 'soccer' || p.id === 'standings-soccer' || p.id === 'fixtures-soccer') return sportsWithCourts.has('soccer');
-    if (p.id === 'basketball' || p.id === 'standings-basketball' || p.id === 'fixtures-basketball') return sportsWithCourts.has('basketball');
+    if (p.id === 'basketball' || p.id === 'standings-basketball') return sportsWithCourts.has('basketball');
     if (p.id === 'volleyball' || p.id === 'standings-volleyball') return sportsWithCourts.has('volleyball');
     return true;
   });
@@ -2686,8 +2520,7 @@ const TV_HASH_MAP = {
   'gallery-gyms':      {type:'gallery',courts:['Gym 1 (Volleyball)','Gym 2 (Basketball)','Gym 3 (Basketball)'],cols:3,label:'🏟 ALL GYMS'},
   'gallery-semis':     {type:'gallery',courts:['Soccer Field A','Soccer Field B'],cols:2,label:'🔥 SEMIFINALS'},
   'finals-soccer':     {type:'final',  court:'Soccer Field A',     sport:'soccer',     label:'⚽ SOCCER GRAND FINAL'},
-  'fixtures-soccer':     {type:'fixtures-soccer',     label:'⚽ Soccer Fixtures'},
-  'fixtures-basketball': {type:'fixtures-basketball', label:'🏀 Basketball Fixtures'},
+  'fixtures-soccer':   {type:'fixtures-soccer',  label:'⚽ Soccer Fixtures'},
   'standings-soccer':  {type:'standings-soccer', label:'⚽ Soccer Standings'},
   'standings-basketball': {type:'standings-rr', sport:'basketball', label:'🏀 Basketball Standings'},
   'standings-volleyball': {type:'standings-rr', sport:'volleyball', label:'🏐 Volleyball Standings'},
@@ -2726,8 +2559,7 @@ function tvHashRender() {
   if (screen.type === 'court')              tvHashRenderCourt(screen);
   else if (screen.type === 'gallery')       tvHashRenderGallery(screen);
   else if (screen.type === 'final')         tvHashRenderFinal(screen);
-  else if (screen.type === 'fixtures-soccer')      tvHashRenderFixturesSoccer();
-  else if (screen.type === 'fixtures-basketball')  tvHashRenderFixturesBasketball();
+  else if (screen.type === 'fixtures-soccer')  tvHashRenderFixturesSoccer();
   else if (screen.type === 'standings-soccer') tvHashRenderSoccerStandings();
   else if (screen.type === 'standings-rr')  tvHashRenderRRStandings(screen.sport);
   else                                      tvHashRenderList();
@@ -2873,76 +2705,6 @@ function tvHashRenderFinal(screen) {
       <div class="tvh-final-round" style="color:${sc}">${g.round || 'Grand Final'}</div>`;
   }
   el.innerHTML = tvHashHdr(label) + `<div class="tvh-final-body">${body}</div>`;
-}
-
-function tvHashRenderFixturesBasketball() {
-  const el = document.getElementById('tvHashScreen');
-
-  const rrGames = Object.values(state.games)
-    .filter(g => g.sport === 'basketball' && g.phase === 'rr')
-    .sort((a, b) => a.scheduledStart - b.scheduledStart || a.court.localeCompare(b.court));
-
-  const slotMap = new Map();
-  rrGames.forEach(g => {
-    if (!slotMap.has(g.scheduledStart)) slotMap.set(g.scheduledStart, []);
-    slotMap.get(g.scheduledStart).push(g);
-  });
-  const slots = [...slotMap.entries()].sort((a, b) => a[0] - b[0]);
-  const slotNums = new Map(slots.map(([ts], i) => [ts, i + 1]));
-
-  let liveSlot = null;
-  const upcomingSlots = [];
-  for (const [startTs, games] of slots) {
-    const allFinal = games.every(g => g.status === 'final');
-    const hasLive = games.some(g => isLiveByTime(g) && g.status !== 'final');
-    if (hasLive && !liveSlot) { liveSlot = [startTs, games]; }
-    else if (!allFinal && !hasLive && upcomingSlots.length < 2) { upcomingSlots.push([startTs, games]); }
-  }
-
-  const displayed = [...(liveSlot ? [liveSlot] : []), ...upcomingSlots];
-
-  const cardsHtml = displayed.map(([startTs, games]) => {
-    const slotNum = slotNums.get(startTs);
-    const slotMin = games[0].slotMin || 15;
-    const endTs = startTs + slotMin * 60000;
-    const hasLive = games.some(g => isLiveByTime(g) && g.status !== 'final');
-    const rowsHtml = games.map(g => {
-      const isLv = (isLiveByTime(g) && g.status !== 'final') || g.status === 'live';
-      const t1Dq = g.dq === 'team1', t2Dq = g.dq === 'team2';
-      const t1Html = t1Dq ? `<s>${g.team1}</s>` : g.team1;
-      const t2Html = t2Dq ? `<s>${g.team2}</s>` : g.team2;
-      const gymLabel = g.court.replace(' (Basketball)', '');
-      let pill;
-      if (g.status === 'final') {
-        pill = `<span class="tvf-pill tvf-pill-final">${g.score1} – ${g.score2}${g.dq ? ' 🚫' : ''}</span>`;
-      } else if (isLv) {
-        const sc = (g.score1 || g.score2) ? `${g.score1}–${g.score2} · ` : '';
-        pill = `<span class="tvf-pill tvf-pill-live"><span class="soc-pulse">●</span> ${sc}LIVE</span>`;
-      } else {
-        pill = `<span class="tvf-pill tvf-pill-upcoming">NEXT</span>`;
-      }
-      return `<div class="tvf-row" style="border-left:4px solid var(--c-basketball)">
-        <span class="tvf-field">${gymLabel}</span>
-        <span class="tvf-team1">${t1Html}</span>
-        ${pill}
-        <span class="tvf-team2">${t2Html}</span>
-      </div>`;
-    }).join('');
-    const liveTag = hasLive ? '<span class="tvf-live-tag">LIVE NOW</span>' : '';
-    return `<div class="tvf-slot-card${hasLive ? ' tvf-slot-live' : ''}">
-      <div class="tvf-slot-hdr">
-        <span class="tvf-slot-num">Slot ${slotNum}</span>
-        <span class="tvf-slot-time">${fmtTime(startTs)} – ${fmtTime(endTs)}</span>
-        ${liveTag}
-      </div>
-      ${rowsHtml}
-    </div>`;
-  }).join('');
-
-  el.innerHTML = tvHashHdr('🏀 Basketball Group Fixtures') +
-    (cardsHtml
-      ? `<div class="tvf-body">${cardsHtml}</div>`
-      : `<div class="tvf-empty">No live or upcoming group fixtures</div>`);
 }
 
 function tvHashRenderFixturesSoccer() {
@@ -3127,8 +2889,7 @@ function tvHashRenderList() {
     ['gym-3',             '🏀 Gym 3 (Basketball)'],
     ['gallery-soccer',    '⚽ Soccer Gallery — All 4 Fields'],
     ['gallery-gyms',      '🏟 Gym Gallery — All 3 Gyms'],
-    ['fixtures-soccer',      '⚽ Soccer Group Fixtures'],
-    ['fixtures-basketball',  '🏀 Basketball Group Fixtures'],
+    ['fixtures-soccer',   '⚽ Soccer Group Fixtures'],
     ['standings-soccer',  '⚽ Soccer Group Standings'],
     ['standings-basketball', '🏀 Basketball Standings'],
     ['standings-volleyball', '🏐 Volleyball Standings'],
