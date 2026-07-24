@@ -750,16 +750,18 @@ const SOCCER_SLOTS = [
     {court:'Soccer Field C', phase:'group', round:'Round 13', desc:'A6 vs A7', group:'A'},
     {court:'Soccer Field D', phase:'group', round:'Round 13', desc:'A3 vs A5', group:'A'},
   ]},
-  // ── Day 2: Knockout ──
-  { start: D2(11, 0), rows:[
-    {court:'Soccer Field A', phase:'ko', round:'Semifinal 1', desc:'A1 vs B2'},
-    {court:'Soccer Field B', phase:'ko', round:'Semifinal 2', desc:'B1 vs A2'},
+  // ── Day 2: Knockout (top 4) — 1:30–2:51 PM, 20-min games, 2 fields ──
+  // Semis parallel (1:30–1:50); 15-min buffer; Bronze 2:05 (20+2 hydration+2 HT);
+  // Final 2:29 (20+2 HT). Finalists rest ~40 min during the bronze match.
+  { start: D2(13,30), rows:[
+    {court:'Soccer Field A', phase:'ko', round:'Semifinal 1', desc:'A1 vs B2', slotMin:20},
+    {court:'Soccer Field B', phase:'ko', round:'Semifinal 2', desc:'B1 vs A2', slotMin:20},
   ]},
-  { start: D2(12, 0), rows:[
-    {court:'Soccer Field A', phase:'ko', round:'3rd Place',   desc:'SF1L vs SF2L'},
+  { start: D2(14, 5), rows:[
+    {court:'Soccer Field A', phase:'ko', round:'3rd Place',   desc:'SF1L vs SF2L', slotMin:24},
   ]},
-  { start: D2(13, 0), rows:[
-    {court:'Soccer Field A', phase:'ko', round:'Final',       desc:'SF1W vs SF2W'},
+  { start: D2(14,29), rows:[
+    {court:'Soccer Field A', phase:'ko', round:'Final',       desc:'SF1W vs SF2W', slotMin:22},
   ]},
 ];
 
@@ -1680,7 +1682,7 @@ function renderSoccerBracket() {
   const fixturesHtml = renderSoccerFixtures();
   el.innerHTML = `
     <div class="sec-title">⚽ Soccer — Group Stage + Knockout <span class="sec-badge">${sportBadge('soccer')}</span>
-      <span class="sec-sub">Day 1: Group Stage 11:00 AM–4:25 PM (13 rounds) &middot; Day 2: Semis 11 AM · 3rd Place 12 PM · Final 1 PM</span>
+      <span class="sec-sub">Day 1: Group Stage 11:00 AM–4:25 PM (13 rounds) &middot; Day 2: Semis 1:30 PM · Bronze 2:05 · Final 2:29 (20-min games)</span>
     </div>
     <div class="format-note">2 groups of 7 — every team plays all 6 others (21 games/group, 42 total Day 1) &middot; Top 2 from each group advance &middot; Day 2: SF1 (A1 vs B2) · SF2 (B1 vs A2) · 3rd Place · Final</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0 0 6px">⚽ Group Fixtures</div>
