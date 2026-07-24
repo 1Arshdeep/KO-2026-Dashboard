@@ -631,7 +631,8 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
   <div class="ko-info"><strong>KHALSA OLYMPICS 2026</strong>4th Annual · July 25–26 · Paramount Fine Foods Centre, Mississauga</div>
   <div class="header-nav">
     <button class="nav-btn active" onclick="showView('dashboard')" id="nav-dashboard"><i class="fa-solid fa-trophy"></i> Brackets</button>
-    <button class="nav-btn" onclick="showView('schedule')" id="nav-schedule"><i class="fa-solid fa-calendar"></i> Schedule</button>
+    <button class="nav-btn" onclick="showView('schedule')" id="nav-schedule"><i class="fa-solid fa-calendar"></i> KO Schedule</button>
+    <button class="nav-btn" onclick="showView('standings')" id="nav-standings"><i class="fa-solid fa-ranking-star"></i> Standings</button>
     <button class="nav-btn" onclick="openTVPicker()"><i class="fa-solid fa-tv"></i> TV</button>
   </div>
 </div>
@@ -653,6 +654,11 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
 <!-- ── SCHEDULE VIEW ── -->
 <div class="view" id="view-schedule">
   <div id="scheduleContent"></div>
+</div>
+
+<!-- ── STANDINGS VIEW (all 3 sports at once) ── -->
+<div class="view" id="view-standings">
+  <div id="standingsContent"></div>
 </div>
 
 
@@ -1358,7 +1364,9 @@ function showView(v, pushState = true) {
   document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
   document.getElementById(`nav-${v}`)?.classList.add('active');
   currentView = v;
+  document.querySelector('.sport-tabs').style.display = (v === 'standings') ? 'none' : '';
   if (v === 'schedule') renderSchedule();
+  if (v === 'standings') renderAllStandings();
   if (v === 'scorer') { seUpdateSport(); seLoadRecentResults(); }
   if (v === 'dashboard') renderDashboard();
   if (pushState && history.pushState) {
@@ -1374,6 +1382,8 @@ function showSport(sp, pushState = true) {
   });
   if (currentView === 'schedule') {
     renderSchedule();
+  } else if (currentView === 'standings') {
+    // Standings shows all 3 sports at once — not sport-filtered
   } else {
     renderDashboard();
   }
@@ -1787,6 +1797,24 @@ function renderRRStandingsTable(sport) {
       <tbody>${rows}</tbody>
     </table>
   </div>`;
+}
+
+// Combined standings for all 3 sports on one page (no sport-tab filtering).
+function renderAllStandings() {
+  const el = document.getElementById('standingsContent');
+  el.innerHTML = `
+    <div class="sec-title">⚽ Soccer — Group Standings</div>
+    <div class="grp-tables-row">
+      ${renderGroupTable('A')}
+      ${renderGroupTable('B')}
+    </div>
+    <hr class="sep" style="margin:22px 0">
+    <div class="sec-title">🏀 Basketball — Standings</div>
+    ${renderRRStandingsTable('basketball')}
+    <hr class="sep" style="margin:22px 0">
+    <div class="sec-title">🏐 Volleyball — Standings</div>
+    ${renderRRStandingsTable('volleyball')}
+  `;
 }
 
 // Full RR fixture list: who plays whom, when, and where (all games).

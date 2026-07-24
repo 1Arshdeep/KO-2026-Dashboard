@@ -650,8 +650,9 @@ select:focus, input[type="text"]:focus {
   /* Header: hide clock to save space */
   #header-title { font-size: 13px; }
   #live-clock { display: none; }
-  /* Tabs: tighten further */
-  .sport-tab { font-size: 11px; padding: 8px 4px; }
+  /* Tabs: too many to fit — scroll horizontally instead of squeezing/overflowing */
+  #sport-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .sport-tab { flex: 0 0 auto; font-size: 11px; padding: 8px 10px; white-space: nowrap; }
   /* Score entry: stack teams vertically */
   #score-card .teams-row { grid-template-columns: 1fr; }
   #score-card .teams-row > :nth-child(2) { display: none; }
