@@ -466,7 +466,7 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
 .tvh-empty-court{font-size:32px;font-weight:800;color:var(--gold)}
 .tvh-empty-msg{font-size:22px;color:var(--dim)}
 /* gallery */
-.tvh-gallery{flex:1;display:grid;gap:16px;padding:18px;overflow:hidden;box-sizing:border-box}
+.tvh-gallery{flex:1;display:grid;grid-auto-rows:1fr;gap:16px;padding:18px;overflow:hidden;box-sizing:border-box}
 .tvh-card{background:var(--gray2);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;overflow:hidden}
 .tvh-card-live{background:rgba(40,10,10,.6);box-shadow:0 0 24px rgba(224,80,80,.2)}
 .tvh-card-empty{opacity:.45}
@@ -499,6 +499,64 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
 .tvh-list-body{flex:1;overflow-y:auto;padding:28px 56px;display:grid;grid-template-columns:repeat(2,1fr);gap:14px;align-content:start}
 .tvh-list-link{display:block;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:18px 26px;font-size:20px;font-weight:700;color:var(--text);text-decoration:none;transition:background .15s}
 .tvh-list-link:hover,.tvh-list-link:focus{background:rgba(212,160,23,.15);border-color:var(--gold)}
+
+/* ── 1920×1080 (and larger) TV SCREENS: scale up so text fills the
+      display and reads from across a gym. Only affects the TV screens. ── */
+@media(min-width:1600px){
+  /* header bar */
+  .tvh-hdr{padding:22px 48px}
+  .tvh-logo{font-size:38px}
+  .tvh-title{font-size:34px}
+  .tvh-time{font-size:38px}
+  /* single-court screen */
+  .tvh-single-body{padding:40px 72px;gap:28px}
+  .tvh-single-status{font-size:40px;padding:20px 32px}
+  .tvh-single-tname{font-size:76px}
+  .tvh-single-score{font-size:150px}
+  .tvh-single-vs{font-size:46px}
+  .tvh-single-round{font-size:32px}
+  .tvh-single-roster-hdr{font-size:24px}
+  .tvh-player-name{font-size:28px;padding:5px 0}
+  .tvh-single-next{font-size:42px;padding:34px 48px}
+  .tvh-empty-icon{font-size:120px}
+  .tvh-empty-court{font-size:52px}
+  .tvh-empty-msg{font-size:34px}
+  /* gallery cards (all-fields / all-gyms / semis) */
+  .tvh-gallery{gap:26px;padding:28px}
+  .tvh-card{padding:30px;gap:16px;border-radius:20px}
+  .tvh-court-name{font-size:22px}
+  .tvh-live-badge{font-size:18px;padding:5px 16px}
+  .tvh-next-badge{font-size:18px}
+  .tvh-tname{font-size:38px}
+  .tvh-score{font-size:96px}
+  .tvh-vs{font-size:24px}
+  .tvh-card-next{font-size:28px;padding:18px 24px}
+  .tvh-card-next-lbl{font-size:17px}
+  .tvh-no-game{font-size:26px}
+  /* standings (soccer groups + basketball/volleyball) */
+  .tvs-body{padding:28px 48px;gap:32px}
+  .tvs-group-hdr{font-size:34px;padding:16px 30px}
+  .tvs-table thead th{font-size:22px;padding:14px 16px}
+  .tvs-table tbody td{font-size:38px;padding:15px 16px}
+  .tvs-table tbody td.tvs-td-pos{font-size:32px;width:64px}
+  .tvs-table tbody td.tvs-td-team{font-size:40px;max-width:none}
+  .tvs-table tbody td.tvs-td-pts{font-size:44px}
+  .tvs-advances-badge{font-size:15px;padding:2px 9px}
+  .tvs-footer{font-size:26px;padding:14px 48px;min-height:60px}
+  /* finals screen */
+  .tvh-champion-banner{font-size:48px;padding:26px 56px}
+  .tvh-final-status{font-size:34px}
+  .tvh-final-tname{font-size:68px}
+  .tvh-final-score{font-size:190px}
+  .tvh-final-vs{font-size:52px}
+  .tvh-final-round{font-size:28px}
+  /* schedule screen rows */
+  .tvsc-time{font-size:28px}
+  .tvsc-event{font-size:32px}
+  .tvsc-loc{font-size:22px}
+  /* picker list */
+  .tvh-list-link{font-size:30px;padding:26px 36px}
+}
 
 /* ── SPORT-SPECIFIC LB-CARD BORDERS ── */
 .lb-card.s-soccer{border-left-color:var(--c-soccer)}
@@ -774,54 +832,52 @@ const SOCCER_SLOTS = [
 ];
 
 // Basketball: 14-team round-robin — 3 games/team (21 games), 20-min games,
-// 5:00–10:50 PM, 2 courts (Gym 2 & Gym 3). No overlap with any dual-sport
-// team's volleyball games. Day 2: top-4 knockout, 3:30/4:00/4:30 PM.
-// MUST MATCH admin.html exactly.
+// 5:00–10:30 PM, 2 courts (Gym 2 & Gym 3). 30-min slots (20-min game + 10-min
+// break). No overlap with any dual-sport team's volleyball games. Last game
+// 10:00–10:20 PM. Day 2: top-4 knockout, 3:30/4:00/4:30 PM.
 const BB_SLOTS = [
-  {start:D1(17, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 1',  desc:'T7 vs T10'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 2',  desc:'T9 vs T11'},
+  {start:D1(17,0), rows:[
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 1', desc:'T8 vs T14'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 2', desc:'T2 vs T3'},
   ]},
   {start:D1(17,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 3',  desc:'T5 vs T12'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 4',  desc:'T8 vs T14'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 3', desc:'T8 vs T13'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 4', desc:'T5 vs T14'},
   ]},
-  {start:D1(18, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 5',  desc:'T4 vs T10'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 6',  desc:'T7 vs T11'},
+  {start:D1(18,0), rows:[
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 5', desc:'T4 vs T9'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 6', desc:'T2 vs T14'},
   ]},
   {start:D1(18,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 7',  desc:'T2 vs T3'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 8',  desc:'T1 vs T5'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 7', desc:'T3 vs T4'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 8', desc:'T9 vs T11'},
   ]},
-  {start:D1(19, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 9',  desc:'T4 vs T9'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 10', desc:'T8 vs T13'},
+  {start:D1(19,0), rows:[
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 9', desc:'T4 vs T10'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 10', desc:'T12 vs T13'},
   ]},
   {start:D1(19,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 11', desc:'T1 vs T6'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 12', desc:'T2 vs T14'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 11', desc:'T1 vs T2'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 12', desc:'T9 vs T12'},
   ]},
-  {start:D1(20, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 13', desc:'T3 vs T4'},
+  {start:D1(20,0), rows:[
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 13', desc:'T11 vs T13'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 14', desc:'T3 vs T7'},
   ]},
   {start:D1(20,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 14', desc:'T12 vs T13'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 15', desc:'T6 vs T8'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 16', desc:'T5 vs T12'},
   ]},
-  {start:D1(21, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 15', desc:'T5 vs T14'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 16', desc:'T6 vs T10'},
+  {start:D1(21,0), rows:[
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 17', desc:'T1 vs T5'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 18', desc:'T7 vs T10'},
   ]},
   {start:D1(21,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 17', desc:'T1 vs T2'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 18', desc:'T11 vs T13'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 19', desc:'T7 vs T11'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 20', desc:'T1 vs T6'},
   ]},
-  {start:D1(22, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 19', desc:'T9 vs T12'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 20', desc:'T3 vs T7'},
-  ]},
-  {start:D1(22,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 21', desc:'T6 vs T8'},
+  {start:D1(22,0), rows:[
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 21', desc:'T6 vs T10'},
   ]},
   // Day 2 Knockout — top 4 advance
   {start:D2(15,30), rows:[
@@ -1914,7 +1970,7 @@ function renderBBPanel() {
   const fixturesHtml = renderBBSlotFixtures();
   el.innerHTML = `
     <div class="sec-title">🏀 Basketball — Group Stage + Knockout <span class="sec-badge">${sportBadge('basketball')}</span>
-      <span class="sec-sub">Day 1: 5:00 PM–10:50 PM · 2 Gyms · 20-min games &middot; Day 2: Semis 3:30 PM · 3rd Place 4:00 PM · Final 4:30 PM</span>
+      <span class="sec-sub">Day 1: 5:00 PM–10:30 PM · 2 Gyms · 20-min games, 30-min slots &middot; Day 2: Semis 3:30 PM · 3rd Place 4:00 PM · Final 4:30 PM</span>
     </div>
     <div class="format-note">21 games · every team plays 3 · rank by Wins, ties broken by score differential (DQ = opponent wins by +${RR_DQ_DIFF.basketball}) · Top 4 advance to Day 2 knockouts: Semis, 3rd Place match, Final.</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0 0 6px">🏀 Group Fixtures</div>
@@ -2609,11 +2665,29 @@ function migrateCourtNames(data) {
   if (Array.isArray(data.activeCourts)) data.activeCourts = data.activeCourts.map(remap);
 }
 
+// Heal known team-name typos from any stale synced state (e.g. "Brackish").
+function normalizeTeamNames(data) {
+  const MAP = {'Brackish':'Brockish'};
+  const fix = n => (n && MAP[n]) ? MAP[n] : n;
+  if (data.teams) Object.keys(data.teams).forEach(sp => { if (Array.isArray(data.teams[sp])) data.teams[sp] = data.teams[sp].map(fix); });
+  if (data.soccerGroups) Object.keys(data.soccerGroups).forEach(grp => { if (Array.isArray(data.soccerGroups[grp])) data.soccerGroups[grp] = data.soccerGroups[grp].map(fix); });
+  if (data.games) Object.values(data.games).forEach(g => {
+    g.team1 = fix(g.team1); g.team2 = fix(g.team2);
+    g.winner = fix(g.winner); g.loser = fix(g.loser);
+    if (g.desc) Object.keys(MAP).forEach(k => { g.desc = g.desc.split(k).join(MAP[k]); });
+  });
+  if (data.rosters) Object.keys(data.rosters).forEach(sp => {
+    const r = data.rosters[sp]; if (!r) return;
+    Object.keys(r).forEach(k => { if (MAP[k]) { r[MAP[k]] = r[k]; delete r[k]; } });
+  });
+}
+
 // Firebase is the single source of truth for the public view.
 // simTime is always null here — admin strips it before saving to Firebase.
 window.applyFirebaseState = (data) => {
   if (!window._appReady) return;
   migrateCourtNames(data);
+  normalizeTeamNames(data);
   state.courtDelays  = data.courtDelays  || {};
   state.teams        = data.teams        || defaultTeams();
   state.games        = data.games        || {};
@@ -3101,7 +3175,7 @@ function buildTvRRStandingsTable(sport) {
       <td class="tvs-td-pts">${diffStr}</td>
     </tr>`;
   }).join('');
-  return `<div class="tvs-group-wrap" style="max-width:900px;margin:0 auto">
+  return `<div class="tvs-group-wrap" style="grid-column:1/-1;max-width:1200px;width:100%;margin:0 auto">
     <div class="tvs-group-hdr">Rank by Wins · Ties broken by Score Differential</div>
     <table class="tvs-table">
       <thead><tr>

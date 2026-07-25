@@ -193,7 +193,7 @@ input:focus, select:focus, textarea:focus {
 
 /* ═══ TV / BIG-SCREEN ═══ */
 body.tv-hash-on{ background-image:var(--bg-ink-gold); }
-#tvHashScreen{ position:relative; }
+#tvHashScreen{ position:fixed; inset:0; }
 #tvHashScreen::before{
   content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
   background:url('../assets/brand/crest-watermark-ghost.png') center/min(62vh,62vw) no-repeat;

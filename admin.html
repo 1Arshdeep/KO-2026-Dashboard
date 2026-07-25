@@ -1164,57 +1164,52 @@ const SOCCER_SLOTS = [
 ];
 
 // Basketball: 14-team round-robin — 3 games/team (21 games), 20-min games,
-// 5:00–10:50 PM, 2 courts (Gym 2 & Gym 3). No overlap with any dual-sport
-// team's volleyball games. Day 2: top-4 knockout, 3:30/4:00/4:30 PM.
-// Seed order (DEFAULT_TEAMS.basketball): T1 Sher Elite · T2 Babbar Khalsa
-// Ballers · T3 Dixie United · T4 Sharomani Akaali Dal · T5 KLF · T6 Akaal Fauj
-// · T7 NPSS · T8 McMaster University · T9 Brockish · T10 Farmers Elite ·
-// T11 Icemen · T12 KGA · T13 Panjab Lions · T14 Kaurs United FC
+// 5:00–10:30 PM, 2 courts (Gym 2 & Gym 3). 30-min slots (20-min game + 10-min
+// break). No overlap with any dual-sport team's volleyball games. Last game
+// 10:00–10:20 PM. Day 2: top-4 knockout, 3:30/4:00/4:30 PM.
 const BB_SLOTS = [
-  {start:D1(17, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 1',  desc:'T7 vs T10'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 2',  desc:'T9 vs T11'},
+  {start:D1(17,0), rows:[
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 1', desc:'T8 vs T14'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 2', desc:'T2 vs T3'},
   ]},
   {start:D1(17,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 3',  desc:'T5 vs T12'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 4',  desc:'T8 vs T14'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 3', desc:'T8 vs T13'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 4', desc:'T5 vs T14'},
   ]},
-  {start:D1(18, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 5',  desc:'T4 vs T10'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 6',  desc:'T7 vs T11'},
+  {start:D1(18,0), rows:[
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 5', desc:'T4 vs T9'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 6', desc:'T2 vs T14'},
   ]},
   {start:D1(18,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 7',  desc:'T2 vs T3'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 8',  desc:'T1 vs T5'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 7', desc:'T3 vs T4'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 8', desc:'T9 vs T11'},
   ]},
-  {start:D1(19, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 9',  desc:'T4 vs T9'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 10', desc:'T8 vs T13'},
+  {start:D1(19,0), rows:[
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 9', desc:'T4 vs T10'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 10', desc:'T12 vs T13'},
   ]},
   {start:D1(19,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 11', desc:'T1 vs T6'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 12', desc:'T2 vs T14'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 11', desc:'T1 vs T2'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 12', desc:'T9 vs T12'},
   ]},
-  {start:D1(20, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 13', desc:'T3 vs T4'},
+  {start:D1(20,0), rows:[
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 13', desc:'T11 vs T13'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 14', desc:'T3 vs T7'},
   ]},
   {start:D1(20,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 14', desc:'T12 vs T13'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 15', desc:'T6 vs T8'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 16', desc:'T5 vs T12'},
   ]},
-  {start:D1(21, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 15', desc:'T5 vs T14'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 16', desc:'T6 vs T10'},
+  {start:D1(21,0), rows:[
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 17', desc:'T1 vs T5'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 18', desc:'T7 vs T10'},
   ]},
   {start:D1(21,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 17', desc:'T1 vs T2'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 18', desc:'T11 vs T13'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 19', desc:'T7 vs T11'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 20', desc:'T1 vs T6'},
   ]},
-  {start:D1(22, 0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 19', desc:'T9 vs T12'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 20', desc:'T3 vs T7'},
-  ]},
-  {start:D1(22,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 21', desc:'T6 vs T8'},
+  {start:D1(22,0), rows:[
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 21', desc:'T6 vs T10'},
   ]},
   // Day 2 Knockout — top 4 advance
   {start:D2(15,30), rows:[
@@ -1419,9 +1414,35 @@ function migrateCourtNames(s) {
 }
 
 // Make sure older saved/synced states gain the newer fields
+// Heal known team-name typos in any loaded/synced state so a stale cached
+// client can never re-introduce them (e.g. "Brackish" → "Brockish").
+function normalizeTeamNames(s) {
+  const MAP = {'Brackish':'Brockish'};
+  const fix = n => (n && MAP[n]) ? MAP[n] : n;
+  if (s.teams) Object.keys(s.teams).forEach(sp => { if (Array.isArray(s.teams[sp])) s.teams[sp] = s.teams[sp].map(fix); });
+  if (s.soccerGroups) Object.keys(s.soccerGroups).forEach(grp => { if (Array.isArray(s.soccerGroups[grp])) s.soccerGroups[grp] = s.soccerGroups[grp].map(fix); });
+  if (s.games) Object.values(s.games).forEach(g => {
+    g.team1 = fix(g.team1); g.team2 = fix(g.team2);
+    g.winner = fix(g.winner); g.loser = fix(g.loser);
+    if (g.desc) Object.keys(MAP).forEach(k => { g.desc = g.desc.split(k).join(MAP[k]); });
+  });
+  if (s.rosters) Object.keys(s.rosters).forEach(sp => {
+    const r = s.rosters[sp]; if (!r) return;
+    Object.keys(r).forEach(k => { if (MAP[k]) { r[MAP[k]] = r[k]; delete r[k]; } });
+  });
+  // Guard against cross-sport roster contamination: a basketball-only team
+  // leaking into the volleyball roster shifts every VB token assignment
+  // (has happened via a bad save). If detected, reset VB roster to default.
+  const BB_ONLY = ['Sher Elite','Akaal Fauj','NPSS','Farmers Elite','Icemen','KGA'];
+  if (s.teams && Array.isArray(s.teams.volleyball) && s.teams.volleyball.some(t => BB_ONLY.includes(t))) {
+    s.teams.volleyball = JSON.parse(JSON.stringify(DEFAULT_TEAMS.volleyball));
+  }
+}
+
 function ensureStateFields(s) {
   if (!s) return;
   migrateCourtNames(s);
+  normalizeTeamNames(s);
   if (!s.rosters) s.rosters = { soccer:{}, basketball:{}, volleyball:{} };
   ['soccer','basketball','volleyball'].forEach(sp => { if (!s.rosters[sp]) s.rosters[sp] = {}; });
   if (s.activeCourts === undefined) s.activeCourts = null;
@@ -3088,7 +3109,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ===== INIT =====
-const BB_SCHEMA_V = 20;  // v20: basketball rebuilt — 21-game round-robin (3/team), 20-min games, no VB overlap; Sunday KO 3:30/4:00/4:30
+const BB_SCHEMA_V = 21;  // v21: basketball re-timed — 30-min slots 5:00–10:30 PM (last game 10:00–10:20), still 21-game RR, no VB overlap
 
 function needsRebuild(games, schemaV) {
   const list = Object.values(games || {});
