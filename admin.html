@@ -1377,14 +1377,78 @@ function shiftGamesToToday(games) {
 }
 
 // ===== SYNC =====
+// Shadow = the last value we know is in Firebase, keyed by 'games/<id>' and by
+// top-level field name (JSON strings). Lets saveState push ONLY what changed on
+// this laptop instead of overwriting the whole document — so 4 scorekeeping
+// laptops never clobber each other's scores.
+let _fbShadow = {};
+function refreshShadow() {
+  _fbShadow = {};
+  const { simTime, games, ...rest } = state;
+  Object.values(games || {}).forEach(g => { _fbShadow['games/' + g.id] = JSON.stringify(g); });
+  Object.keys(rest).forEach(k => { _fbShadow[k] = JSON.stringify(rest[k]); });
+}
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  if (window.fbDb) {
-    // Strip simTime before writing to Firebase — it's a local admin-only flag
-    // and must not propagate back to overwrite the exit decision
-    const { simTime, ...fbState } = state;
-    try { window.fbDb.ref('ko2026').set(fbState); } catch(e) {}
-  }
+  if (!window.fbDb) return;
+  try {
+    const { simTime, games, ...rest } = state;
+    const updates = {};
+    // per-game: only push games that changed on THIS device (no whole-doc clobber)
+    Object.values(games || {}).forEach(g => {
+      const s = JSON.stringify(g);
+      if (_fbShadow['games/' + g.id] !== s) { updates['games/' + g.id] = g; _fbShadow['games/' + g.id] = s; }
+    });
+    // per-field: teams, soccerGroups, timers, activeCourts, courtDelays, rosters, schemaV
+    Object.keys(rest).forEach(k => {
+      const s = JSON.stringify(rest[k]);
+      if (_fbShadow[k] !== s) { updates[k] = rest[k]; _fbShadow[k] = s; }
+    });
+    if (Object.keys(updates).length) window.fbDb.ref('ko2026').update(updates);
+  } catch(e) {}
+}
+
+// Real-time sync: every scorekeeping laptop listens for changes from the others
+// and merges them in. A game is only adopted if it isn't OLDER than our copy
+// (by ts), so a stale echo can never revert a fresh local edit.
+let _liveSyncAttached = false;
+function attachLiveSync() {
+  if (_liveSyncAttached || !window.fbDb) return;
+  _liveSyncAttached = true;
+  window.fbDb.ref('ko2026').on('value', snap => {
+    try {
+      const data = snap.val();
+      if (!data || !data.games) return;
+      if (needsRebuild(data.games, data.schemaV)) return; // ignore malformed / old-schema writes
+      let changed = false;
+      Object.keys(data.games).forEach(id => {
+        const remote = data.games[id];
+        const rs = JSON.stringify(remote);
+        if (_fbShadow['games/' + id] === rs) return;      // already have it
+        const local = state.games[id];
+        if (local && (remote.ts || 0) < (local.ts || 0)) return; // our edit is newer — keep it
+        state.games[id] = remote;
+        _fbShadow['games/' + id] = rs;
+        changed = true;
+      });
+      ['teams','soccerGroups','activeCourts','courtDelays','rosters','timers','schemaV'].forEach(k => {
+        if (data[k] === undefined) return;
+        const rs = JSON.stringify(data[k]);
+        if (_fbShadow[k] === rs) return;
+        state[k] = data[k];
+        _fbShadow[k] = rs;
+        changed = true;
+      });
+      if (!changed) return;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      propagateAll();
+      populateKnockoutTeams();
+      populateBBKnockoutTeams();
+      populateVBKnockoutTeams();
+      refresh();
+      if (typeof renderLiveControl === 'function' && document.getElementById('lc-grid')) renderLiveControl();
+    } catch(e) { console.warn('live sync merge failed:', e); }
+  });
 }
 
 function loadState() {
@@ -3398,6 +3462,10 @@ window.fbDb.ref('ko2026').once('value', snapshot => {
     currentGameId = null;
     refresh();
   } catch(e) { console.warn('Firebase seed failed:', e); }
+  // Initialise the write-shadow from the just-seeded (current) state, then start
+  // real-time sync so all scorekeeping laptops stay in sync from here on.
+  refreshShadow();
+  attachLiveSync();
 });
 </script>
 </body>
