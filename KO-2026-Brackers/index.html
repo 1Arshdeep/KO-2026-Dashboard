@@ -2940,7 +2940,8 @@ function tvHashRenderCourt(screen) {
     // Half clock: counts down from the scorekeeper's timer duration (10-min
     // halves). At halftime the scorekeeper resets it and it starts again.
     const tmr = (state.timers || {})[game.id];
-    const maxHalf = (game.slotMin * 60) / 2;
+    // volleyball has no halves — full 15-min game clock; others run 10-min halves
+    const maxHalf = game.sport === 'volleyball' ? (game.slotMin * 60) : (game.slotMin * 60) / 2;
     // cap at the half length so a stale full-game timer still shows a 10-min half
     const halfSec = Math.min((tmr && tmr.duration) ? tmr.duration : maxHalf, maxHalf);
     const rem = isLive ? Math.max(0, Math.ceil(halfSec - elapsedSec(game))) : 0;
