@@ -1541,7 +1541,7 @@ function ensureStateFields(s) {
   if (s.activeCourts === undefined) s.activeCourts = null;
   if (!s.timers) s.timers = {};
   // Migrate any timers saved with old 15-min duration to 20-min
-  Object.entries(s.timers).forEach(([id,tm]) => { if (!tm) return; if (tm.duration === 900) tm.duration = 1200; const g = s.games && s.games[id]; const half = Math.round(((g && g.slotMin) ? g.slotMin : 20) * 60 / 2); if (tm.duration > half) tm.duration = half; });
+  Object.entries(s.timers).forEach(([id,tm]) => { if (!tm) return; if (tm.duration === 900) tm.duration = 1200; const g = s.games && s.games[id]; const mins = ((g && g.slotMin) ? g.slotMin : 20); const full = (g && g.sport === 'volleyball') ? Math.round(mins*60) : Math.round(mins*60/2); if (tm.duration > full) tm.duration = full; });
   if (!s.soccerGroups) s.soccerGroups = JSON.parse(JSON.stringify(DEFAULT_SOCCER_GROUPS));
 }
 
@@ -1594,6 +1594,8 @@ function formatTime(seconds) {
 function halfDurationFor(gameId) {
   const g = state.games && state.games[gameId];
   const mins = (g && g.slotMin) ? g.slotMin : 20;
+  // volleyball plays a straight game (no halves) — full duration
+  if (g && g.sport === 'volleyball') return Math.round(mins * 60);
   return Math.round(mins * 60 / 2);
 }
 function ensureTimer(gameId, duration) {
