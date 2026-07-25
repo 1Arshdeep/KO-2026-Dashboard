@@ -1384,22 +1384,29 @@ function shiftGamesToToday(games) {
 let _fbShadow = {};
 function refreshShadow() {
   _fbShadow = {};
-  const { simTime, games, ...rest } = state;
+  const { simTime, games, timers, ...rest } = state;
   Object.values(games || {}).forEach(g => { _fbShadow['games/' + g.id] = JSON.stringify(g); });
+  Object.keys(timers || {}).forEach(id => { _fbShadow['timers/' + id] = JSON.stringify(timers[id]); });
   Object.keys(rest).forEach(k => { _fbShadow[k] = JSON.stringify(rest[k]); });
 }
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   if (!window.fbDb) return;
   try {
-    const { simTime, games, ...rest } = state;
+    const { simTime, games, timers, ...rest } = state;
     const updates = {};
     // per-game: only push games that changed on THIS device (no whole-doc clobber)
     Object.values(games || {}).forEach(g => {
       const s = JSON.stringify(g);
       if (_fbShadow['games/' + g.id] !== s) { updates['games/' + g.id] = g; _fbShadow['games/' + g.id] = s; }
     });
-    // per-field: teams, soccerGroups, timers, activeCourts, courtDelays, rosters, schemaV
+    // per-TIMER: must be per-game too, otherwise one laptop saving its whole
+    // timers object wipes another laptop's running clock (clock jumps back).
+    Object.keys(timers || {}).forEach(id => {
+      const s = JSON.stringify(timers[id]);
+      if (_fbShadow['timers/' + id] !== s) { updates['timers/' + id] = timers[id]; _fbShadow['timers/' + id] = s; }
+    });
+    // per-field: teams, soccerGroups, activeCourts, courtDelays, rosters, schemaV
     Object.keys(rest).forEach(k => {
       const s = JSON.stringify(rest[k]);
       if (_fbShadow[k] !== s) { updates[k] = rest[k]; _fbShadow[k] = s; }
@@ -1431,7 +1438,22 @@ function attachLiveSync() {
         _fbShadow['games/' + id] = rs;
         changed = true;
       });
-      ['teams','soccerGroups','activeCourts','courtDelays','rosters','timers','schemaV'].forEach(k => {
+      // timers merge per-game: never let a stale/idle remote timer replace a
+      // clock that is running locally (that made the TV clock jump back).
+      if (data.timers) {
+        state.timers = state.timers || {};
+        Object.keys(data.timers).forEach(id => {
+          const remote = data.timers[id];
+          const rs = JSON.stringify(remote);
+          if (_fbShadow['timers/' + id] === rs) return;
+          const local = state.timers[id];
+          if (local && local.running && !(remote && remote.running)) return; // keep our running clock
+          state.timers[id] = remote;
+          _fbShadow['timers/' + id] = rs;
+          changed = true;
+        });
+      }
+      ['teams','soccerGroups','activeCourts','courtDelays','rosters','schemaV'].forEach(k => {
         if (data[k] === undefined) return;
         const rs = JSON.stringify(data[k]);
         if (_fbShadow[k] === rs) return;

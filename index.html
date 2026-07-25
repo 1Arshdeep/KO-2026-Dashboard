@@ -2689,6 +2689,37 @@ setInterval(() => {
 }, 1000);
 
 // One-time migration: remap old court names in Firebase-loaded data
+
+// TV clocks must run CONTINUOUSLY. Another scorekeeping laptop pushing a stale
+// timer must never yank the clock backwards. So while a timer is running we
+// only accept forward progress; an actual admin Pause/Reset (which sets
+// running:false) or a duration change is always accepted.
+function timerElapsed(t) {
+  if (!t) return 0;
+  let s = t.accumulated || 0;
+  if (t.running && t.startedAt) s += (Date.now() - t.startedAt) / 1000;
+  return Math.max(0, s);
+}
+function mergeTimersMonotonic(localTimers, remoteTimers) {
+  const out = {};
+  Object.keys(remoteTimers || {}).forEach(id => {
+    const remote = remoteTimers[id];
+    const local  = (localTimers || {})[id];
+    if (!local) { out[id] = remote; return; }
+    const bothRunning = local.running && remote && remote.running;
+    const sameDuration = local.duration === (remote && remote.duration);
+    // regression while running (and no deliberate reset) => stale echo, keep ours
+    if (bothRunning && sameDuration && timerElapsed(remote) < timerElapsed(local) - 1.5) {
+      out[id] = local;
+    } else {
+      out[id] = remote;
+    }
+  });
+  // keep any local-only timers
+  Object.keys(localTimers || {}).forEach(id => { if (!(id in out)) out[id] = localTimers[id]; });
+  return out;
+}
+
 function migrateCourtNames(data) {
   const MAP = {'Basketball Court 1':'Gym 2 (Basketball)','Basketball Court 2':'Gym 3 (Basketball)','Volleyball Court':'Gym 1 (Volleyball)'};
   const remap = n => MAP[n] || n;
@@ -2723,7 +2754,7 @@ window.applyFirebaseState = (data) => {
   state.courtDelays  = data.courtDelays  || {};
   state.teams        = data.teams        || defaultTeams();
   state.games        = data.games        || {};
-  state.timers       = data.timers       || {};
+  state.timers       = mergeTimersMonotonic(state.timers, data.timers || {});
   state.rosters      = data.rosters      || {soccer:{},basketball:{},volleyball:{}};
   state.activeCourts = data.activeCourts !== undefined ? data.activeCourts : null;
   state.soccerGroups = data.soccerGroups || JSON.parse(JSON.stringify(DEFAULT_SOCCER_GROUPS));
