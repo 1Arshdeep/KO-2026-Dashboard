@@ -2312,6 +2312,11 @@ function tvActiveCourts() {
 function activePanels() {
   const active = tvActiveCourts();
   const sportsWithCourts = new Set(active.map(c => c.sport));
+  // Never hide a sport that actually has a live or still-to-play game right now
+  // (a stale "active courts" selection must not blank basketball/volleyball).
+  Object.values(state.games || {}).forEach(g => {
+    if (g.status === 'live' || (g.status !== 'final' && isLiveByTime(g))) sportsWithCourts.add(g.sport);
+  });
   return TV_PANELS.filter(p => {
     if (p.id === 'soccer' || p.id === 'standings-soccer' || p.id === 'fixtures-soccer') return sportsWithCourts.has('soccer');
     if (p.id === 'basketball' || p.id === 'standings-basketball' || p.id === 'fixtures-basketball') return sportsWithCourts.has('basketball');
@@ -2810,7 +2815,7 @@ function tvHashEnter(key) {
   }
   tvHashRender();
   clearInterval(_tvHashTimer);
-  _tvHashTimer = setInterval(tvHashRender, 3000);
+  _tvHashTimer = setInterval(tvHashRender, 1000);
 }
 
 function tvHashExit() {
@@ -2893,7 +2898,10 @@ function tvHashRenderCourt(screen) {
     const s1 = showScore ? game.score1 : '', s2 = showScore ? game.score2 : '';
     const nextUp = remaining && remaining[0];
     const statusClass = isLive ? 'tvh-status-live' : isFinal ? 'tvh-status-done' : 'tvh-status-next';
-    const statusLabel = isLive ? '🔴 LIVE NOW' : isFinal ? (game.dq ? '🚫 FORFEIT' : '✅ FINAL') : `⏰ UP NEXT · ${fmtTime(effectiveStart(game))}`;
+    // Live game clock — driven by the scorekeeper's timer (synced via Firebase)
+    const es = isLive ? Math.floor(elapsedSec(game)) : 0;
+    const clock = isLive ? ` · ${Math.floor(es/60)}:${String(es%60).padStart(2,'0')} / ${game.slotMin}:00` : '';
+    const statusLabel = isLive ? `🔴 LIVE NOW${clock}` : isFinal ? (game.dq ? '🚫 FORFEIT' : '✅ FINAL') : `⏰ UP NEXT · ${fmtTime(effectiveStart(game))}`;
     body = `
       <div class="tvh-single-status ${statusClass}">
         ${statusLabel}
@@ -2932,7 +2940,8 @@ function tvHashCourtCard(court) {
   const nextHtml = nextUp
     ? `<div class="tvh-card-next"><span class="tvh-card-next-lbl">${(isLive || isFinal) ? 'UP NEXT' : 'AFTER THIS'}</span> <strong>${nextUp.team1} vs ${nextUp.team2}</strong> · ${nextUp.round || ''} · ${fmtTime(effectiveStart(nextUp))}</div>`
     : '';
-  const badgeLabel = isLive ? '🔴 LIVE' : isFinal ? (game.dq ? '🚫 FORFEIT' : '✅ FINAL') : `⏰ ${fmtTime(effectiveStart(game))}`;
+  const esC = isLive ? Math.floor(elapsedSec(game)) : 0;
+  const badgeLabel = isLive ? `🔴 LIVE ${Math.floor(esC/60)}:${String(esC%60).padStart(2,'0')}` : isFinal ? (game.dq ? '🚫 FORFEIT' : '✅ FINAL') : `⏰ ${fmtTime(effectiveStart(game))}`;
   return `<div class="tvh-card ${isLive ? 'tvh-card-live' : ''}" style="border-top:4px solid ${sc}">
     <div class="tvh-card-top">
       <div class="tvh-court-name">${court}</div>
