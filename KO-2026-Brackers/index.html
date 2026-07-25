@@ -453,9 +453,13 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
 .tvh-single-tname{font-size:52px;font-weight:900;text-align:center;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;font-family:'Archivo',sans-serif}
 .tvh-single-score{font-size:110px;font-weight:900;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums}
 .tvh-single-vs{font-size:32px;font-weight:900;color:var(--dim);text-align:center;padding:0 10px}
-.tvh-gameclock{font-family:'Archivo',sans-serif;font-size:96px;font-weight:900;text-align:center;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:2px}
+.tvh-gameclock{font-family:'Archivo',sans-serif;font-weight:900;color:var(--gold);line-height:.9;
+  font-variant-numeric:tabular-nums;letter-spacing:2px;
+  flex:1;min-height:0;display:flex;align-items:center;justify-content:center;
+  font-size:clamp(120px,26vw,42vh)}
 .tvh-gameclock-end{color:var(--live);animation:pulse 1s infinite}
-@media(min-width:1600px){.tvh-gameclock{font-size:150px}}
+/* when a live clock is showing, let it own the leftover vertical space */
+.tvh-single-body.has-clock{display:flex;flex-direction:column;justify-content:center}
 .tvh-single-round{font-size:22px;font-weight:800;letter-spacing:3px;text-align:center;text-transform:uppercase;color:var(--text);font-family:'Archivo',sans-serif;opacity:.7}
 .tvh-single-rosters{display:grid;grid-template-columns:1fr 1fr;gap:20px;overflow:hidden;min-height:0}
 .tvh-single-roster-col{background:rgba(255,255,255,.04);border-radius:10px;padding:14px;overflow:hidden}
@@ -2902,13 +2906,16 @@ function tvHashRenderCourt(screen) {
     const nextUp = remaining && remaining[0];
     const statusClass = isLive ? 'tvh-status-live' : isFinal ? 'tvh-status-done' : 'tvh-status-next';
     // Live game clock — driven by the scorekeeper's timer (synced via Firebase)
-    const rem = isLive ? Math.max(0, Math.ceil((game.slotMin * 60) - elapsedSec(game))) : 0;
-    const clock = isLive ? ` · ${Math.floor(rem/60)}:${String(rem%60).padStart(2,'0')}` : '';
-    const statusLabel = isLive ? `🔴 LIVE NOW${clock}` : isFinal ? (game.dq ? '🚫 FORFEIT' : '✅ FINAL') : `⏰ UP NEXT · ${fmtTime(effectiveStart(game))}`;
+    // Half clock: counts down from the scorekeeper's timer duration (10-min
+    // halves). At halftime the scorekeeper resets it and it starts again.
+    const tmr = (state.timers || {})[game.id];
+    const maxHalf = (game.slotMin * 60) / 2;
+    // cap at the half length so a stale full-game timer still shows a 10-min half
+    const halfSec = Math.min((tmr && tmr.duration) ? tmr.duration : maxHalf, maxHalf);
+    const rem = isLive ? Math.max(0, Math.ceil(halfSec - elapsedSec(game))) : 0;
+    const statusLabel = isLive ? '' : isFinal ? (game.dq ? '🚫 FORFEIT' : '✅ FINAL') : `⏰ UP NEXT · ${fmtTime(effectiveStart(game))}`;
     body = `
-      <div class="tvh-single-status ${statusClass}">
-        ${statusLabel}
-      </div>
+      ${statusLabel ? `<div class="tvh-single-status ${statusClass}">${statusLabel}</div>` : ''}
       <div class="tvh-single-matchup">
         <div class="tvh-single-team">
           <div class="tvh-single-tname">${game.team1}</div>
@@ -2922,10 +2929,11 @@ function tvHashRenderCourt(screen) {
       </div>
       ${isLive ? `<div class="tvh-gameclock${rem<=60?' tvh-gameclock-end':''}">${Math.floor(rem/60)}:${String(rem%60).padStart(2,'0')}</div>` : ''}
       <div class="tvh-single-round" style="color:${sc}">${game.round || ''}</div>
-      ${tvHashRosterHtml(game)}
+      ${isLive ? '' : tvHashRosterHtml(game)}
       ${nextUp ? `<div class="tvh-single-next">AFTER THIS: <strong>${nextUp.team1} vs ${nextUp.team2}</strong> · ${nextUp.round || ''} · ${fmtTime(effectiveStart(nextUp))}</div>` : ''}`;
   }
-  el.innerHTML = tvHashHdr(`${SPORT_ICON[sport]} ${court}`) + `<div class="tvh-single-body">${body}</div>`;
+  const hasClock = /tvh-gameclock/.test(body);
+  el.innerHTML = tvHashHdr(`${SPORT_ICON[sport]} ${court}`) + `<div class="tvh-single-body${hasClock?' has-clock':''}">${body}</div>`;
 }
 
 function tvHashCourtCard(court) {
