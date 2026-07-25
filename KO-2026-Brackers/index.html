@@ -1691,9 +1691,10 @@ function renderSoccerBracket() {
 // ══════════════════════════════════════════════════════════════
 // ROUND-ROBIN STANDINGS (basketball + volleyball)
 // Rank by wins, tiebreak by cumulative score differential.
-// DQ games carry no scoreline: winner +10 differential, DQ'd team −10.
+// DQ games carry no scoreline: winner +diff, DQ'd team −diff
+// (basketball 15, volleyball 10).
 // ══════════════════════════════════════════════════════════════
-const RR_DQ_DIFF = 10;
+const RR_DQ_DIFF = {basketball:15, volleyball:10};
 
 function computeRRStandings(sport) {
   const teams = (state.teams && state.teams[sport]) || [];
@@ -1709,10 +1710,11 @@ function computeRRStandings(sport) {
     if (!s1 || !s2) return;
     s1.played++; s2.played++;
     if (g.dq) {
+      const dqAmt = RR_DQ_DIFF[sport] || 10;
       const w = g.dq === 'team1' ? s2 : s1;
       const l = g.dq === 'team1' ? s1 : s2;
-      w.won++; w.pf += RR_DQ_DIFF; w.diff += RR_DQ_DIFF;
-      l.lost++; l.pa += RR_DQ_DIFF; l.diff -= RR_DQ_DIFF;
+      w.won++; w.pf += dqAmt; w.diff += dqAmt;
+      l.lost++; l.pa += dqAmt; l.diff -= dqAmt;
       return;
     }
     s1.pf += g.score1; s1.pa += g.score2; s1.diff += (g.score1 - g.score2);
@@ -1914,7 +1916,7 @@ function renderBBPanel() {
     <div class="sec-title">🏀 Basketball — Group Stage + Knockout <span class="sec-badge">${sportBadge('basketball')}</span>
       <span class="sec-sub">Day 1: 5:00 PM–10:50 PM · 2 Gyms · 20-min games &middot; Day 2: Semis 3:30 PM · 3rd Place 4:00 PM · Final 4:30 PM</span>
     </div>
-    <div class="format-note">21 games · every team plays 3 · rank by Wins, ties broken by score differential (DQ = opponent wins by +${RR_DQ_DIFF}) · Top 4 advance to Day 2 knockouts: Semis, 3rd Place match, Final.</div>
+    <div class="format-note">21 games · every team plays 3 · rank by Wins, ties broken by score differential (DQ = opponent wins by +${RR_DQ_DIFF.basketball}) · Top 4 advance to Day 2 knockouts: Semis, 3rd Place match, Final.</div>
     <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0 0 6px">🏀 Group Fixtures</div>
     ${fixturesHtml}
     <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0 0 10px">🏀 Live Standings</div>
@@ -1942,7 +1944,7 @@ function renderVBPanel() {
     <div class="sec-title">🏐 Volleyball — Standings Play <span class="sec-badge">${sportBadge('volleyball')}</span>
       <span class="sec-sub">Day 1: 5:00 PM–10:35 PM · Gym 1 · 15-min games</span>
     </div>
-    <div class="format-note">Round robin: all 13 teams play exactly 2 games. Rank by <strong>Wins</strong>, ties broken by <strong>score differential</strong>. A forfeit (DQ) credits the opponent a win with a +${RR_DQ_DIFF} differential.</div>
+    <div class="format-note">Round robin: all 13 teams play exactly 2 games. Rank by <strong>Wins</strong>, ties broken by <strong>score differential</strong>. A forfeit (DQ) credits the opponent a win with a +${RR_DQ_DIFF.volleyball} differential.</div>
     ${buildScheduleGrid('volleyball')}
     <div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:0 0 10px">🏐 Live Standings</div>
     <div class="grp-tables-row">
@@ -2747,9 +2749,16 @@ function tvHashHdr(title) {
 function tvHashGameInfo(court) {
   const games = Object.values(state.games).filter(g => g.court === court).sort((a,b) => (a.scheduledStart||0)-(b.scheduledStart||0));
   const live = games.find(g => g.status === 'live');
-  if (live) return {game:live, isLive:true, remaining:games.filter(g => g.status !== 'final' && g.id !== live.id)};
+  if (live) return {game:live, isLive:true, isFinal:false, remaining:games.filter(g => g.status !== 'final' && g.id !== live.id)};
+  // A game that ended early (DQ/forfeit) but is still within its scheduled
+  // time window should keep showing on TV — don't jump ahead to the next
+  // match before its actual start time arrives.
+  const inWindow = games.find(g => g.status === 'final' && isLiveByTime(g));
+  if (inWindow) {
+    return {game:inWindow, isLive:false, isFinal:true, remaining:games.filter(g => g.status !== 'final' && g.id !== inWindow.id)};
+  }
   const coming = games.filter(g => g.status !== 'final').sort((a,b) => (a.scheduledStart||0)-(b.scheduledStart||0));
-  return coming.length ? {game:coming[0], isLive:false, remaining:coming.slice(1)} : null;
+  return coming.length ? {game:coming[0], isLive:false, isFinal:false, remaining:coming.slice(1)} : null;
 }
 
 function tvHashRosterHtml(game) {
@@ -2785,22 +2794,25 @@ function tvHashRenderCourt(screen) {
       <div class="tvh-empty-msg">No active games</div>
     </div>`;
   } else {
-    const {game, isLive, remaining} = info;
-    const s1 = isLive ? game.score1 : '', s2 = isLive ? game.score2 : '';
+    const {game, isLive, isFinal, remaining} = info;
+    const showScore = isLive || isFinal;
+    const s1 = showScore ? game.score1 : '', s2 = showScore ? game.score2 : '';
     const nextUp = remaining && remaining[0];
+    const statusClass = isLive ? 'tvh-status-live' : isFinal ? 'tvh-status-done' : 'tvh-status-next';
+    const statusLabel = isLive ? '🔴 LIVE NOW' : isFinal ? (game.dq ? '🚫 FORFEIT' : '✅ FINAL') : `⏰ UP NEXT · ${fmtTime(effectiveStart(game))}`;
     body = `
-      <div class="tvh-single-status ${isLive ? 'tvh-status-live' : 'tvh-status-next'}">
-        ${isLive ? '🔴 LIVE NOW' : `⏰ UP NEXT · ${fmtTime(effectiveStart(game))}`}
+      <div class="tvh-single-status ${statusClass}">
+        ${statusLabel}
       </div>
       <div class="tvh-single-matchup">
         <div class="tvh-single-team">
           <div class="tvh-single-tname">${game.team1}</div>
-          ${isLive ? `<div class="tvh-single-score">${s1}</div>` : ''}
+          ${showScore ? `<div class="tvh-single-score">${s1}</div>` : ''}
         </div>
         <div class="tvh-single-vs">VS</div>
         <div class="tvh-single-team">
           <div class="tvh-single-tname">${game.team2}</div>
-          ${isLive ? `<div class="tvh-single-score">${s2}</div>` : ''}
+          ${showScore ? `<div class="tvh-single-score">${s2}</div>` : ''}
         </div>
       </div>
       <div class="tvh-single-round" style="color:${sc}">${game.round || ''}</div>
@@ -2819,21 +2831,23 @@ function tvHashCourtCard(court) {
     <div class="tvh-card-top"><div class="tvh-court-name">${court}</div></div>
     <div class="tvh-no-game">No games scheduled</div>
   </div>`;
-  const {game, isLive, remaining} = info;
-  const s1 = isLive ? game.score1 : '', s2 = isLive ? game.score2 : '';
+  const {game, isLive, isFinal, remaining} = info;
+  const showScore = isLive || isFinal;
+  const s1 = showScore ? game.score1 : '', s2 = showScore ? game.score2 : '';
   const nextUp = remaining && remaining[0];
   const nextHtml = nextUp
-    ? `<div class="tvh-card-next"><span class="tvh-card-next-lbl">${isLive ? 'UP NEXT' : 'AFTER THIS'}</span> <strong>${nextUp.team1} vs ${nextUp.team2}</strong> · ${nextUp.round || ''} · ${fmtTime(effectiveStart(nextUp))}</div>`
+    ? `<div class="tvh-card-next"><span class="tvh-card-next-lbl">${(isLive || isFinal) ? 'UP NEXT' : 'AFTER THIS'}</span> <strong>${nextUp.team1} vs ${nextUp.team2}</strong> · ${nextUp.round || ''} · ${fmtTime(effectiveStart(nextUp))}</div>`
     : '';
+  const badgeLabel = isLive ? '🔴 LIVE' : isFinal ? (game.dq ? '🚫 FORFEIT' : '✅ FINAL') : `⏰ ${fmtTime(effectiveStart(game))}`;
   return `<div class="tvh-card ${isLive ? 'tvh-card-live' : ''}" style="border-top:4px solid ${sc}">
     <div class="tvh-card-top">
       <div class="tvh-court-name">${court}</div>
-      <div class="${isLive ? 'tvh-live-badge' : 'tvh-next-badge'}">${isLive ? '🔴 LIVE' : `⏰ ${fmtTime(effectiveStart(game))}`}</div>
+      <div class="${isLive ? 'tvh-live-badge' : 'tvh-next-badge'}">${badgeLabel}</div>
     </div>
     <div class="tvh-matchup">
-      <div class="tvh-team-side"><div class="tvh-tname">${game.team1}</div>${isLive ? `<div class="tvh-score">${s1}</div>` : ''}</div>
+      <div class="tvh-team-side"><div class="tvh-tname">${game.team1}</div>${showScore ? `<div class="tvh-score">${s1}</div>` : ''}</div>
       <div class="tvh-vs">VS</div>
-      <div class="tvh-team-side"><div class="tvh-tname">${game.team2}</div>${isLive ? `<div class="tvh-score">${s2}</div>` : ''}</div>
+      <div class="tvh-team-side"><div class="tvh-tname">${game.team2}</div>${showScore ? `<div class="tvh-score">${s2}</div>` : ''}</div>
     </div>
     ${nextHtml}
   </div>`;

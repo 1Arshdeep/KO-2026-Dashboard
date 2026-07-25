@@ -1974,9 +1974,14 @@ function showConfirm(msg, cb) {
 }
 
 function dqMessage(g, dqTeam, winTeam) {
-  return g.phase === 'rr'
-    ? `Disqualify ${dqTeam} (no-show)? ${winTeam} is credited the win with a +${RR_DQ_DIFF} score differential in the standings.`
-    : `Disqualify ${dqTeam}? This will set ${winTeam} as winner.`;
+  if (g.phase === 'rr') {
+    const dqAmt = RR_DQ_DIFF[g.sport] || 10;
+    return `Disqualify ${dqTeam} (no-show)? ${winTeam} is credited the win with a +${dqAmt} score differential in the standings.`;
+  }
+  if (g.phase === 'group') {
+    return `Disqualify ${dqTeam} (no-show)? ${winTeam} is credited a win (+3 pts); ${dqTeam} is penalized (−3 pts) in the group standings.`;
+  }
+  return `Disqualify ${dqTeam}? This will set ${winTeam} as winner.`;
 }
 
 function applyDQ(g, side) {
@@ -2604,9 +2609,10 @@ function renderAdminSoccerBracketContent() {
 // ══════════════════════════════════════════════════════════════
 // ROUND-ROBIN STANDINGS (basketball + volleyball)
 // Rank by wins, tiebreak by cumulative score differential.
-// DQ games: no scoreline — winner is credited +10 diff, DQ'd team −10.
+// DQ games: no scoreline — winner credited +diff, DQ'd team −diff
+// (basketball 15, volleyball 10).
 // ══════════════════════════════════════════════════════════════
-const RR_DQ_DIFF = 10;
+const RR_DQ_DIFF = {basketball:15, volleyball:10};
 
 function computeRRStandings(sport) {
   const teams = (state.teams && state.teams[sport]) || [];
@@ -2622,11 +2628,12 @@ function computeRRStandings(sport) {
     if (!s1 || !s2) return;
     s1.played++; s2.played++;
     if (g.dq) {
-      // Forfeit: blank scoreline; winner +10 differential, DQ'd team −10
+      // Forfeit: blank scoreline; winner +diff, DQ'd team −diff
+      const dqAmt = RR_DQ_DIFF[sport] || 10;
       const w = g.dq === 'team1' ? s2 : s1;
       const l = g.dq === 'team1' ? s1 : s2;
-      w.won++; w.pf += RR_DQ_DIFF; w.diff += RR_DQ_DIFF;
-      l.lost++; l.pa += RR_DQ_DIFF; l.diff -= RR_DQ_DIFF;
+      w.won++; w.pf += dqAmt; w.diff += dqAmt;
+      l.lost++; l.pa += dqAmt; l.diff -= dqAmt;
       return;
     }
     s1.pf += g.score1; s1.pa += g.score2; s1.diff += (g.score1 - g.score2);
@@ -2706,7 +2713,7 @@ function renderAdminRRStandingsContent(sport) {
 
   return warnHtml +
     `<div style="font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:4px">${icon} ${label} Standings <span style="font-size:9px;color:var(--dim);font-weight:400">(read-only · updates after each score)</span></div>` +
-    `<div style="font-size:11px;color:var(--dim);margin-bottom:10px">Round-robin: ${sport==='basketball'?'every team plays 3 games':'round-robin'} · Rank = Wins, tie broken by score differential · ${played}/${games.length} games final · DQ = win by +${RR_DQ_DIFF} differential</div>` +
+    `<div style="font-size:11px;color:var(--dim);margin-bottom:10px">Round-robin: ${sport==='basketball'?'every team plays 3 games':'round-robin'} · Rank = Wins, tie broken by score differential · ${played}/${games.length} games final · DQ = win by +${RR_DQ_DIFF[sport]||10} differential</div>` +
     `<div style="max-width:640px;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden">
       <table style="width:100%;border-collapse:collapse">
         <thead><tr style="background:rgba(0,0,0,.1)">
