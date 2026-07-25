@@ -1388,6 +1388,17 @@ function computeGroupStandings(grp) {
     const {team1:t1, team2:t2, score1:s1, score2:s2} = g;
     if (!stats[t1] || !stats[t2]) return;
     stats[t1].played++; stats[t2].played++;
+    if (g.dq) {
+      // Forfeit: opponent credited a win (+3 pts, same as a normal win),
+      // DQ'd team penalized -3 pts (worse than a normal loss's 0).
+      const w = g.dq === 'team1' ? t2 : t1;
+      const l = g.dq === 'team1' ? t1 : t2;
+      stats[w].points += 3; stats[w].pts += 3; stats[w].won++;
+      stats[l].points -= 3; stats[l].pts -= 3; stats[l].lost++;
+      stats[w].h2h[l] = {pts:3, winner:w};
+      stats[l].h2h[w] = {pts:0, winner:w};
+      return;
+    }
     stats[t1].gf += s1; stats[t1].ga += s2; stats[t1].gd += (s1-s2);
     stats[t2].gf += s2; stats[t2].ga += s1; stats[t2].gd += (s2-s1);
     if (s1 > s2) {
