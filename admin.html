@@ -1164,52 +1164,51 @@ const SOCCER_SLOTS = [
 ];
 
 // Basketball: 14-team round-robin — 3 games/team (21 games), 20-min games,
-// 30-min slots (20+10 break) 5:00-10:20 PM. No dual-sport overlap (>=20-min rest),
-// no team plays >2 back-to-back. Babbar vs Sher Elite/KLF/McMaster, all after 7 PM.
-// Day 2: TOP-8 knockout (4 QF -> 2 SF -> bronze -> final).
+// 30-min slots (20+10 break) 5:00-10:20 PM. No dual-sport overlap (>=20-min rest).
+// Babbar vs KLF/McMaster/Sher Elite, all after 7 PM. Day 2: TOP-8 knockout.
 const BB_SLOTS = [
   {start:D1(17,0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 1', desc:'Kaurs United FC vs Panjab Lions'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 1', desc:'McMaster University vs Sharomani Akaali Dal'},
     {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 2', desc:'Icemen vs Brockish'},
   ]},
   {start:D1(17,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 3', desc:'McMaster University vs Sharomani Akaali Dal'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 4', desc:'Panjab Lions vs Icemen'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 3', desc:'Sher Elite vs Akaal Fauj'},
   ]},
   {start:D1(18,0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 5', desc:'Sher Elite vs McMaster University'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 6', desc:'Farmers Elite vs Dixie United'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 4', desc:'Kaurs United FC vs Panjab Lions'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 5', desc:'Farmers Elite vs Dixie United'},
   ]},
   {start:D1(18,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 7', desc:'KGA vs Sharomani Akaali Dal'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 8', desc:'Akaal Fauj vs Farmers Elite'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 6', desc:'Brockish vs NPSS'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 7', desc:'Sher Elite vs McMaster University'},
   ]},
   {start:D1(19,0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 9', desc:'Dixie United vs Kaurs United FC'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 10', desc:'NPSS vs Sharomani Akaali Dal'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 8', desc:'Dixie United vs Kaurs United FC'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 9', desc:'Babbar Khalsa Ballers vs KLF'},
   ]},
   {start:D1(19,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 11', desc:'KLF vs Panjab Lions'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 12', desc:'Kaurs United FC vs Farmers Elite'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 10', desc:'NPSS vs Sharomani Akaali Dal'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 11', desc:'KGA vs Brockish'},
   ]},
   {start:D1(20,0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 13', desc:'Babbar Khalsa Ballers vs Sher Elite'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 14', desc:'NPSS vs Akaal Fauj'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 12', desc:'Babbar Khalsa Ballers vs McMaster University'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 13', desc:'KLF vs Panjab Lions'},
   ]},
   {start:D1(20,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 15', desc:'KGA vs Dixie United'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 16', desc:'KLF vs Icemen'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 14', desc:'Kaurs United FC vs Farmers Elite'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 15', desc:'KGA vs Sharomani Akaali Dal'},
   ]},
   {start:D1(21,0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 17', desc:'Babbar Khalsa Ballers vs KLF'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 18', desc:'Brockish vs NPSS'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 16', desc:'KLF vs Icemen'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 17', desc:'NPSS vs Akaal Fauj'},
   ]},
   {start:D1(21,30), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 19', desc:'Babbar Khalsa Ballers vs McMaster University'},
-    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 20', desc:'Sher Elite vs Akaal Fauj'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 18', desc:'KGA vs Dixie United'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 19', desc:'Babbar Khalsa Ballers vs Sher Elite'},
   ]},
   {start:D1(22,0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 21', desc:'KGA vs Brockish'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 20', desc:'Panjab Lions vs Icemen'},
+    {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 21', desc:'Akaal Fauj vs Farmers Elite'},
   ]},
   // Day 2 Knockout — TOP 8 advance
   {start:D2(15,30), rows:[
@@ -1233,22 +1232,22 @@ const BB_SLOTS = [
 ];
 
 // Volleyball: 14-team round-robin — 2 games/team (14 games), 15-min games, Gym 1.
-// Sat 5:00-10:55 PM. Day 2: TOP-4 knockout (2 SF -> bronze -> final).
+// Sat 5:00-10:35 PM. Day 2: TOP-4 knockout (2 SF -> bronze -> final).
 const VB_SLOTS = [
-  {start:D1(17,0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 1', desc:'Chinguacousy Ekta vs Brampton Spikers'}]},
-  {start:D1(17,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 2', desc:'Baba Bidhi Chand Chinna VC vs KLF'}]},
-  {start:D1(17,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 3', desc:'Palm Springs vs Kaurs United FC'}]},
-  {start:D1(18,0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 4', desc:'Baba Bidhi Chand Chinna VC vs Vortex'}]},
-  {start:D1(18,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 5', desc:'Panjab Lions vs Vortex'}]},
-  {start:D1(19,0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 6', desc:'Waymakers vs Brockish'}]},
-  {start:D1(19,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 7', desc:'Chinguacousy Ekta vs Babbar Khalsa Ballers'}]},
-  {start:D1(19,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 8', desc:'Palm Springs vs Dixie United'}]},
-  {start:D1(20,0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 9', desc:'Brockish vs McMaster University'}]},
-  {start:D1(20,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 10', desc:'Sharomani Akaali Dal vs Brampton Spikers'}]},
-  {start:D1(21,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 11', desc:'Dixie United vs Kaurs United FC'}]},
-  {start:D1(22,0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 12', desc:'Panjab Lions vs KLF'}]},
-  {start:D1(22,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 13', desc:'Sharomani Akaali Dal vs Babbar Khalsa Ballers'}]},
-  {start:D1(22,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 14', desc:'Waymakers vs McMaster University'}]},
+  {start:D1(17,0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 1', desc:'Dixie United vs Kaurs United FC'}]},
+  {start:D1(17,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 2', desc:'Panjab Lions vs KLF'}]},
+  {start:D1(17,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 3', desc:'Brockish vs McMaster University'}]},
+  {start:D1(18,0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 4', desc:'Sharomani Akaali Dal vs Babbar Khalsa Ballers'}]},
+  {start:D1(18,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 5', desc:'Baba Bidhi Chand Chinna VC vs KLF'}]},
+  {start:D1(18,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 6', desc:'Sharomani Akaali Dal vs Brampton Spikers'}]},
+  {start:D1(19,0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 7', desc:'Panjab Lions vs Vortex'}]},
+  {start:D1(19,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 8', desc:'Waymakers vs McMaster University'}]},
+  {start:D1(19,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 9', desc:'Palm Springs vs Kaurs United FC'}]},
+  {start:D1(20,0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 10', desc:'Palm Springs vs Dixie United'}]},
+  {start:D1(20,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 11', desc:'Waymakers vs Brockish'}]},
+  {start:D1(20,40), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 12', desc:'Chinguacousy Ekta vs Babbar Khalsa Ballers'}]},
+  {start:D1(21,0), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 13', desc:'Chinguacousy Ekta vs Brampton Spikers'}]},
+  {start:D1(21,20), rows:[{court:'Gym 1 (Volleyball)', phase:'rr', round:'RR Game 14', desc:'Baba Bidhi Chand Chinna VC vs Vortex'}]},
   // Day 2 Knockout — TOP 4 advance
   {start:D2(15,30), rows:[{court:'Gym 1 (Volleyball)', phase:'ko', round:'Semifinal 1', desc:'#1 vs #4', slotMin:20, winnerSlot:'VBSF1W', loserSlot:'VBSF1L'}]},
   {start:D2(15,50), rows:[{court:'Gym 1 (Volleyball)', phase:'ko', round:'Semifinal 2', desc:'#2 vs #3', slotMin:20, winnerSlot:'VBSF2W', loserSlot:'VBSF2L'}]},
@@ -3123,7 +3122,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ===== INIT =====
-const BB_SCHEMA_V = 25;  // v25: fix dup RR Game 21 (KGA vs Brockish; was Brockish vs NPSS)
+const BB_SCHEMA_V = 26;  // v26: official final BB + VB schedules (per updated sync prompt)
 
 function needsRebuild(games, schemaV) {
   const list = Object.values(games || {});
