@@ -1209,7 +1209,7 @@ const BB_SLOTS = [
     {court:'Gym 3 (Basketball)', phase:'rr', round:'RR Game 20', desc:'Sher Elite vs Akaal Fauj'},
   ]},
   {start:D1(22,0), rows:[
-    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 21', desc:'Brockish vs NPSS'},
+    {court:'Gym 2 (Basketball)', phase:'rr', round:'RR Game 21', desc:'KGA vs Brockish'},
   ]},
   // Day 2 Knockout — TOP 8 advance
   {start:D2(15,30), rows:[
@@ -3123,7 +3123,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ===== INIT =====
-const BB_SCHEMA_V = 24;  // v24: BB no team >2 back-to-back (still Babbar after 7 PM, 0 VB overlap)
+const BB_SCHEMA_V = 25;  // v25: fix dup RR Game 21 (KGA vs Brockish; was Brockish vs NPSS)
 
 function needsRebuild(games, schemaV) {
   const list = Object.values(games || {});
