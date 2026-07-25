@@ -453,6 +453,9 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
 .tvh-single-tname{font-size:52px;font-weight:900;text-align:center;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;font-family:'Archivo',sans-serif}
 .tvh-single-score{font-size:110px;font-weight:900;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums}
 .tvh-single-vs{font-size:32px;font-weight:900;color:var(--dim);text-align:center;padding:0 10px}
+.tvh-gameclock{font-family:'Archivo',sans-serif;font-size:96px;font-weight:900;text-align:center;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:2px}
+.tvh-gameclock-end{color:var(--live);animation:pulse 1s infinite}
+@media(min-width:1600px){.tvh-gameclock{font-size:150px}}
 .tvh-single-round{font-size:22px;font-weight:800;letter-spacing:3px;text-align:center;text-transform:uppercase;color:var(--text);font-family:'Archivo',sans-serif;opacity:.7}
 .tvh-single-rosters{display:grid;grid-template-columns:1fr 1fr;gap:20px;overflow:hidden;min-height:0}
 .tvh-single-roster-col{background:rgba(255,255,255,.04);border-radius:10px;padding:14px;overflow:hidden}
@@ -2899,8 +2902,8 @@ function tvHashRenderCourt(screen) {
     const nextUp = remaining && remaining[0];
     const statusClass = isLive ? 'tvh-status-live' : isFinal ? 'tvh-status-done' : 'tvh-status-next';
     // Live game clock — driven by the scorekeeper's timer (synced via Firebase)
-    const es = isLive ? Math.floor(elapsedSec(game)) : 0;
-    const clock = isLive ? ` · ${Math.floor(es/60)}:${String(es%60).padStart(2,'0')} / ${game.slotMin}:00` : '';
+    const rem = isLive ? Math.max(0, Math.ceil((game.slotMin * 60) - elapsedSec(game))) : 0;
+    const clock = isLive ? ` · ${Math.floor(rem/60)}:${String(rem%60).padStart(2,'0')}` : '';
     const statusLabel = isLive ? `🔴 LIVE NOW${clock}` : isFinal ? (game.dq ? '🚫 FORFEIT' : '✅ FINAL') : `⏰ UP NEXT · ${fmtTime(effectiveStart(game))}`;
     body = `
       <div class="tvh-single-status ${statusClass}">
@@ -2917,6 +2920,7 @@ function tvHashRenderCourt(screen) {
           ${showScore ? `<div class="tvh-single-score">${s2}</div>` : ''}
         </div>
       </div>
+      ${isLive ? `<div class="tvh-gameclock${rem<=60?' tvh-gameclock-end':''}">${Math.floor(rem/60)}:${String(rem%60).padStart(2,'0')}</div>` : ''}
       <div class="tvh-single-round" style="color:${sc}">${game.round || ''}</div>
       ${tvHashRosterHtml(game)}
       ${nextUp ? `<div class="tvh-single-next">AFTER THIS: <strong>${nextUp.team1} vs ${nextUp.team2}</strong> · ${nextUp.round || ''} · ${fmtTime(effectiveStart(nextUp))}</div>` : ''}`;
@@ -2940,8 +2944,8 @@ function tvHashCourtCard(court) {
   const nextHtml = nextUp
     ? `<div class="tvh-card-next"><span class="tvh-card-next-lbl">${(isLive || isFinal) ? 'UP NEXT' : 'AFTER THIS'}</span> <strong>${nextUp.team1} vs ${nextUp.team2}</strong> · ${nextUp.round || ''} · ${fmtTime(effectiveStart(nextUp))}</div>`
     : '';
-  const esC = isLive ? Math.floor(elapsedSec(game)) : 0;
-  const badgeLabel = isLive ? `🔴 LIVE ${Math.floor(esC/60)}:${String(esC%60).padStart(2,'0')}` : isFinal ? (game.dq ? '🚫 FORFEIT' : '✅ FINAL') : `⏰ ${fmtTime(effectiveStart(game))}`;
+  const remC = isLive ? Math.max(0, Math.ceil((game.slotMin * 60) - elapsedSec(game))) : 0;
+  const badgeLabel = isLive ? `🔴 ${Math.floor(remC/60)}:${String(remC%60).padStart(2,'0')}` : isFinal ? (game.dq ? '🚫 FORFEIT' : '✅ FINAL') : `⏰ ${fmtTime(effectiveStart(game))}`;
   return `<div class="tvh-card ${isLive ? 'tvh-card-live' : ''}" style="border-top:4px solid ${sc}">
     <div class="tvh-card-top">
       <div class="tvh-court-name">${court}</div>
