@@ -458,6 +458,8 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
   flex:1;min-height:0;display:flex;align-items:center;justify-content:center;
   font-size:clamp(120px,26vw,42vh)}
 .tvh-gameclock-end{color:var(--live);animation:pulse 1s infinite}
+.tvh-half-label{text-align:center;font-size:18px;font-weight:700;letter-spacing:2px;color:var(--dim);text-transform:uppercase;margin-top:4px}
+.tvh-final-clock{text-align:center;font-size:clamp(28px,5vw,52px);font-weight:900;font-family:'Archivo',sans-serif;color:var(--gold);letter-spacing:2px;margin:8px 0}
 /* when a live clock is showing, let it own the leftover vertical space */
 .tvh-single-body.has-clock{display:flex;flex-direction:column;justify-content:center}
 .tvh-single-round{font-size:22px;font-weight:800;letter-spacing:3px;text-align:center;text-transform:uppercase;color:var(--text);font-family:'Archivo',sans-serif;opacity:.7}
@@ -2876,11 +2878,11 @@ function mergeTimersMonotonic(localTimers, remoteTimers) {
     const remote = remoteTimers[id];
     const local  = (localTimers || {})[id];
     if (!local) { out[id] = remote; return; }
-    const bothRunning = local.running && remote && remote.running;
-    const sameDuration = local.duration === (remote && remote.duration);
-    // regression while running (and no deliberate reset) => stale echo, keep ours
-    if (bothRunning && sameDuration && timerElapsed(remote) < timerElapsed(local) - 1.5) {
-      out[id] = local;
+    // LWW: prefer whichever side has a higher updatedAt; fall back to remote (source of truth)
+    const lAt = (local && local.updatedAt) || 0;
+    const rAt = (remote && remote.updatedAt) || 0;
+    if (lAt > rAt && local.running && timerElapsed(local) >= timerElapsed(remote) - 1.5) {
+      out[id] = local;  // local is newer AND has progressed further
     } else {
       out[id] = remote;
     }
@@ -2929,13 +2931,17 @@ window.applyFirebaseState = (data) => {
   state.activeCourts = data.activeCourts !== undefined ? data.activeCourts : null;
   state.soccerGroups = data.soccerGroups || JSON.parse(JSON.stringify(DEFAULT_SOCCER_GROUPS));
   state.simTime      = null; // public view always uses real clock
-  // Ensure VB set fields exist on incoming data
+  // Ensure VB set fields + soccer/basketball matchDuration/halfNumber on incoming data
   Object.values(state.games).forEach(g => {
-    if (g.sport !== 'volleyball') return;
-    if (!g.sets) g.sets = [{s1:0,s2:0,done:false},{s1:0,s2:0,done:false},{s1:0,s2:0,done:false}];
-    if (g.currentSet === undefined) g.currentSet = 0;
-    if (g.setsWon1 === undefined) g.setsWon1 = 0;
-    if (g.setsWon2 === undefined) g.setsWon2 = 0;
+    if (g.sport === 'volleyball') {
+      if (!g.sets) g.sets = [{s1:0,s2:0,done:false},{s1:0,s2:0,done:false},{s1:0,s2:0,done:false}];
+      if (g.currentSet === undefined) g.currentSet = 0;
+      if (g.setsWon1 === undefined) g.setsWon1 = 0;
+      if (g.setsWon2 === undefined) g.setsWon2 = 0;
+    } else {
+      if (g.matchDuration === undefined) g.matchDuration = g.slotMin || 20;
+      if (g.halfNumber === undefined) g.halfNumber = 1;
+    }
   });
   populateKnockoutTeams();
   populateBBKnockoutTeams();
@@ -3124,12 +3130,13 @@ function tvHashRenderCourt(screen) {
     // Half clock: counts down from the scorekeeper's timer duration (10-min
     // halves). At halftime the scorekeeper resets it and it starts again.
     const tmr = (state.timers || {})[game.id];
-    // volleyball has no halves — full 15-min game clock; others run 10-min halves
-    const maxHalf = game.sport === 'volleyball' ? (game.slotMin * 60) : (game.slotMin * 60) / 2;
-    // cap at the half length so a stale full-game timer still shows a 10-min half
-    const halfSec = Math.min((tmr && tmr.duration) ? tmr.duration : maxHalf, maxHalf);
+    const configuredSec = (tmr && tmr.duration)
+      ? tmr.duration
+      : game.sport === 'volleyball'
+        ? (game.slotMin || 25) * 60
+        : ((game.matchDuration || game.slotMin || 20) * 60);
     const elapSec = elapsedSec(game);
-    const rem = isLive ? Math.max(0, Math.ceil(halfSec - elapSec)) : 0;
+    const rem = isLive ? Math.max(0, Math.ceil(configuredSec - elapSec)) : 0;
     const statusLabel = isLive ? '' : isFinal ? (game.dq ? '🚫 FORFEIT' : '✅ FINAL') : `⏰ UP NEXT · ${fmtTime(effectiveStart(game))}`;
     body = `
       ${statusLabel ? `<div class="tvh-single-status ${statusClass}">${statusLabel}</div>` : ''}
@@ -3146,7 +3153,11 @@ function tvHashRenderCourt(screen) {
       </div>`}
       ${isLive ? (isVB
         ? `<div class="tvh-gameclock">↑ ${formatCountUp(elapSec)}</div>`
-        : `<div class="tvh-gameclock${rem<=60?' tvh-gameclock-end':''}">${Math.floor(rem/60)}:${String(rem%60).padStart(2,'0')}</div>`) : ''}
+        : (() => {
+            const remStr = `${Math.floor(rem/60)}:${String(rem%60).padStart(2,'0')}`;
+            const durStr = `${Math.floor(configuredSec/60)}:${String(Math.floor(configuredSec%60)).padStart(2,'0')}`;
+            return `<div class="tvh-gameclock${rem<=60?' tvh-gameclock-end':''}">${remStr} / ${durStr}</div><div class="tvh-half-label">Half ${game.halfNumber||1}</div>`;
+          })()) : ''}
       <div class="tvh-single-round" style="color:${sc}">${game.round || ''}</div>
       ${isLive ? '' : tvHashRosterHtml(game)}
       ${nextUp ? `<div class="tvh-single-next">AFTER THIS: <strong>${nextUp.team1} vs ${nextUp.team2}</strong> · ${nextUp.round || ''} · ${fmtTime(effectiveStart(nextUp))}</div>` : ''}`;
@@ -3174,9 +3185,14 @@ function tvHashCourtCard(court) {
     ? `<div class="tvh-card-next"><span class="tvh-card-next-lbl">${(isLive || isFinal) ? 'UP NEXT' : 'AFTER THIS'}</span> <strong>${nextUp.team1} vs ${nextUp.team2}</strong> · ${nextUp.round || ''} · ${fmtTime(effectiveStart(nextUp))}</div>`
     : '';
   const elC = elapsedSec(game);
-  const remC = isLive ? Math.max(0, Math.ceil((game.slotMin * 60) - elC)) : 0;
+  const tmrC = (state.timers || {})[game.id];
+  const durC = (tmrC && tmrC.duration) ? tmrC.duration : ((game.matchDuration || game.slotMin || 20) * 60);
+  const remC = isLive ? Math.max(0, Math.ceil(durC - elC)) : 0;
+  const durFmtC = `${Math.floor(durC/60)}:${String(Math.floor(durC%60)).padStart(2,'0')}`;
   const badgeLabel = isLive
-    ? (isVB ? `🔴 ↑ ${formatCountUp(elC)}` : `🔴 ${Math.floor(remC/60)}:${String(remC%60).padStart(2,'0')}`)
+    ? (isVB
+        ? `🔴 ↑ ${formatCountUp(elC)}`
+        : `🔴 ${Math.floor(remC/60)}:${String(remC%60).padStart(2,'0')} / ${durFmtC} · H${game.halfNumber||1}`)
     : isFinal ? (game.dq ? '🚫 FORFEIT' : '✅ FINAL') : `⏰ ${fmtTime(effectiveStart(game))}`;
   return `<div class="tvh-card ${isLive ? 'tvh-card-live' : ''}" style="border-top:4px solid ${sc}">
     <div class="tvh-card-top">
@@ -3219,6 +3235,15 @@ function tvHashRenderFinal(screen) {
       <div class="tvh-final-status ${isLive ? 'tvh-status-live' : isDone ? 'tvh-status-done' : 'tvh-status-next'}">
         ${isLive ? '🔴 LIVE NOW' : isDone ? '✅ GAME OVER' : `⏰ ${fmtTime(effectiveStart(g))}`}
       </div>
+      ${isLive && !isVBf ? (() => {
+          const tmrF = (state.timers || {})[g.id];
+          const durF = (tmrF && tmrF.duration) ? tmrF.duration : ((g.matchDuration || g.slotMin || 20) * 60);
+          const elF = elapsedSec(g);
+          const remF = Math.max(0, Math.ceil(durF - elF));
+          const remStr = `${Math.floor(remF/60)}:${String(remF%60).padStart(2,'0')}`;
+          const durStr = `${Math.floor(durF/60)}:${String(Math.floor(durF%60)).padStart(2,'0')}`;
+          return `<div class="tvh-final-clock">${remStr} / ${durStr} · Half ${g.halfNumber||1}</div>`;
+        })() : ''}
       <div class="tvh-final-matchup">
         <div class="tvh-final-team ${t1w ? 'tvh-winner' : ''}">
           <div class="tvh-final-tname">${g.team1}</div>
