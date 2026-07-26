@@ -1506,6 +1506,11 @@ function computeGroupStandings(grp) {
     return 0;
   });
 
+  const ord = (FINAL_SOCCER_ORDER||{})[grp];
+  if (ord && ord.length) {
+    arr.sort((x,y)=>{const a=ord.indexOf(x.team),b=ord.indexOf(y.team);
+      if(a===-1&&b===-1)return 0; if(a===-1)return 1; if(b===-1)return -1; return a-b;});
+  }
   arr.forEach((t, i) => {
     t.rank = i + 1;
     if (i > 0) {
@@ -1773,7 +1778,41 @@ function renderSoccerBracket() {
 const RR_DQ_DIFF = {basketball:10, volleyball:10};
 const RR_ADV = {basketball:8, volleyball:4};  // how many advance to Day 2 knockout
 
+// ═══ LOCKED FINAL DAY-1 STANDINGS ═══
+// Some Day-1 games were deleted from Firebase, so live re-computation is
+// unreliable. These are the official end-of-Day-1 standings and they take
+// precedence for both the standings tables and knockout seeding.
+const FINAL_STANDINGS = {
+  basketball: [
+    ['KGA',3,3,0,61],['KLF',3,3,0,15],['Akaal Fauj',4,3,1,-45],['Sher Elite',3,2,1,36],
+    ['Dixie United',2,2,0,18],['Babbar Khalsa Ballers',3,2,1,10],['Kaurs United FC',3,2,1,7],
+    ['Brockish',3,2,1,-6],['Sharomani Akaali Dal',2,1,1,20],['Icemen',3,0,3,-12],
+    ['McMaster University',2,0,2,-20],['Panjab Lions',3,0,3,-25],['NPSS',3,0,3,-29],
+    ['Farmers Elite',3,0,3,-30]
+  ],
+  volleyball: [
+    ['Waymakers',2,2,0,32],['Palm Springs',2,2,0,25],['Baba Bidhi Chand Chinna VC',2,2,0,22],
+    ['Chinguacousy Ekta',2,2,0,14],['Brampton Spikers',2,1,1,20],['Dixie United',2,1,1,9],
+    ['KLF',2,1,1,-1],['Panjab Lions',2,1,1,-1],['Babbar Khalsa Ballers',2,1,1,-3],
+    ['Brockish',2,1,1,-12],['McMaster University',2,0,2,-20],['Vortex',2,0,2,-20],
+    ['Sharomani Akaali Dal',2,0,2,-31],['Kaurs United FC',2,0,2,-34]
+  ]
+};
+// Soccer group order is locked too (top 2 of each advance).
+const FINAL_SOCCER_ORDER = {
+  A: ['KLF','Humberwood','Brockish','NPSS','Babbar Khalsa Ballers','Sharomani Akaali Dal','Panjab Lions'],
+  B: ['Rebel FC','Mohali fc']
+};
+function lockedRRStandings(sport) {
+  const rows = FINAL_STANDINGS[sport];
+  if (!rows) return null;
+  return rows.map((r,i) => ({ team:r[0], played:r[1], won:r[2], lost:r[3], drawn:0,
+    pf:0, pa:0, diff:r[4], rank:i+1 }));
+}
+
 function computeRRStandings(sport) {
+  const locked = lockedRRStandings(sport);
+  if (locked) return locked;
   const teams = (state.teams && state.teams[sport]) || [];
   const stats = {};
   teams.forEach(t => {
