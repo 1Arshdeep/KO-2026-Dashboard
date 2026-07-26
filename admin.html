@@ -2762,7 +2762,7 @@ const FINAL_STANDINGS = {
 // Soccer group order is locked too (top 2 of each advance).
 const FINAL_SOCCER_ORDER = {
   A: ['KLF','Humberwood','Brockish','NPSS','Babbar Khalsa Ballers','Sharomani Akaali Dal','Panjab Lions'],
-  B: ['Rebel FC','Mohali fc']
+  B: ['Rebel FC','Mohali fc','Punjab Kings','Dixie United','Akaal Fauj','Kaurs United FC','McMaster University']
 };
 function lockedRRStandings(sport) {
   const rows = FINAL_STANDINGS[sport];
@@ -3250,7 +3250,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ===== INIT =====
-const BB_SCHEMA_V = 28;  // v28: seed KO brackets from locked standings (no all-games-final gate)
+const BB_SCHEMA_V = 29;  // v29: lock soccer Group A stats + full Group B order
 
 function needsRebuild(games, schemaV) {
   const list = Object.values(games || {});
@@ -3270,7 +3270,29 @@ function propagateAll() {
 
 // Returns [{team, name, played, won, drawn, lost, gf, ga, gd, points, pts, rank, h2hTbd}]
 // sorted by: Pts → GD → GF → H2H winner → stable sort
+// Full locked Group-A rows (P,W,D,L,GF,GA,GD,Pts). Group B keeps its stored
+// stats but is forced into the official rank order below.
+const SOCCER_FINAL_STANDINGS = {
+  A: [
+    ['KLF',6,5,0,1,18,8,10,15],
+    ['Humberwood',6,4,2,0,24,7,17,14],
+    ['Brockish',6,4,1,1,19,6,13,13],
+    ['NPSS',6,3,1,2,14,12,2,10],
+    ['Babbar Khalsa Ballers',6,2,0,4,14,23,-9,6],
+    ['Sharomani Akaali Dal',6,1,0,5,5,36,-31,3],
+    ['Panjab Lions',6,0,0,6,0,2,-2,-15]
+  ]
+};
+function lockedGroupStandings(grp) {
+  const rows = (typeof SOCCER_FINAL_STANDINGS !== 'undefined') && SOCCER_FINAL_STANDINGS[grp];
+  if (!rows) return null;
+  return rows.map((r,i) => ({ team:r[0], name:r[0], played:r[1], won:r[2], drawn:r[3], lost:r[4],
+    gf:r[5], ga:r[6], gd:r[7], points:r[8], pts:r[8], h2h:{}, rank:i+1, h2hTbd:false }));
+}
+
 function computeGroupStandings(grp) {
+  const lockedG = lockedGroupStandings(grp);
+  if (lockedG) return lockedG;
   const teams = (state.soccerGroups || {})[grp] || [];
   const stats = {};
   teams.forEach(t => {
@@ -3390,8 +3412,11 @@ function populateKnockoutTeams() {
     const groupGames = Object.values(state.games).filter(g =>
       g.sport === 'soccer' && g.phase === 'group' && g.group === grp
     );
-    if (!groupGames.length) return;
-    if (groupGames.filter(g => g.status === 'final').length < groupGames.length) return;
+    const socLocked = (typeof SOCCER_FINAL_STANDINGS !== 'undefined') || (typeof FINAL_SOCCER_ORDER !== 'undefined');
+    if (!socLocked) {
+      if (!groupGames.length) return;
+      if (groupGames.filter(g => g.status === 'final').length < groupGames.length) return;
+    }
     const s = computeGroupStandings(grp);
     resolved[grp] = { p1: (s[0]||{}).team, p2: (s[1]||{}).team };
   });
