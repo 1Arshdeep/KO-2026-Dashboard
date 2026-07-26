@@ -2044,17 +2044,42 @@ function confirmCustomDuration() {
   setMatchDuration(v);
 }
 
+// A set's winner: an explicit award (w) wins, otherwise the higher score.
+function vbSetWinnerSide(st) {
+  if (!st) return null;
+  if (st.w === 'team1' || st.w === 'team2') return st.w;
+  if ((st.s1 || 0) > (st.s2 || 0)) return 'team1';
+  if ((st.s2 || 0) > (st.s1 || 0)) return 'team2';
+  return null;
+}
+
+// Always derive setsWon from the sets themselves so the tally can't drift out
+// of sync with the set scores (incrementing by hand did drift).
+function recomputeSetsWon(g) {
+  let w1 = 0, w2 = 0;
+  (g.sets || []).forEach(st => {
+    if (!st || !st.done) return;
+    const side = vbSetWinnerSide(st);
+    if (side === 'team1') w1++; else if (side === 'team2') w2++;
+  });
+  g.setsWon1 = w1;
+  g.setsWon2 = w2;
+}
+
 // Best-of-3 set tabs. Shows each set's result, marks the one in progress, and
 // lets the scorekeeper jump back to a set to correct it.
 function vbSetTabsHtml(g, gameId) {
   const cur = g.currentSet || 0;
   return [0, 1, 2].map(i => {
     const st = (g.sets || [])[i] || {};
-    const label = st.done ? `${st.s1}\u2013${st.s2}`
-                : (i === cur ? `${g.score1}\u2013${g.score2}` : '\u2013');
+    const hasScore = st.done || (st.s1 || 0) > 0 || (st.s2 || 0) > 0;
+    const label = (i === cur) ? `${g.score1}\u2013${g.score2}`
+                : hasScore ? `${st.s1 || 0}\u2013${st.s2 || 0}` : '\u2013';
+    const wSide = st.done ? vbSetWinnerSide(st) : null;
+    const wMark = wSide ? ` \u2713 ${(wSide === 'team1' ? g.team1 : g.team2).slice(0, 10)}` : '';
     const cls = `vb-tab${i === cur ? ' active' : ''}${st.done ? ' done' : ''}`;
     return `<button class="${cls}" onclick="selectSet(${i},'${gameId}')">` +
-           `<span class="vb-tab-n">SET ${i + 1}</span>` +
+           `<span class="vb-tab-n">SET ${i + 1}${wMark}</span>` +
            `<span class="vb-tab-s">${label}</span></button>`;
   }).join('');
 }
@@ -2070,11 +2095,22 @@ function selectSet(idx, gameId) {
   const cur = g.currentSet || 0;
   if (cur === idx) return;
   const leaving = g.sets[cur] || {};
-  g.sets[cur] = { s1: g.score1, s2: g.score2, done: !!leaving.done };
+  // Moving off a set that has a score completes it and awards it to the higher
+  // score. Without this the set stays "not done", so the TV shows nothing for
+  // it and the set tally never moves.
+  const played = (g.score1 || 0) > 0 || (g.score2 || 0) > 0;
+  const closed = { s1: g.score1, s2: g.score2, done: !!leaving.done || played };
+  if (leaving.w) closed.w = leaving.w;
+  if (closed.done && !closed.w) {
+    const side = vbSetWinnerSide(closed);
+    if (side) closed.w = side;
+  }
+  g.sets[cur] = closed;
   const target = g.sets[idx] || { s1: 0, s2: 0, done: false };
   g.currentSet = idx;
   g.score1 = target.s1 || 0;
   g.score2 = target.s2 || 0;
+  recomputeSetsWon(g);
   g.ts = Date.now();
   saveState();
   renderScoreCard(); renderStatus(); renderGameMeta(); renderLiveControl();
@@ -2088,9 +2124,8 @@ function endSet(side, gameId) {
   const tName = side === 'team1' ? g.team1 : g.team2;
   showConfirm(`End Set ${curSet+1} and award to ${tName}?\nScore: ${g.score1} – ${g.score2}`, () => {
     if (!g.sets) g.sets = [{s1:0,s2:0,done:false},{s1:0,s2:0,done:false},{s1:0,s2:0,done:false}];
-    g.sets[curSet] = { s1: g.score1, s2: g.score2, done: true };
-    if (side === 'team1') g.setsWon1 = (g.setsWon1||0) + 1;
-    else g.setsWon2 = (g.setsWon2||0) + 1;
+    g.sets[curSet] = { s1: g.score1, s2: g.score2, done: true, w: side };
+    recomputeSetsWon(g);
     g.ts = Date.now();
     if ((g.setsWon1||0) >= 2 || (g.setsWon2||0) >= 2) {
       g.status = 'final';
@@ -2121,12 +2156,10 @@ function undoLastSet(gameId) {
     const set = (g.sets || [])[prev];
     if (!set || !set.done) return;
     if (g.status === 'final') { g.status = 'live'; g.winner = null; g.loser = null; }
-    const prevWinner = set.s1 > set.s2 ? 'team1' : 'team2';
-    if (prevWinner === 'team1') g.setsWon1 = Math.max(0, (g.setsWon1||0) - 1);
-    else g.setsWon2 = Math.max(0, (g.setsWon2||0) - 1);
     g.score1 = set.s1; g.score2 = set.s2;
     g.sets[prev] = {s1:0, s2:0, done:false};
     g.currentSet = prev;
+    recomputeSetsWon(g);
     g.ts = Date.now();
     saveState(); renderScoreCard(); renderStatus(); buildGameSelect(); renderGameMeta();
     renderLiveControl();

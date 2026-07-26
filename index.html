@@ -630,7 +630,8 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
 .tvh-vb-sset { flex:0 0 auto; min-width:clamp(46px,5vw,112px); text-align:center;
   font-size:clamp(26px,3.6vw,84px); font-weight:700; color:rgba(255,255,255,.55);
   padding:2px 6px; border-radius:8px; font-variant-numeric:tabular-nums; line-height:1.05; }
-.tvh-vb-sset-won { color:#fff; font-weight:900; }
+.tvh-vb-sset-won { color:#0a0e1a; font-weight:900; background:var(--gold,#d4a017);
+  box-shadow:0 0 0 2px rgba(212,160,23,.45); }
 .tvh-vb-sset-live { color:#4cbb7f; }
 .tvh-vb-sset-empty { opacity:.25; }
 .tvh-vb-tname { flex:1 1 auto; min-width:0; font-size:clamp(24px,3.4vw,78px); font-weight:900;
@@ -1218,16 +1219,27 @@ function renderVBTVSetScore(g) {
   const sw2 = g.setsWon2 || 0;
   const isLv = (isLiveByTime(g) && g.status !== 'final') || g.status === 'live';
   const isDone = g.status === 'final';
+  // A set's winner: explicit award (w) first, otherwise the higher score.
+  const winnerSide = set => {
+    if (!set) return null;
+    if (set.w === 'team1' || set.w === 'team2') return set.w;
+    if ((set.s1||0) > (set.s2||0)) return 'team1';
+    if ((set.s2||0) > (set.s1||0)) return 'team2';
+    return null;
+  };
   const setCell = (i, team) => {
     const set = sets[i];
     const liveVal = team === 1 ? g.score1 : g.score2;
-    if (set && set.done) {
-      const my = team === 1 ? set.s1 : set.s2;
-      const their = team === 1 ? set.s2 : set.s1;
-      return `<span class="tvh-vb-sset${my>their?' tvh-vb-sset-won':''}">${my}</span>`;
-    }
     if (i === curSet && (isLv || isDone)) {
       return `<span class="tvh-vb-sset tvh-vb-sset-live">${liveVal}</span>`;
+    }
+    // show any set that has been played, not just ones explicitly ended -
+        // switching sets in admin used to make the previous score vanish here
+    const played = set && (set.done || (set.s1||0) > 0 || (set.s2||0) > 0);
+    if (played) {
+      const my = team === 1 ? set.s1 : set.s2;
+      const won = winnerSide(set) === (team === 1 ? 'team1' : 'team2');
+      return `<span class="tvh-vb-sset${won?' tvh-vb-sset-won':''}">${my||0}</span>`;
     }
     return `<span class="tvh-vb-sset tvh-vb-sset-empty">–</span>`;
   };
