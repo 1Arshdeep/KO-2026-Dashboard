@@ -764,6 +764,16 @@ select:focus, input[type="text"]:focus {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+/* Volleyball set controls */
+#vb-set-card { display:none; margin-top:0; }
+.vb-set-rows { display:flex; flex-direction:column; gap:4px; margin-bottom:12px; }
+.vb-set-row { padding:6px 10px; border-radius:6px; font-size:12px; color:var(--dim); background:var(--surface); border:1px solid var(--border); }
+.vb-set-row.vb-set-active { color:var(--fg); border-color:var(--gold); background:rgba(212,160,23,.07); font-weight:600; }
+.vb-set-row.vb-set-done { color:var(--fg); text-decoration:none; }
+.vb-btn-row { display:flex; gap:7px; flex-wrap:wrap; }
+.vb-btn-row button { flex:1; min-width:120px; padding:9px 8px; font-size:12px; font-weight:600; background:var(--surface); border:1px solid var(--border); border-radius:7px; color:var(--fg); cursor:pointer; }
+.vb-btn-row button:hover { background:rgba(212,160,23,.12); border-color:var(--gold); }
+.vb-btn-undo { color:var(--dim) !important; font-size:11px !important; }
 </style>
 <!-- Khalsa Olympics brand: fonts, icons, tokens (visual restyle only) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -893,6 +903,9 @@ select:focus, input[type="text"]:focus {
       </div>
     </div>
   </div>
+
+  <!-- VOLLEYBALL SET TRACKING -->
+  <div class="card" id="vb-set-card"></div>
 
   <!-- EVENT LOG -->
   <div class="card" id="event-log-card">
@@ -1532,6 +1545,14 @@ function normalizeTeamNames(s) {
   }
 }
 
+function ensureVBFields(g) {
+  if (!g || g.sport !== 'volleyball') return;
+  if (!g.sets) g.sets = [{s1:0,s2:0,done:false},{s1:0,s2:0,done:false},{s1:0,s2:0,done:false}];
+  if (g.currentSet === undefined) g.currentSet = 0;
+  if (g.setsWon1 === undefined) g.setsWon1 = 0;
+  if (g.setsWon2 === undefined) g.setsWon2 = 0;
+}
+
 function ensureStateFields(s) {
   if (!s) return;
   migrateCourtNames(s);
@@ -1543,6 +1564,7 @@ function ensureStateFields(s) {
   // Migrate any timers saved with old 15-min duration to 20-min
   Object.entries(s.timers).forEach(([id,tm]) => { if (!tm) return; if (tm.duration === 900) tm.duration = 1200; const g = s.games && s.games[id]; const mins = ((g && g.slotMin) ? g.slotMin : 20); const full = (g && g.sport === 'volleyball') ? Math.round(mins*60) : Math.round(mins*60/2); if (tm.duration > full) tm.duration = full; });
   if (!s.soccerGroups) s.soccerGroups = JSON.parse(JSON.stringify(DEFAULT_SOCCER_GROUPS));
+  if (s.games) Object.values(s.games).forEach(ensureVBFields);
 }
 
 window.addEventListener('storage', e => {
@@ -1784,6 +1806,82 @@ function renderScoreCard() {
   document.getElementById('score2').textContent = g ? g.score2 : 0;
   document.getElementById('dq-name1').textContent = g ? g.team1 : 'Team 1';
   document.getElementById('dq-name2').textContent = g ? g.team2 : 'Team 2';
+  renderVBControls();
+}
+
+function renderVBControls() {
+  const el = document.getElementById('vb-set-card');
+  if (!el) return;
+  const g = currentGameId ? state.games[currentGameId] : null;
+  if (!g || g.sport !== 'volleyball') { el.style.display = 'none'; return; }
+  el.style.display = '';
+  const sets = g.sets || [];
+  const curSet = g.currentSet || 0;
+  const isDone = g.status === 'final';
+  const setRows = [0,1,2].map(i => {
+    const set = sets[i];
+    const isActive = i === curSet && !isDone;
+    const isSetDone = set && set.done;
+    let label = '';
+    if (isSetDone) label = ` · ${set.s1} – ${set.s2}`;
+    else if (isActive) label = ` · ${g.score1} – ${g.score2} · in progress`;
+    return `<div class="vb-set-row${isActive?' vb-set-active':''}${isSetDone?' vb-set-done':''}">SET ${i+1}${label}</div>`;
+  }).join('');
+  const controls = isDone ? '' : `<div class="vb-btn-row">
+    <button onclick="endSet('team1')">✓ End Set for<br><strong>${g.team1}</strong></button>
+    <button onclick="endSet('team2')">✓ End Set for<br><strong>${g.team2}</strong></button>
+    ${curSet > 0 ? `<button class="vb-btn-undo" onclick="undoLastSet()">↺ Undo Set ${curSet}</button>` : ''}
+  </div>`;
+  el.innerHTML = `<div class="card-title">🏐 Volleyball Sets (Best of 3) · ${g.setsWon1||0}–${g.setsWon2||0}</div>
+    <div class="vb-set-rows">${setRows}</div>${controls}`;
+}
+
+function endSet(side) {
+  const g = state.games[currentGameId];
+  if (!g || g.sport !== 'volleyball' || g.status === 'final') return;
+  const curSet = g.currentSet || 0;
+  const tName = side === 'team1' ? g.team1 : g.team2;
+  showConfirm(`End Set ${curSet+1} and award to ${tName}?\nScore: ${g.score1} – ${g.score2}`, () => {
+    if (!g.sets) g.sets = [{s1:0,s2:0,done:false},{s1:0,s2:0,done:false},{s1:0,s2:0,done:false}];
+    g.sets[curSet] = { s1: g.score1, s2: g.score2, done: true };
+    if (side === 'team1') g.setsWon1 = (g.setsWon1||0) + 1;
+    else g.setsWon2 = (g.setsWon2||0) + 1;
+    g.ts = Date.now();
+    if ((g.setsWon1||0) >= 2 || (g.setsWon2||0) >= 2) {
+      g.status = 'final';
+      g.winner = (g.setsWon1||0) >= 2 ? g.team1 : g.team2;
+      g.loser  = (g.setsWon1||0) >= 2 ? g.team2 : g.team1;
+      if (state.timers[currentGameId]) pauseTimer(currentGameId);
+      propagateResult(currentGameId);
+      populateKnockoutTeams(); populateBBKnockoutTeams(); populateVBKnockoutTeams();
+    } else {
+      g.currentSet = curSet + 1;
+      g.score1 = 0;
+      g.score2 = 0;
+    }
+    saveState(); renderScoreCard(); renderStatus(); buildGameSelect(); renderGameMeta();
+  });
+}
+
+function undoLastSet() {
+  const g = state.games[currentGameId];
+  if (!g || g.sport !== 'volleyball') return;
+  const curSet = g.currentSet || 0;
+  if (curSet === 0) return;
+  showConfirm(`Undo Set ${curSet} and revert to that set's score?`, () => {
+    const prev = curSet - 1;
+    const set = (g.sets || [])[prev];
+    if (!set || !set.done) return;
+    if (g.status === 'final') { g.status = 'live'; g.winner = null; g.loser = null; }
+    const prevWinner = set.s1 > set.s2 ? 'team1' : 'team2';
+    if (prevWinner === 'team1') g.setsWon1 = Math.max(0, (g.setsWon1||0) - 1);
+    else g.setsWon2 = Math.max(0, (g.setsWon2||0) - 1);
+    g.score1 = set.s1; g.score2 = set.s2;
+    g.sets[prev] = {s1:0, s2:0, done:false};
+    g.currentSet = prev;
+    g.ts = Date.now();
+    saveState(); renderScoreCard(); renderStatus(); buildGameSelect(); renderGameMeta();
+  });
 }
 
 function renderStatus() {
@@ -2057,6 +2155,29 @@ document.querySelectorAll('.btn-status').forEach(btn => {
     const g = state.games[currentGameId];
     if (!g) return;
     const newStatus = btn.dataset.status;
+    // Volleyball pre-finalize guard: warn if neither team has 2 sets yet
+    if (newStatus === 'final' && g.sport === 'volleyball' && !g.dq) {
+      const sw1 = g.setsWon1||0, sw2 = g.setsWon2||0;
+      if (sw1 < 2 && sw2 < 2) {
+        showConfirm(`Volleyball match: sets are ${sw1}–${sw2} (neither team has 2 yet). Finalize anyway?`, () => {
+          g.status = 'final'; g.ts = Date.now();
+          if (state.timers[currentGameId]) pauseTimer(currentGameId);
+          if (!g.dq) {
+            const pts1 = (g.sets||[]).filter(s=>s.done).reduce((a,s)=>a+s.s1,0) + g.score1;
+            const pts2 = (g.sets||[]).filter(s=>s.done).reduce((a,s)=>a+s.s2,0) + g.score2;
+            if (sw1 > sw2) { g.winner = g.team1; g.loser = g.team2; }
+            else if (sw2 > sw1) { g.winner = g.team2; g.loser = g.team1; }
+            else if (pts1 > pts2) { g.winner = g.team1; g.loser = g.team2; }
+            else if (pts2 > pts1) { g.winner = g.team2; g.loser = g.team1; }
+            else { g.winner = null; g.loser = null; }
+          }
+          propagateResult(currentGameId);
+          populateKnockoutTeams(); populateBBKnockoutTeams(); populateVBKnockoutTeams();
+          saveState(); renderStatus(); buildGameSelect(); renderGameMeta(); tickTimer();
+        });
+        return;
+      }
+    }
     g.status = newStatus;
     g.ts = Date.now();
 
@@ -2071,9 +2192,23 @@ document.querySelectorAll('.btn-status').forEach(btn => {
       }
       // Determine winner/loser
       if (!g.dq) {
-        if (g.score1 > g.score2) { g.winner = g.team1; g.loser = g.team2; }
-        else if (g.score2 > g.score1) { g.winner = g.team2; g.loser = g.team1; }
-        else { g.winner = null; g.loser = null; }
+        if (g.sport === 'volleyball') {
+          const sw1 = g.setsWon1||0, sw2 = g.setsWon2||0;
+          if (sw1 > sw2) { g.winner = g.team1; g.loser = g.team2; }
+          else if (sw2 > sw1) { g.winner = g.team2; g.loser = g.team1; }
+          else {
+            // Tie in sets — fall back to total points
+            const pts1 = (g.sets||[]).filter(s=>s.done).reduce((a,s)=>a+s.s1,0) + g.score1;
+            const pts2 = (g.sets||[]).filter(s=>s.done).reduce((a,s)=>a+s.s2,0) + g.score2;
+            if (pts1 > pts2) { g.winner = g.team1; g.loser = g.team2; }
+            else if (pts2 > pts1) { g.winner = g.team2; g.loser = g.team1; }
+            else { g.winner = null; g.loser = null; }
+          }
+        } else {
+          if (g.score1 > g.score2) { g.winner = g.team1; g.loser = g.team2; }
+          else if (g.score2 > g.score1) { g.winner = g.team2; g.loser = g.team1; }
+          else { g.winner = null; g.loser = null; }
+        }
       }
       propagateResult(currentGameId);
       populateKnockoutTeams();
@@ -2113,6 +2248,12 @@ function applyDQ(g, side) {
   g.loser  = side === 'team1' ? g.team1 : g.team2;
   g.status = 'final';
   g.ts = Date.now();
+  if (g.sport === 'volleyball') {
+    if (g.setsWon1 === undefined) g.setsWon1 = 0;
+    if (g.setsWon2 === undefined) g.setsWon2 = 0;
+    if (side === 'team1') g.setsWon2 = Math.max(g.setsWon2, 1);
+    else g.setsWon1 = Math.max(g.setsWon1, 1);
+  }
   // Forfeits carry no scoreline — the standings math (RR ±10 differential,
   // soccer group ±3 points) is applied inside computeRRStandings /
   // computeGroupStandings. Clear any partially-entered score so a stale

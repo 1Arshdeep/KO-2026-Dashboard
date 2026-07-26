@@ -602,6 +602,26 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
 .ag-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:9px;vertical-align:middle}
 .ag-loc{color:var(--dim);font-size:13px}
 @media(max-width:640px){.agenda-tbl{font-size:12px}.agenda-tbl th,.agenda-tbl td{padding:8px 9px}}
+/* Volleyball set score display */
+.vb-score-wrap { display:flex; flex-direction:column; gap:2px; font-size:11px; }
+.vb-sr { display:flex; align-items:center; gap:4px; }
+.vb-sw { display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%; font-size:10px; font-weight:700; background:var(--border); color:var(--dim); flex-shrink:0; }
+.vb-sw-won { background:var(--gold); color:#000; }
+.vb-sset { display:inline-block; min-width:22px; text-align:center; font-size:10px; color:var(--dim); padding:1px 3px; border-radius:3px; }
+.vb-sset-won { font-weight:700; color:var(--fg); }
+.vb-sset-live { color:#4cbb7f; font-weight:600; }
+.vb-sset-live .vb-live-dot { font-size:7px; margin-right:2px; animation:soc-blink 1s ease-in-out infinite; }
+.vb-sset-empty { color:var(--dim); opacity:.4; }
+/* TV large set score */
+.tvh-vb-sets { display:flex; flex-direction:column; gap:8px; margin:12px 0; }
+.tvh-vb-row { display:flex; align-items:center; gap:10px; font-size:24px; }
+.tvh-vb-sw { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:800; background:rgba(255,255,255,.1); }
+.tvh-vb-sw-won { background:var(--gold,#d4a017); color:#000; }
+.tvh-vb-sset { min-width:44px; text-align:center; font-size:20px; font-weight:600; color:rgba(255,255,255,.55); padding:4px 6px; border-radius:5px; }
+.tvh-vb-sset-won { color:#fff; font-weight:800; }
+.tvh-vb-sset-live { color:#4cbb7f; }
+.tvh-vb-sset-empty { opacity:.25; }
+.tvh-vb-tname { flex:1; font-size:28px; font-weight:700; }
 </style>
 <!-- Khalsa Olympics brand: fonts, icons, tokens (visual restyle only) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -664,6 +684,7 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
     <div class="tvp-section-lbl">🏆 Finals</div>
     <div class="tvp-grid">
       <a class="tvp-link" href="#tv/finals-soccer" onclick="closeTVPicker()"><i class="fa-solid fa-trophy"></i> Soccer Grand Final</a>
+      <a class="tvp-link" href="#tv/finals-volleyball" onclick="closeTVPicker()"><i class="fa-solid fa-volleyball"></i> Volleyball Final</a>
     </div>
   </div>
 </div>
@@ -1101,13 +1122,15 @@ function renderBanner() {
   banner.classList.remove('empty');
 
   const cards = liveGames.map(g => {
-    const t1lead = g.score1 >= g.score2;
+    const t1lead = g.sport==='volleyball' ? (g.setsWon1||0) >= (g.setsWon2||0) : g.score1 >= g.score2;
     const elap = g.status === 'live' ? elapsedMin(g) : null;
     const eSec = g.status === 'live' ? elapsedSec(g) : null;
     const durSec = (g.slotMin || 25) * 60;
     const remSec = eSec !== null ? Math.max(0, durSec - eSec) : null;
     const remFmt = remSec !== null
-      ? `${Math.floor(remSec/60)}:${String(Math.floor(remSec%60)).padStart(2,'0')}`
+      ? (g.sport === 'volleyball'
+         ? `↑ ${formatCountUp(eSec)}`
+         : `${Math.floor(remSec/60)}:${String(Math.floor(remSec%60)).padStart(2,'0')}`)
       : null;
     const nextGame = Object.values(state.games)
       .filter(x => x.court === g.court && x.status === 'upcoming' && effectiveStart(x) > effectiveStart(g))
@@ -1116,25 +1139,90 @@ function renderBanner() {
       <div class="lb-card-sport">
         <span>${SPORT_ICON[g.sport]} ${g.sport.toUpperCase()} · ${g.court} · ${g.round}</span>
         ${elap !== null
-          ? `<span class="elapsed" style="display:flex;flex-direction:column;align-items:flex-end;gap:1px">
-               <span>${elap}'</span>
-               <span style="font-size:9px;color:#4cbb7f;letter-spacing:0;animation:none">${remFmt} left</span>
-             </span>`
+          ? (g.sport === 'volleyball'
+            ? `<span class="elapsed" style="display:flex;flex-direction:column;align-items:flex-end;gap:1px">
+                 <span>${remFmt}</span>
+               </span>`
+            : `<span class="elapsed" style="display:flex;flex-direction:column;align-items:flex-end;gap:1px">
+                 <span>${elap}'</span>
+                 <span style="font-size:9px;color:#4cbb7f;letter-spacing:0;animation:none">${remFmt} left</span>
+               </span>`)
           : '<span class="elapsed">LIVE</span>'}
       </div>
       <div class="lb-team ${t1lead?'leader':''}">
         <span class="lb-team-name">${g.team1}${g.dq==='team1'?' 🚫':''}</span>
-        <span class="lb-team-score">${g.score1}</span>
+        <span class="lb-team-score">${g.sport==='volleyball'?(g.setsWon1||0):g.score1}</span>
       </div>
       <div class="lb-team ${!t1lead?'leader':''}">
         <span class="lb-team-name">${g.team2}${g.dq==='team2'?' 🚫':''}</span>
-        <span class="lb-team-score">${g.score2}</span>
+        <span class="lb-team-score">${g.sport==='volleyball'?(g.setsWon2||0):g.score2}</span>
       </div>
       ${nextGame ? `<div class="lb-card-next">Next: ${nextGame.team1} vs ${nextGame.team2} @ ${fmtTime(effectiveStart(nextGame))}</div>` : ''}
     </div>`;
   }).join('');
 
   body.innerHTML = `<div class="lb-scroll">${cards}</div>`;
+}
+
+function formatCountUp(sec) {
+  const s = Math.max(0, Math.floor(sec));
+  return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+}
+
+function renderVolleyballSetScore(g) {
+  const sets = g.sets || [];
+  const curSet = g.currentSet || 0;
+  const sw1 = g.setsWon1 || 0;
+  const sw2 = g.setsWon2 || 0;
+  const isLv = (isLiveByTime(g) && g.status !== 'final') || g.status === 'live';
+  const isDone = g.status === 'final';
+  const setCell = (i, team) => {
+    const set = sets[i];
+    const liveVal = team === 1 ? g.score1 : g.score2;
+    if (set && set.done) {
+      const my = team === 1 ? set.s1 : set.s2;
+      const their = team === 1 ? set.s2 : set.s1;
+      return `<span class="vb-sset${my > their ? ' vb-sset-won' : ''}">${my}</span>`;
+    }
+    if (i === curSet && (isLv || isDone)) {
+      const dot = isLv ? '<span class="vb-live-dot">●</span>' : '';
+      return `<span class="vb-sset vb-sset-live">${dot}${liveVal}</span>`;
+    }
+    return `<span class="vb-sset vb-sset-empty">–</span>`;
+  };
+  return `<div class="vb-score-wrap">
+    <div class="vb-sr"><span class="vb-sw${sw1>=2?' vb-sw-won':''}">${sw1}</span>${[0,1,2].map(i=>setCell(i,1)).join('')}</div>
+    <div class="vb-sr"><span class="vb-sw${sw2>=2?' vb-sw-won':''}">${sw2}</span>${[0,1,2].map(i=>setCell(i,2)).join('')}</div>
+  </div>`;
+}
+
+function renderVBTVSetScore(g) {
+  // Large-format version for TV screens
+  const sets = g.sets || [];
+  const curSet = g.currentSet || 0;
+  const sw1 = g.setsWon1 || 0;
+  const sw2 = g.setsWon2 || 0;
+  const isLv = (isLiveByTime(g) && g.status !== 'final') || g.status === 'live';
+  const isDone = g.status === 'final';
+  const setCell = (i, team) => {
+    const set = sets[i];
+    const liveVal = team === 1 ? g.score1 : g.score2;
+    if (set && set.done) {
+      const my = team === 1 ? set.s1 : set.s2;
+      const their = team === 1 ? set.s2 : set.s1;
+      return `<span class="tvh-vb-sset${my>their?' tvh-vb-sset-won':''}">${my}</span>`;
+    }
+    if (i === curSet && (isLv || isDone)) {
+      return `<span class="tvh-vb-sset tvh-vb-sset-live">${liveVal}</span>`;
+    }
+    return `<span class="tvh-vb-sset tvh-vb-sset-empty">–</span>`;
+  };
+  const row = (team, name) => `<div class="tvh-vb-row">
+    <div class="tvh-vb-tname">${name}</div>
+    <div class="tvh-vb-sw${(team===1?sw1:sw2)>=2?' tvh-vb-sw-won':''}">${team===1?sw1:sw2}</div>
+    ${[0,1,2].map(i=>setCell(i,team)).join('')}
+  </div>`;
+  return `<div class="tvh-vb-sets">${row(1,g.team1)}${row(2,g.team2)}</div>`;
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -2224,12 +2312,12 @@ function matchupCard(g) {
     <div class="tr ${t1w?'won':''} ${!t1w&&isDone?'lost':''} ${g.dq==='team1'?'dq-row':''}">
       <span class="tr-seed"></span>
       <span class="tr-name ${isTbdToken(g.team1)?'tbd':''}">${g.team1}${g.dq==='team1'?' 🚫':''}</span>
-      <span class="tr-score">${isDone||isLv?g.score1:''}</span>
+      <span class="tr-score">${isDone||isLv?(g.sport==='volleyball'?(g.setsWon1||0):g.score1):''}</span>
     </div>
     <div class="tr ${t2w?'won':''} ${!t2w&&isDone?'lost':''} ${g.dq==='team2'?'dq-row':''}">
       <span class="tr-seed"></span>
       <span class="tr-name ${isTbdToken(g.team2)?'tbd':''}">${g.team2}${g.dq==='team2'?' 🚫':''}</span>
-      <span class="tr-score">${isDone||isLv?g.score2:''}</span>
+      <span class="tr-score">${isDone||isLv?(g.sport==='volleyball'?(g.setsWon2||0):g.score2):''}</span>
     </div>
   </div>`;
 }
@@ -2841,6 +2929,14 @@ window.applyFirebaseState = (data) => {
   state.activeCourts = data.activeCourts !== undefined ? data.activeCourts : null;
   state.soccerGroups = data.soccerGroups || JSON.parse(JSON.stringify(DEFAULT_SOCCER_GROUPS));
   state.simTime      = null; // public view always uses real clock
+  // Ensure VB set fields exist on incoming data
+  Object.values(state.games).forEach(g => {
+    if (g.sport !== 'volleyball') return;
+    if (!g.sets) g.sets = [{s1:0,s2:0,done:false},{s1:0,s2:0,done:false},{s1:0,s2:0,done:false}];
+    if (g.currentSet === undefined) g.currentSet = 0;
+    if (g.setsWon1 === undefined) g.setsWon1 = 0;
+    if (g.setsWon2 === undefined) g.setsWon2 = 0;
+  });
   populateKnockoutTeams();
   populateBBKnockoutTeams();
   populateVBKnockoutTeams();
@@ -2913,6 +3009,7 @@ const TV_HASH_MAP = {
   'gallery-gyms':      {type:'gallery',courts:['Gym 1 (Volleyball)','Gym 2 (Basketball)','Gym 3 (Basketball)'],cols:3,label:'🏟 ALL GYMS'},
   'gallery-semis':     {type:'gallery',courts:['Soccer Field A','Soccer Field B'],cols:2,label:'🔥 SEMIFINALS'},
   'finals-soccer':     {type:'final',  court:'Soccer Field A',     sport:'soccer',     label:'⚽ SOCCER GRAND FINAL'},
+  'finals-volleyball': {type:'final',  court:'Gym 1 (Volleyball)', sport:'volleyball', label:'🏐 VOLLEYBALL GRAND FINAL'},
   'fixtures-soccer':     {type:'fixtures-soccer',     label:'⚽ Soccer Fixtures'},
   'fixtures-basketball': {type:'fixtures-basketball', label:'🏀 Basketball Fixtures'},
   'standings-soccer':  {type:'standings-soccer', label:'⚽ Soccer Standings'},
@@ -3017,7 +3114,9 @@ function tvHashRenderCourt(screen) {
   } else {
     const {game, isLive, isFinal, remaining} = info;
     const showScore = isLive || isFinal;
-    const s1 = showScore ? game.score1 : '', s2 = showScore ? game.score2 : '';
+    const isVB = game.sport === 'volleyball';
+    const s1 = showScore ? (isVB ? (game.setsWon1||0) : game.score1) : '';
+    const s2 = showScore ? (isVB ? (game.setsWon2||0) : game.score2) : '';
     const nextUp = remaining && remaining[0];
     const statusClass = isLive ? 'tvh-status-live' : isFinal ? 'tvh-status-done' : 'tvh-status-next';
     // Live game clock — driven by the scorekeeper's timer (synced via Firebase)
@@ -3028,11 +3127,12 @@ function tvHashRenderCourt(screen) {
     const maxHalf = game.sport === 'volleyball' ? (game.slotMin * 60) : (game.slotMin * 60) / 2;
     // cap at the half length so a stale full-game timer still shows a 10-min half
     const halfSec = Math.min((tmr && tmr.duration) ? tmr.duration : maxHalf, maxHalf);
-    const rem = isLive ? Math.max(0, Math.ceil(halfSec - elapsedSec(game))) : 0;
+    const elapSec = elapsedSec(game);
+    const rem = isLive ? Math.max(0, Math.ceil(halfSec - elapSec)) : 0;
     const statusLabel = isLive ? '' : isFinal ? (game.dq ? '🚫 FORFEIT' : '✅ FINAL') : `⏰ UP NEXT · ${fmtTime(effectiveStart(game))}`;
     body = `
       ${statusLabel ? `<div class="tvh-single-status ${statusClass}">${statusLabel}</div>` : ''}
-      <div class="tvh-single-matchup">
+      ${isVB && showScore ? renderVBTVSetScore(game) : `<div class="tvh-single-matchup">
         <div class="tvh-single-team">
           <div class="tvh-single-tname">${game.team1}</div>
           ${showScore ? `<div class="tvh-single-score">${s1}</div>` : ''}
@@ -3042,8 +3142,10 @@ function tvHashRenderCourt(screen) {
           <div class="tvh-single-tname">${game.team2}</div>
           ${showScore ? `<div class="tvh-single-score">${s2}</div>` : ''}
         </div>
-      </div>
-      ${isLive ? `<div class="tvh-gameclock${rem<=60?' tvh-gameclock-end':''}">${Math.floor(rem/60)}:${String(rem%60).padStart(2,'0')}</div>` : ''}
+      </div>`}
+      ${isLive ? (isVB
+        ? `<div class="tvh-gameclock">↑ ${formatCountUp(elapSec)}</div>`
+        : `<div class="tvh-gameclock${rem<=60?' tvh-gameclock-end':''}">${Math.floor(rem/60)}:${String(rem%60).padStart(2,'0')}</div>`) : ''}
       <div class="tvh-single-round" style="color:${sc}">${game.round || ''}</div>
       ${isLive ? '' : tvHashRosterHtml(game)}
       ${nextUp ? `<div class="tvh-single-next">AFTER THIS: <strong>${nextUp.team1} vs ${nextUp.team2}</strong> · ${nextUp.round || ''} · ${fmtTime(effectiveStart(nextUp))}</div>` : ''}`;
@@ -3063,13 +3165,18 @@ function tvHashCourtCard(court) {
   </div>`;
   const {game, isLive, isFinal, remaining} = info;
   const showScore = isLive || isFinal;
-  const s1 = showScore ? game.score1 : '', s2 = showScore ? game.score2 : '';
+  const isVB = game.sport === 'volleyball';
+  const s1 = showScore ? (isVB ? (game.setsWon1||0) : game.score1) : '';
+  const s2 = showScore ? (isVB ? (game.setsWon2||0) : game.score2) : '';
   const nextUp = remaining && remaining[0];
   const nextHtml = nextUp
     ? `<div class="tvh-card-next"><span class="tvh-card-next-lbl">${(isLive || isFinal) ? 'UP NEXT' : 'AFTER THIS'}</span> <strong>${nextUp.team1} vs ${nextUp.team2}</strong> · ${nextUp.round || ''} · ${fmtTime(effectiveStart(nextUp))}</div>`
     : '';
-  const remC = isLive ? Math.max(0, Math.ceil((game.slotMin * 60) - elapsedSec(game))) : 0;
-  const badgeLabel = isLive ? `🔴 ${Math.floor(remC/60)}:${String(remC%60).padStart(2,'0')}` : isFinal ? (game.dq ? '🚫 FORFEIT' : '✅ FINAL') : `⏰ ${fmtTime(effectiveStart(game))}`;
+  const elC = elapsedSec(game);
+  const remC = isLive ? Math.max(0, Math.ceil((game.slotMin * 60) - elC)) : 0;
+  const badgeLabel = isLive
+    ? (isVB ? `🔴 ↑ ${formatCountUp(elC)}` : `🔴 ${Math.floor(remC/60)}:${String(remC%60).padStart(2,'0')}`)
+    : isFinal ? (game.dq ? '🚫 FORFEIT' : '✅ FINAL') : `⏰ ${fmtTime(effectiveStart(game))}`;
   return `<div class="tvh-card ${isLive ? 'tvh-card-live' : ''}" style="border-top:4px solid ${sc}">
     <div class="tvh-card-top">
       <div class="tvh-court-name">${court}</div>
@@ -3102,8 +3209,9 @@ function tvHashRenderFinal(screen) {
     body = `<div class="tvh-final-pending">Bracket not yet set — check back soon</div>`;
   } else {
     const isDone = g.status === 'final', isLive = g.status === 'live';
-    const s1 = (isLive || isDone) ? g.score1 : '—';
-    const s2 = (isLive || isDone) ? g.score2 : '—';
+    const isVBf = g.sport === 'volleyball';
+    const s1 = (isLive || isDone) ? (isVBf ? (g.setsWon1||0) : g.score1) : '—';
+    const s2 = (isLive || isDone) ? (isVBf ? (g.setsWon2||0) : g.score2) : '—';
     const t1w = isDone && g.winner === g.team1, t2w = isDone && g.winner === g.team2;
     body = `
       ${isDone && g.winner ? `<div class="tvh-champion-banner" style="background:${sc}">🏆 CHAMPION: ${g.winner} 🏆</div>` : ''}
@@ -3121,6 +3229,7 @@ function tvHashRenderFinal(screen) {
           <div class="tvh-final-score">${s2}</div>
         </div>
       </div>
+      ${isVBf && (isLive || isDone) ? renderVBTVSetScore(g) : ''}
       <div class="tvh-final-round" style="color:${sc}">${g.round || 'Grand Final'}</div>`;
   }
   el.innerHTML = tvHashHdr(label) + `<div class="tvh-final-body">${body}</div>`;
@@ -3408,6 +3517,7 @@ function tvHashRenderList() {
     ['schedule',          '🗓 Official Schedule'],
     ['gallery-semis',     '🔥 Semifinals — Fields A & B'],
     ['finals-soccer',     '🏆 Soccer Grand Final'],
+      ['finals-volleyball', '🏐 Volleyball Grand Final'],
   ].map(([k,l]) => `<a class="tvh-list-link" href="#tv/${k}">${l}</a>`).join('');
   el.innerHTML = `<div class="tvh-hdr"><div class="tvh-logo">🏆 KO 2026</div><div class="tvh-title">TV SCREENS — Tap to open</div><div class="tvh-time">🖥</div></div>
     <div class="tvh-list-body">${links}</div>`;
