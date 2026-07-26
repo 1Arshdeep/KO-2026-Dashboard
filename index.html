@@ -3153,8 +3153,21 @@ function tvHashHdr(title) {
   return `<div class="tvh-hdr"><div class="tvh-logo">🏆 KO 2026</div><div class="tvh-title">${title}</div><div class="tvh-time">${t}</div></div>`;
 }
 
+// Same calendar day as now.
+function isToday(ts) {
+  if (!ts) return false;
+  const d = new Date(ts), n = new Date();
+  return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
+}
+
 function tvHashGameInfo(court) {
-  const games = Object.values(state.games).filter(g => g.court === court).sort((a,b) => (a.scheduledStart||0)-(b.scheduledStart||0));
+  const all = Object.values(state.games).filter(g => g.court === court).sort((a,b) => (a.scheduledStart||0)-(b.scheduledStart||0));
+  // Only today's games. Yesterday's round-robin games were never marked final,
+  // so their earlier timestamps used to win the "up next" pick and the TV showed
+  // a game from the previous day. Fall back to everything if nothing is
+  // scheduled today, so this can't blank a screen.
+  const today = all.filter(g => isToday(g.scheduledStart));
+  const games = today.length ? today : all;
   const live = games.find(g => g.status === 'live');
   if (live) return {game:live, isLive:true, isFinal:false, remaining:games.filter(g => g.status !== 'final' && g.id !== live.id)};
   // A game that ended early (DQ/forfeit) but is still within its scheduled
