@@ -463,7 +463,8 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
 .tvh-half-label{text-align:center;font-size:18px;font-weight:700;letter-spacing:2px;color:var(--dim);text-transform:uppercase;margin-top:4px}
 .tvh-final-clock{text-align:center;font-size:clamp(28px,5vw,52px);font-weight:900;font-family:'Archivo',sans-serif;color:var(--gold);letter-spacing:2px;margin:8px 0}
 /* when a live clock is showing, let it own the leftover vertical space */
-.tvh-single-body.has-clock{display:flex;flex-direction:column;justify-content:center}
+.tvh-single-body.has-clock{display:flex;flex-direction:column;justify-content:center;gap:10px;overflow:hidden}
+.tvh-single-body.has-clock .tvh-single-matchup{flex:0 0 auto}
 .tvh-single-round{font-size:22px;font-weight:800;letter-spacing:3px;text-align:center;text-transform:uppercase;color:var(--text);font-family:'Archivo',sans-serif;opacity:.7}
 .tvh-single-rosters{display:grid;grid-template-columns:1fr 1fr;gap:20px;overflow:hidden;min-height:0}
 .tvh-single-roster-col{background:rgba(255,255,255,.04);border-radius:10px;padding:14px;overflow:hidden}
@@ -3157,8 +3158,7 @@ function tvHashRenderCourt(screen) {
         ? `<div class="tvh-gameclock">↑ ${formatCountUp(elapSec)}</div>`
         : (() => {
             const remStr = `${Math.floor(rem/60)}:${String(rem%60).padStart(2,'0')}`;
-            const durStr = `${Math.floor(configuredSec/60)}:${String(Math.floor(configuredSec%60)).padStart(2,'0')}`;
-            return `<div class="tvh-gameclock${rem<=60?' tvh-gameclock-end':''}">${remStr}<span class="tvh-clock-dur">/ ${durStr}</span></div><div class="tvh-half-label">Half ${game.halfNumber||1}</div>`;
+            return `<div class="tvh-gameclock${rem<=60?' tvh-gameclock-end':''}">${remStr}</div><div class="tvh-half-label">Half ${game.halfNumber||1}</div>`;
           })()) : ''}
       <div class="tvh-single-round" style="color:${sc}">${game.round || ''}</div>
       ${isLive ? '' : tvHashRosterHtml(game)}
