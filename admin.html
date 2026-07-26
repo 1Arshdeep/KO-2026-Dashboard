@@ -2764,6 +2764,13 @@ const FINAL_SOCCER_ORDER = {
   A: ['KLF','Humberwood','Brockish','NPSS','Babbar Khalsa Ballers','Sharomani Akaali Dal','Panjab Lions'],
   B: ['Rebel FC','Mohali fc','Punjab Kings','Dixie United','Akaal Fauj','Kaurs United FC','McMaster University']
 };
+// Teams that withdrew from the Day-2 bracket, and who replaces them.
+// Applied after seeding so the rest of the bracket is untouched.
+const KO_SUBSTITUTIONS = { 'Kaurs United FC': 'Icemen' };
+function applyKoSubs(name) {
+  return (KO_SUBSTITUTIONS && KO_SUBSTITUTIONS[name]) ? KO_SUBSTITUTIONS[name] : name;
+}
+
 function lockedRRStandings(sport) {
   const rows = FINAL_STANDINGS[sport];
   if (!rows) return null;
@@ -3250,7 +3257,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ===== INIT =====
-const BB_SCHEMA_V = 30;  // v30: Day-2 knockout times + durations confirmed
+const BB_SCHEMA_V = 31;  // v31: Kaurs United FC withdrew — Icemen substituted into the bracket
 
 function needsRebuild(games, schemaV) {
   const list = Object.values(games || {});
@@ -3376,7 +3383,7 @@ function populateBBKnockoutTeams() {
     if (rrGames.filter(g => g.status === 'final').length < rrGames.length) return;
   }
   const s = computeRRStandings('basketball');
-  const seed = i => (s[i] || {}).team || 'TBD';  // i is 0-based (seed #1 = index 0)
+  const seed = i => applyKoSubs((s[i] || {}).team || 'TBD');  // i is 0-based (seed #1 = index 0)
   // TOP-8 quarterfinals: QF1 #1v#8, QF2 #4v#5, QF3 #2v#7, QF4 #3v#6
   const QF = { 'Quarterfinal 1':[0,7], 'Quarterfinal 2':[3,4], 'Quarterfinal 3':[1,6], 'Quarterfinal 4':[2,5] };
   Object.entries(QF).forEach(([round,[a,b]]) => {
