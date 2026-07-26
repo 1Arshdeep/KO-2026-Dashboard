@@ -315,7 +315,19 @@ select:focus, input[type="text"]:focus {
   border: 1px solid var(--border);
   border-radius: 8px;
 }
-#btn-start-pause { background: var(--gold); color: #080c14; border: none; }
+#btn-start { background: var(--gold); color: #080c14; border: none; }
+#btn-reset-next { background: #7a2020; color: #fff; border: none; }
+.btn-timer:disabled { opacity: 0.38; cursor: not-allowed; }
+/* Duration picker */
+#duration-picker-card { margin-bottom: 12px; }
+.dur-title { font-size: 10px; font-weight: 700; letter-spacing: .08em; color: var(--dim); margin-bottom: 6px; }
+.dur-buttons { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+.btn-dur { flex: 1; min-width: 48px; min-height: 44px; font-size: 13px; font-weight: 600; background: var(--surface); color: var(--fg); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; }
+.btn-dur-sel { background: var(--gold); color: #080c14; border-color: var(--gold); }
+.btn-dur-disabled { opacity: 0.42; pointer-events: none; }
+.dur-hint { font-size: 11px; color: var(--amber); margin-bottom: 4px; }
+.dur-status { font-size: 11px; color: var(--dim); margin-bottom: 4px; }
+.dur-half { font-size: 12px; font-weight: 600; color: var(--gold); }
 #fulltime-overlay {
   display: none;
   position: absolute;
@@ -937,6 +949,7 @@ select:focus, input[type="text"]:focus {
       <div class="ft-text">⚡ FULL TIME</div>
       <button id="btn-dismiss-ft">Dismiss</button>
     </div>
+    <div id="duration-picker-card"></div>
     <div id="timer-display-wrap">
       <div id="timer-main">20:00</div>
       <div id="timer-ot"></div>
@@ -945,9 +958,9 @@ select:focus, input[type="text"]:focus {
       <div id="timer-progress"></div>
     </div>
     <div id="timer-buttons">
-      <button id="btn-start-pause" class="btn-timer">▶ START</button>
-      <button id="btn-reset" class="btn-timer">↺ Reset</button>
-      <button id="btn-set15" class="btn-timer">Set 20:00</button>
+      <button id="btn-start" class="btn-timer">▶ Start</button>
+      <button id="btn-pause" class="btn-timer">⏸ Pause</button>
+      <button id="btn-reset-next" class="btn-timer">↺ Reset &amp; Set Next</button>
     </div>
   </div>
 
@@ -1451,19 +1464,28 @@ function attachLiveSync() {
         _fbShadow['games/' + id] = rs;
         changed = true;
       });
-      // timers merge per-game: never let a stale/idle remote timer replace a
-      // clock that is running locally (that made the TV clock jump back).
+      // Timers: per-field LWW by updatedAt. If local is running, its duration is sticky.
       if (data.timers) {
         state.timers = state.timers || {};
         Object.keys(data.timers).forEach(id => {
           const remote = data.timers[id];
-          const rs = JSON.stringify(remote);
-          if (_fbShadow['timers/' + id] === rs) return;
           const local = state.timers[id];
-          if (local && local.running && !(remote && remote.running)) return; // keep our running clock
-          state.timers[id] = remote;
-          _fbShadow['timers/' + id] = rs;
+          // 4A: pick winner by updatedAt
+          const lAt = (local && local.updatedAt) || 0;
+          const rAt = (remote && remote.updatedAt) || 0;
+          let merged = lAt >= rAt ? local : remote;
+          if (!merged) merged = remote;
+          // 4A: if local is running, force our duration — remote must never overwrite it
+          if (local && local.running) merged = { ...merged, duration: local.duration };
+          const ms = JSON.stringify(merged);
+          if (_fbShadow['timers/' + id] === ms) return;
+          state.timers[id] = merged;
+          _fbShadow['timers/' + id] = ms;
           changed = true;
+        });
+        // Preserve local-only timers not yet in Firebase
+        Object.keys(state.timers).forEach(id => {
+          if (!data.timers[id]) return;
         });
       }
       ['teams','soccerGroups','activeCourts','courtDelays','rosters','schemaV'].forEach(k => {
@@ -1562,7 +1584,12 @@ function ensureStateFields(s) {
   if (s.activeCourts === undefined) s.activeCourts = null;
   if (!s.timers) s.timers = {};
   // Migrate any timers saved with old 15-min duration to 20-min
-  Object.entries(s.timers).forEach(([id,tm]) => { if (!tm) return; if (tm.duration === 900) tm.duration = 1200; const g = s.games && s.games[id]; const mins = ((g && g.slotMin) ? g.slotMin : 20); const full = (g && g.sport === 'volleyball') ? Math.round(mins*60) : Math.round(mins*60/2); if (tm.duration > full) tm.duration = full; });
+  // Migrate: initialize matchDuration and halfNumber on soccer/basketball games that lack them
+  if (s.games) Object.values(s.games).forEach(g => {
+    if (!g || g.sport === 'volleyball') return;
+    if (g.matchDuration === undefined) g.matchDuration = g.slotMin || 20;
+    if (g.halfNumber === undefined) g.halfNumber = 1;
+  });
   if (!s.soccerGroups) s.soccerGroups = JSON.parse(JSON.stringify(DEFAULT_SOCCER_GROUPS));
   if (s.games) Object.values(s.games).forEach(ensureVBFields);
 }
@@ -1612,13 +1639,25 @@ function formatTime(seconds) {
   return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
 }
 
-// Half length in seconds for a game (10-min halves for a 20-min game).
+// Duration in seconds for the current timer period.
+// Volleyball: full slot time. Soccer/basketball: g.matchDuration (no divide-by-two).
 function halfDurationFor(gameId) {
   const g = state.games && state.games[gameId];
-  const mins = (g && g.slotMin) ? g.slotMin : 20;
-  // volleyball plays a straight game (no halves) — full duration
-  if (g && g.sport === 'volleyball') return Math.round(mins * 60);
-  return Math.round(mins * 60 / 2);
+  if (g && g.sport === 'volleyball') return Math.round((g.slotMin || 25) * 60);
+  const mins = (g && g.matchDuration) ? g.matchDuration
+             : (g && g.slotMin)        ? g.slotMin
+             : 20;
+  return Math.round(mins * 60);
+}
+
+// True only when it is safe to auto-overwrite the timer's duration.
+// Prevents "timer jumped mid-game" resets from remote merges or refresh.
+function shouldRederiveDuration(gameId) {
+  const t = state.timers[gameId];
+  if (!t) return true;                         // no timer yet — safe
+  if (t.running) return false;                 // never touch a running clock
+  if ((t.accumulated || 0) > 0) return false;  // has been played — scorekeeper owns it
+  return true;
 }
 function ensureTimer(gameId, duration) {
   if (!state.timers[gameId]) {
@@ -1632,6 +1671,7 @@ function startTimer(gameId) {
   if (!t.running) {
     t.startedAt = Date.now();
     t.running = true;
+    t.updatedAt = Date.now();
     saveState();
   }
 }
@@ -1643,12 +1683,13 @@ function pauseTimer(gameId) {
     t.accumulated = getElapsed(gameId);
     t.startedAt = null;
     t.running = false;
+    t.updatedAt = Date.now();
     saveState();
   }
 }
 
 function resetTimer(gameId) {
-  state.timers[gameId] = { startedAt: null, accumulated: 0, running: false, duration: halfDurationFor(gameId) };
+  state.timers[gameId] = { startedAt: null, accumulated: 0, running: false, duration: halfDurationFor(gameId), updatedAt: Date.now() };
   buzzerFired = false;
   fulltimeShown = false;
   document.getElementById('fulltime-overlay').classList.remove('visible');
@@ -1706,13 +1747,11 @@ function tickTimer() {
   else if (remaining <= 300) prog.style.backgroundColor = 'var(--amber)';
   else prog.style.backgroundColor = 'var(--green)';
 
-  // Start/Pause button
-  const btn = document.getElementById('btn-start-pause');
-  if (isRunning) {
-    btn.textContent = '⏸ PAUSE';
-  } else {
-    btn.textContent = '▶ START';
-  }
+  // Start / Pause buttons — enabled state driven by running flag
+  const btnStart = document.getElementById('btn-start');
+  const btnPause = document.getElementById('btn-pause');
+  if (btnStart) btnStart.disabled = !!isRunning;
+  if (btnPause) btnPause.disabled = !isRunning;
 }
 
 // ===== CLOCK =====
@@ -1836,6 +1875,69 @@ function renderVBControls() {
     <div class="vb-set-rows">${setRows}</div>${controls}`;
 }
 
+function renderDurationPicker() {
+  const el = document.getElementById('duration-picker-card');
+  if (!el) return;
+  const g = currentGameId ? state.games[currentGameId] : null;
+  if (!g || g.sport === 'volleyball') { el.innerHTML = ''; return; }
+  const t = currentGameId ? state.timers[currentGameId] : null;
+  const isRunning = !!(t && t.running);
+  const md = g.matchDuration || g.slotMin || 20;
+  const presets = [10, 15, 20, 30];
+  const isCustom = !presets.includes(md);
+  const dis = isRunning ? ' btn-dur-disabled' : '';
+  const btns = presets.map(m =>
+    `<button class="btn-dur${md===m?' btn-dur-sel':''}${dis}" onclick="setMatchDuration(${m})">${m} min</button>`
+  ).join('');
+  const customBtn = `<button class="btn-dur${isCustom?' btn-dur-sel':''}${dis}" onclick="openCustomDuration()">Custom${isCustom?` (${md})`:''}</button>`;
+  const hint = isRunning ? `<div class="dur-hint">Pause the timer to change duration</div>` : '';
+  let statusText;
+  if (t && t.running) {
+    statusText = `Current timer: ${formatTime(Math.max(0,getRemaining(currentGameId)))} (running)`;
+  } else if (t && (t.accumulated||0) > 0) {
+    statusText = `Current timer: ${formatTime(Math.max(0,getRemaining(currentGameId)))} (paused, ${formatTime(t.accumulated||0)} played)`;
+  } else {
+    statusText = 'Timer ready';
+  }
+  el.innerHTML = `
+    <div class="dur-title">TIMER DURATION</div>
+    <div class="dur-buttons">${btns}${customBtn}</div>
+    ${hint}
+    <div class="dur-status">${statusText}</div>
+    <div class="dur-half">Half ${g.halfNumber||1} · ${md} min configured</div>
+    <div id="custom-dur-row" style="display:none;margin-top:8px;gap:8px;align-items:center">
+      <input type="number" id="custom-dur-val" min="1" max="60" value="${isCustom?md:20}"
+        style="width:60px;padding:6px;border-radius:5px;border:1px solid var(--border);background:var(--bg);color:var(--fg)">
+      <button onclick="confirmCustomDuration()" style="padding:6px 12px">OK</button>
+    </div>`;
+}
+
+function setMatchDuration(mins) {
+  const g = currentGameId ? state.games[currentGameId] : null;
+  if (!g || g.sport === 'volleyball') return;
+  const t = state.timers[currentGameId];
+  if (t && t.running) return;
+  g.matchDuration = mins;
+  g.ts = Date.now();
+  ensureTimer(currentGameId);
+  state.timers[currentGameId].duration = mins * 60;
+  state.timers[currentGameId].updatedAt = Date.now();
+  saveState();
+  renderDurationPicker();
+  tickTimer();
+}
+
+function openCustomDuration() {
+  const row = document.getElementById('custom-dur-row');
+  if (row) { row.style.display = 'flex'; const inp = document.getElementById('custom-dur-val'); if (inp) inp.focus(); }
+}
+
+function confirmCustomDuration() {
+  const v = parseInt((document.getElementById('custom-dur-val') || {}).value || '');
+  if (isNaN(v) || v < 1 || v > 60) return;
+  setMatchDuration(v);
+}
+
 function endSet(side) {
   const g = state.games[currentGameId];
   if (!g || g.sport !== 'volleyball' || g.status === 'final') return;
@@ -1925,7 +2027,11 @@ function renderNextUp() {
 
 function renderTimerButtons() {
   const g = currentGameId ? state.games[currentGameId] : null;
-  if (g) ensureTimer(currentGameId, 1200);
+  if (g) {
+    if (shouldRederiveDuration(currentGameId)) ensureTimer(currentGameId, halfDurationFor(currentGameId));
+    else ensureTimer(currentGameId);
+  }
+  renderDurationPicker();
   tickTimer();
 }
 
@@ -2116,32 +2222,37 @@ document.querySelectorAll('.btn-score').forEach(btn => {
 });
 
 // Timer buttons
-document.getElementById('btn-start-pause').addEventListener('click', () => {
+document.getElementById('btn-start').addEventListener('click', () => {
   if (!currentGameId) return;
   ensureTimer(currentGameId);
-  const t = state.timers[currentGameId];
-  if (t.running) {
-    pauseTimer(currentGameId);
-  } else {
-    startTimer(currentGameId);
-  }
+  startTimer(currentGameId);
+  renderDurationPicker();
   tickTimer();
 });
 
-document.getElementById('btn-reset').addEventListener('click', () => {
+document.getElementById('btn-pause').addEventListener('click', () => {
   if (!currentGameId) return;
-  resetTimer(currentGameId);
+  pauseTimer(currentGameId);
+  renderDurationPicker();
   tickTimer();
 });
 
-document.getElementById('btn-set15').addEventListener('click', () => {
+document.getElementById('btn-reset-next').addEventListener('click', () => {
   if (!currentGameId) return;
-  state.timers[currentGameId] = { startedAt: null, accumulated: 0, running: false, duration: halfDurationFor(currentGameId) };
-  buzzerFired = false;
-  fulltimeShown = false;
-  document.getElementById('fulltime-overlay').classList.remove('visible');
-  saveState();
-  tickTimer();
+  const elapsed = getElapsed(currentGameId);
+  showConfirm(
+    `Reset the timer to 00:00? Elapsed ${formatTime(elapsed)} will be cleared. You can change the duration before starting again.`,
+    () => {
+      const g = state.games[currentGameId];
+      if (g && g.sport !== 'volleyball') {
+        g.halfNumber = (g.halfNumber || 1) + 1;
+        g.ts = Date.now();
+      }
+      resetTimer(currentGameId);
+      renderDurationPicker();
+      tickTimer();
+    }
+  );
 });
 
 document.getElementById('btn-dismiss-ft').addEventListener('click', () => {
