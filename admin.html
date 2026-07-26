@@ -320,6 +320,11 @@ select:focus, input[type="text"]:focus {
 .btn-timer:disabled { opacity: 0.38; cursor: not-allowed; }
 /* Duration picker */
 #duration-picker-card { margin-bottom: 12px; }
+.dur-setclock{display:flex;gap:8px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.dur-setclock-lbl{font-size:11px;font-weight:800;letter-spacing:1px;opacity:.75}
+.lc-clockin{width:62px;padding:5px 4px;border-radius:5px;border:1px solid var(--border);
+  background:var(--bg);color:var(--fg);font-weight:700;text-align:center;font-size:12px}
+.lc-tbtn.setclk{background:#1e3a5f;color:#cbe3ff}
 .dur-title { font-size: 10px; font-weight: 700; letter-spacing: .08em; color: var(--dim); margin-bottom: 6px; }
 .dur-buttons { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
 .btn-dur { flex: 1; min-width: 48px; min-height: 44px; font-size: 13px; font-weight: 600; background: var(--surface); color: var(--fg); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; }
@@ -1905,11 +1910,68 @@ function renderDurationPicker() {
     ${hint}
     <div class="dur-status">${statusText}</div>
     <div class="dur-half">Half ${g.halfNumber||1} · ${md} min configured</div>
+    <div class="dur-setclock">
+      <span class="dur-setclock-lbl">SET CLOCK TO</span>
+      <input type="text" id="set-clock-val" placeholder="10:00" value=""
+        onkeydown="if(event.key==='Enter'){applyClockInput(currentGameId,'set-clock-val')}"
+        style="width:78px;padding:6px;border-radius:5px;border:1px solid var(--border);background:var(--bg);color:var(--fg);font-weight:700;text-align:center">
+      <button onclick="applyClockInput(currentGameId,'set-clock-val')" style="padding:6px 12px">Set</button>
+      <span class="dur-hint" style="margin:0">any time, no reset needed</span>
+    </div>
     <div id="custom-dur-row" style="display:none;margin-top:8px;gap:8px;align-items:center">
       <input type="number" id="custom-dur-val" min="1" max="60" value="${isCustom?md:20}"
         style="width:60px;padding:6px;border-radius:5px;border:1px solid var(--border);background:var(--bg);color:var(--fg)">
       <button onclick="confirmCustomDuration()" style="padding:6px 12px">OK</button>
     </div>`;
+}
+
+// Set the clock to any time the scorekeeper types. Works whether the timer is
+// running or paused - no reset required. Accepts "mm:ss", "mm", or "mm.5".
+function parseClockInput(raw) {
+  const v = String(raw == null ? '' : raw).trim();
+  if (!v) return null;
+  let secs;
+  if (v.indexOf(':') !== -1) {
+    const p = v.split(':');
+    const m = parseInt(p[0], 10);
+    const sec = parseInt(p[1], 10);
+    if (isNaN(m) || isNaN(sec) || sec < 0 || sec > 59) return null;
+    secs = m * 60 + sec;
+  } else {
+    const m = parseFloat(v);
+    if (isNaN(m)) return null;
+    secs = Math.round(m * 60);
+  }
+  if (secs < 0 || secs > 7200) return null;
+  return secs;
+}
+
+function setClockSeconds(gameId, secs) {
+  if (!gameId || secs == null) return false;
+  ensureTimer(gameId);
+  const t = state.timers[gameId];
+  const wasRunning = !!t.running;
+  // remaining = duration - elapsed, so zero the elapsed and make duration the target
+  t.duration = secs;
+  t.accumulated = 0;
+  t.startedAt = wasRunning ? Date.now() : null;
+  t.running = wasRunning;
+  t.updatedAt = Date.now();
+  const g = state.games[gameId];
+  if (g) { g.matchDuration = Math.round(secs / 60 * 100) / 100; g.ts = Date.now(); }
+  saveState();
+  return true;
+}
+
+function applyClockInput(gameId, inputId) {
+  const inp = document.getElementById(inputId);
+  if (!inp) return;
+  const secs = parseClockInput(inp.value);
+  if (secs == null) { alert('Enter a time like 10:00, 7:30, or 12'); inp.focus(); return; }
+  setClockSeconds(gameId, secs);
+  renderDurationPicker();
+  renderLiveControl();
+  tickTimer();
 }
 
 function setMatchDuration(mins) {
@@ -3348,6 +3410,9 @@ function lcCard(court) {
       ${g.status!=='final'?`<button class="lc-tbtn start" onclick="lcStart('${g.id}')">▶ Start</button>`:''}
       ${ts==='run'?`<button class="lc-tbtn pause" onclick="lcPause('${g.id}')">⏸ Pause</button>`:''}
       <button class="lc-tbtn reset" onclick="lcReset('${g.id}')">↺ Reset</button>
+      <input type="text" class="lc-clockin" id="lc-clockin-${g.id}" placeholder="mm:ss"
+        onkeydown="if(event.key==='Enter'){applyClockInput('${g.id}','lc-clockin-${g.id}')}">
+      <button class="lc-tbtn setclk" onclick="applyClockInput('${g.id}','lc-clockin-${g.id}')">⏱ Set</button>
       ${g.status!=='final'?`<button class="lc-tbtn end" onclick="lcEnd('${g.id}')">✅ End</button>`:'<span style="color:#86efac;font-size:11px;font-weight:700;align-self:center">FINAL</span>'}
     </div>
     <div class="lc-teams">
