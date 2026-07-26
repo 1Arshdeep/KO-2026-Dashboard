@@ -1713,7 +1713,9 @@ function populateBBKnockoutTeams() {
     if (rrGames.filter(g => g.status === 'final').length < rrGames.length) return;
   }
   const s = computeRRStandings('basketball');
-  const seed = i => (s[i] || {}).team || 'TBD';
+  // withdrawn teams are substituted here too - admin did this but the public
+  // page did not, so a locally rebuilt schedule showed the withdrawn team
+  const seed = i => applyKoSubs((s[i] || {}).team || 'TBD');
   // TOP-8 QFs: QF1 #1v#8, QF2 #4v#5, QF3 #2v#7, QF4 #3v#6
   const QF = { 'Quarterfinal 1':[0,7], 'Quarterfinal 2':[3,4], 'Quarterfinal 3':[1,6], 'Quarterfinal 4':[2,5] };
   Object.entries(QF).forEach(([round,[a,b]]) => {
@@ -2001,6 +2003,19 @@ const FINAL_SOCCER_ORDER = {
 const KO_SUBSTITUTIONS = { 'Kaurs United FC': 'Icemen' };
 function applyKoSubs(name) {
   return (KO_SUBSTITUTIONS && KO_SUBSTITUTIONS[name]) ? KO_SUBSTITUTIONS[name] : name;
+}
+
+// Rewrite any basketball knockout game that still names a withdrawn team.
+// Guards against a stale local rebuild or old remote data putting the
+// substituted-out team back on the TVs. Finished games are left alone.
+function healKoSubs() {
+  Object.values(state.games || {}).forEach(g => {
+    if (g.sport !== 'basketball' || g.phase !== 'ko' || g.status === 'final') return;
+    const t1 = applyKoSubs(g.team1), t2 = applyKoSubs(g.team2);
+    if (t1 !== g.team1 || t2 !== g.team2) {
+      g.team1 = t1; g.team2 = t2; g.desc = `${t1} vs ${t2}`;
+    }
+  });
 }
 
 function lockedRRStandings(sport) {
@@ -3013,6 +3028,7 @@ window.applyFirebaseState = (data) => {
   populateKnockoutTeams();
   populateBBKnockoutTeams();
   populateVBKnockoutTeams();
+  healKoSubs();
   renderAll();
   if (_tvHashKey) tvHashRender();
 };
