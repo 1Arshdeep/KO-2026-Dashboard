@@ -453,10 +453,12 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
 .tvh-single-tname{font-size:52px;font-weight:900;text-align:center;line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%;font-family:'Archivo',sans-serif}
 .tvh-single-score{font-size:110px;font-weight:900;color:var(--gold);line-height:1;font-variant-numeric:tabular-nums}
 .tvh-single-vs{font-size:32px;font-weight:900;color:var(--dim);text-align:center;padding:0 10px}
-.tvh-gameclock{font-family:'Archivo',sans-serif;font-weight:900;color:var(--gold);line-height:.9;
-  font-variant-numeric:tabular-nums;letter-spacing:2px;
-  flex:1;min-height:0;display:flex;align-items:center;justify-content:center;
-  font-size:clamp(120px,26vw,42vh)}
+.tvh-gameclock{font-family:'Archivo',sans-serif;font-weight:900;color:var(--gold);line-height:1;
+  font-variant-numeric:tabular-nums;letter-spacing:2px;white-space:nowrap;
+  flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:6px 0;
+  font-size:clamp(40px,5.5vw,96px)}
+.tvh-clock-dur{font-size:.45em;opacity:.55;font-weight:800}
 .tvh-gameclock-end{color:var(--live);animation:pulse 1s infinite}
 .tvh-half-label{text-align:center;font-size:18px;font-weight:700;letter-spacing:2px;color:var(--dim);text-transform:uppercase;margin-top:4px}
 .tvh-final-clock{text-align:center;font-size:clamp(28px,5vw,52px);font-weight:900;font-family:'Archivo',sans-serif;color:var(--gold);letter-spacing:2px;margin:8px 0}
@@ -3156,7 +3158,7 @@ function tvHashRenderCourt(screen) {
         : (() => {
             const remStr = `${Math.floor(rem/60)}:${String(rem%60).padStart(2,'0')}`;
             const durStr = `${Math.floor(configuredSec/60)}:${String(Math.floor(configuredSec%60)).padStart(2,'0')}`;
-            return `<div class="tvh-gameclock${rem<=60?' tvh-gameclock-end':''}">${remStr} / ${durStr}</div><div class="tvh-half-label">Half ${game.halfNumber||1}</div>`;
+            return `<div class="tvh-gameclock${rem<=60?' tvh-gameclock-end':''}">${remStr}<span class="tvh-clock-dur">/ ${durStr}</span></div><div class="tvh-half-label">Half ${game.halfNumber||1}</div>`;
           })()) : ''}
       <div class="tvh-single-round" style="color:${sc}">${game.round || ''}</div>
       ${isLive ? '' : tvHashRosterHtml(game)}
