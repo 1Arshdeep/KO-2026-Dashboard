@@ -1828,6 +1828,13 @@ const FINAL_SOCCER_ORDER = {
   A: ['KLF','Humberwood','Brockish','NPSS','Babbar Khalsa Ballers','Sharomani Akaali Dal','Panjab Lions'],
   B: ['Rebel FC','Mohali fc','Punjab Kings','Dixie United','Akaal Fauj','Kaurs United FC','McMaster University']
 };
+// Teams that withdrew from the Day-2 bracket, and who replaces them.
+// Applied after seeding so the rest of the bracket is untouched.
+const KO_SUBSTITUTIONS = { 'Kaurs United FC': 'Icemen' };
+function applyKoSubs(name) {
+  return (KO_SUBSTITUTIONS && KO_SUBSTITUTIONS[name]) ? KO_SUBSTITUTIONS[name] : name;
+}
+
 function lockedRRStandings(sport) {
   const rows = FINAL_STANDINGS[sport];
   if (!rows) return null;
