@@ -205,6 +205,22 @@ select:focus, input[type="text"]:focus {
 #live-badge.visible { display: inline-block; }
 
 /* ===== SCORE ENTRY ===== */
+#vb-settabs { display:none; gap:6px; margin-bottom:12px; }
+#vb-settabs.on { display:flex; }
+.vb-tab {
+  flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;
+  padding:8px 4px; border-radius:8px; cursor:pointer;
+  border:1px solid var(--border); background:var(--surface); color:var(--dim);
+  font-family:'Archivo',sans-serif;
+}
+.vb-tab .vb-tab-n { font-size:11px; font-weight:800; letter-spacing:1px; }
+.vb-tab .vb-tab-s { font-size:13px; font-weight:900; font-variant-numeric:tabular-nums; }
+.vb-tab.done { color:var(--text); border-color:rgba(212,160,23,.35); }
+.vb-tab.active {
+  color:var(--text); border-color:var(--gold);
+  background:rgba(212,160,23,.12); box-shadow:0 0 0 1px var(--gold) inset;
+}
+.vb-tab.active .vb-tab-s { color:var(--gold); }
 #score-card .teams-row {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -331,7 +347,10 @@ select:focus, input[type="text"]:focus {
   align-items:center;gap:8px}
 .lc-vbhd strong{color:var(--gold);font-size:15px}
 .lc-vbcur{font-weight:600;font-size:11px;color:var(--dim);letter-spacing:0}
-.lc-vbdone{font-size:11px;color:var(--dim);margin-top:3px}
+.lc-vbtabs{display:flex;gap:5px;margin-top:6px}
+.lc-vbtabs .vb-tab{padding:5px 3px}
+.lc-vbtabs .vb-tab .vb-tab-n{font-size:9px}
+.lc-vbtabs .vb-tab .vb-tab-s{font-size:12px}
 .lc-vbbtns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
 .lc-vbbtn{flex:1;min-width:96px;padding:8px 6px;border-radius:6px;border:1px solid var(--border);
   background:#1f3b22;color:#b9f5c2;font-weight:700;font-size:11px;cursor:pointer}
@@ -903,7 +922,8 @@ select:focus, input[type="text"]:focus {
 
   <!-- SCORE ENTRY -->
   <div class="card" id="score-card">
-    <div class="card-title">Score Entry</div>
+    <div class="card-title" id="score-card-title">Score Entry</div>
+    <div id="vb-settabs"></div>
     <div class="teams-row">
       <div class="team-col" id="col-team1">
         <div class="team-name" id="name1">—</div>
@@ -1861,6 +1881,19 @@ function renderScoreCard() {
   document.getElementById('score2').textContent = g ? g.score2 : 0;
   document.getElementById('dq-name1').textContent = g ? g.team1 : 'Team 1';
   document.getElementById('dq-name2').textContent = g ? g.team2 : 'Team 2';
+  const tabs = document.getElementById('vb-settabs');
+  const title = document.getElementById('score-card-title');
+  if (tabs) {
+    if (g && g.sport === 'volleyball') {
+      tabs.className = 'on';
+      tabs.innerHTML = vbSetTabsHtml(g, g.id);
+      if (title) title.textContent = `Score Entry \u00b7 Set ${(g.currentSet || 0) + 1} of 3 \u00b7 Sets ${g.setsWon1 || 0}\u2013${g.setsWon2 || 0}`;
+    } else {
+      tabs.className = '';
+      tabs.innerHTML = '';
+      if (title) title.textContent = 'Score Entry';
+    }
+  }
   renderVBControls();
 }
 
@@ -2009,6 +2042,42 @@ function confirmCustomDuration() {
   const v = parseInt((document.getElementById('custom-dur-val') || {}).value || '');
   if (isNaN(v) || v < 1 || v > 60) return;
   setMatchDuration(v);
+}
+
+// Best-of-3 set tabs. Shows each set's result, marks the one in progress, and
+// lets the scorekeeper jump back to a set to correct it.
+function vbSetTabsHtml(g, gameId) {
+  const cur = g.currentSet || 0;
+  return [0, 1, 2].map(i => {
+    const st = (g.sets || [])[i] || {};
+    const label = st.done ? `${st.s1}\u2013${st.s2}`
+                : (i === cur ? `${g.score1}\u2013${g.score2}` : '\u2013');
+    const cls = `vb-tab${i === cur ? ' active' : ''}${st.done ? ' done' : ''}`;
+    return `<button class="${cls}" onclick="selectSet(${i},'${gameId}')">` +
+           `<span class="vb-tab-n">SET ${i + 1}</span>` +
+           `<span class="vb-tab-s">${label}</span></button>`;
+  }).join('');
+}
+
+// Switch which set the +/- buttons are scoring. The live score is banked into
+// the set being left, and the target set's score is loaded back in.
+function selectSet(idx, gameId) {
+  const gid = gameId || currentGameId;
+  const g = state.games[gid];
+  if (!g || g.sport !== 'volleyball') return;
+  if (idx < 0 || idx > 2) return;
+  if (!g.sets) g.sets = [{s1:0,s2:0,done:false},{s1:0,s2:0,done:false},{s1:0,s2:0,done:false}];
+  const cur = g.currentSet || 0;
+  if (cur === idx) return;
+  const leaving = g.sets[cur] || {};
+  g.sets[cur] = { s1: g.score1, s2: g.score2, done: !!leaving.done };
+  const target = g.sets[idx] || { s1: 0, s2: 0, done: false };
+  g.currentSet = idx;
+  g.score1 = target.s1 || 0;
+  g.score2 = target.s2 || 0;
+  g.ts = Date.now();
+  saveState();
+  renderScoreCard(); renderStatus(); renderGameMeta(); renderLiveControl();
 }
 
 function endSet(side, gameId) {
@@ -3405,9 +3474,6 @@ function lcLogHtml(g) {
 // Without these the scorekeeper can only move point totals and setsWon stays 0.
 function lcVBSetBlock(g) {
   const cur = g.currentSet || 0;
-  const sets = g.sets || [];
-  const done = (sets || []).filter(x => x && x.done)
-    .map((x, i) => `S${i + 1} ${x.s1}-${x.s2}`).join('  ·  ');
   const isFinal = g.status === 'final';
   const btns = isFinal ? '' : `
     <div class="lc-vbbtns">
@@ -3417,8 +3483,8 @@ function lcVBSetBlock(g) {
     </div>`;
   return `<div class="lc-vbsets">
     <div class="lc-vbhd">SETS <strong>${g.setsWon1 || 0} – ${g.setsWon2 || 0}</strong>
-      <span class="lc-vbcur">Set ${Math.min(cur + 1, 3)} in progress</span></div>
-    ${done ? `<div class="lc-vbdone">${done}</div>` : ''}
+      <span class="lc-vbcur">Set ${Math.min(cur + 1, 3)} of 3</span></div>
+    <div class="lc-vbtabs">${vbSetTabsHtml(g, g.id)}</div>
     ${btns}
   </div>`;
 }
