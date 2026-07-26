@@ -325,6 +325,17 @@ select:focus, input[type="text"]:focus {
 .lc-clockin{width:62px;padding:5px 4px;border-radius:5px;border:1px solid var(--border);
   background:var(--bg);color:var(--fg);font-weight:700;text-align:center;font-size:12px}
 .lc-tbtn.setclk{background:#1e3a5f;color:#cbe3ff}
+.lc-vbsets{margin:8px 0;padding:8px 10px;border-radius:8px;background:rgba(212,160,23,.07);
+  border:1px solid rgba(212,160,23,.35)}
+.lc-vbhd{font-size:12px;font-weight:800;letter-spacing:1px;display:flex;justify-content:space-between;
+  align-items:center;gap:8px}
+.lc-vbhd strong{color:var(--gold);font-size:15px}
+.lc-vbcur{font-weight:600;font-size:11px;color:var(--dim);letter-spacing:0}
+.lc-vbdone{font-size:11px;color:var(--dim);margin-top:3px}
+.lc-vbbtns{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.lc-vbbtn{flex:1;min-width:96px;padding:8px 6px;border-radius:6px;border:1px solid var(--border);
+  background:#1f3b22;color:#b9f5c2;font-weight:700;font-size:11px;cursor:pointer}
+.lc-vbbtn.undo{background:#3b2a1f;color:#f5d8b9;flex:0 0 auto;min-width:0}
 .dur-title { font-size: 10px; font-weight: 700; letter-spacing: .08em; color: var(--dim); margin-bottom: 6px; }
 .dur-buttons { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
 .btn-dur { flex: 1; min-width: 48px; min-height: 44px; font-size: 13px; font-weight: 600; background: var(--surface); color: var(--fg); border: 1px solid var(--border); border-radius: 7px; cursor: pointer; }
@@ -2000,8 +2011,9 @@ function confirmCustomDuration() {
   setMatchDuration(v);
 }
 
-function endSet(side) {
-  const g = state.games[currentGameId];
+function endSet(side, gameId) {
+  const gid = gameId || currentGameId;
+  const g = state.games[gid];
   if (!g || g.sport !== 'volleyball' || g.status === 'final') return;
   const curSet = g.currentSet || 0;
   const tName = side === 'team1' ? g.team1 : g.team2;
@@ -2015,8 +2027,8 @@ function endSet(side) {
       g.status = 'final';
       g.winner = (g.setsWon1||0) >= 2 ? g.team1 : g.team2;
       g.loser  = (g.setsWon1||0) >= 2 ? g.team2 : g.team1;
-      if (state.timers[currentGameId]) pauseTimer(currentGameId);
-      propagateResult(currentGameId);
+      if (state.timers[gid]) pauseTimer(gid);
+      propagateResult(gid);
       populateKnockoutTeams(); populateBBKnockoutTeams(); populateVBKnockoutTeams();
     } else {
       g.currentSet = curSet + 1;
@@ -2024,16 +2036,19 @@ function endSet(side) {
       g.score2 = 0;
     }
     saveState(); renderScoreCard(); renderStatus(); buildGameSelect(); renderGameMeta();
+    renderLiveControl();
   });
 }
 
-function undoLastSet() {
-  const g = state.games[currentGameId];
+function undoLastSet(gameId) {
+  const g = state.games[gameId || currentGameId];
   if (!g || g.sport !== 'volleyball') return;
-  const curSet = g.currentSet || 0;
-  if (curSet === 0) return;
-  showConfirm(`Undo Set ${curSet} and revert to that set's score?`, () => {
-    const prev = curSet - 1;
+  // Undo the highest completed set, not currentSet-1: on the deciding set the
+  // match goes final without advancing currentSet, so currentSet-1 points at
+  // the wrong set and would credit the undo to the wrong team.
+  const prev = (g.sets || []).reduce((last, x, i) => (x && x.done ? i : last), -1);
+  if (prev < 0) return;
+  showConfirm(`Undo Set ${prev + 1} and revert to that set's score?`, () => {
     const set = (g.sets || [])[prev];
     if (!set || !set.done) return;
     if (g.status === 'final') { g.status = 'live'; g.winner = null; g.loser = null; }
@@ -2045,6 +2060,7 @@ function undoLastSet() {
     g.currentSet = prev;
     g.ts = Date.now();
     saveState(); renderScoreCard(); renderStatus(); buildGameSelect(); renderGameMeta();
+    renderLiveControl();
   });
 }
 
@@ -3385,6 +3401,28 @@ function lcLogHtml(g) {
   </div>`).join('');
 }
 
+// Volleyball in Live Control: current set score plus "won this set" buttons.
+// Without these the scorekeeper can only move point totals and setsWon stays 0.
+function lcVBSetBlock(g) {
+  const cur = g.currentSet || 0;
+  const sets = g.sets || [];
+  const done = (sets || []).filter(x => x && x.done)
+    .map((x, i) => `S${i + 1} ${x.s1}-${x.s2}`).join('  ·  ');
+  const isFinal = g.status === 'final';
+  const btns = isFinal ? '' : `
+    <div class="lc-vbbtns">
+      <button class="lc-vbbtn" onclick="endSet('team1','${g.id}')">✓ Set to ${g.team1}</button>
+      <button class="lc-vbbtn" onclick="endSet('team2','${g.id}')">✓ Set to ${g.team2}</button>
+      ${cur > 0 ? `<button class="lc-vbbtn undo" onclick="undoLastSet('${g.id}')">↺ Undo S${cur}</button>` : ''}
+    </div>`;
+  return `<div class="lc-vbsets">
+    <div class="lc-vbhd">SETS <strong>${g.setsWon1 || 0} – ${g.setsWon2 || 0}</strong>
+      <span class="lc-vbcur">Set ${Math.min(cur + 1, 3)} in progress</span></div>
+    ${done ? `<div class="lc-vbdone">${done}</div>` : ''}
+    ${btns}
+  </div>`;
+}
+
 function lcCard(court) {
   const g = lcCurrentGame(court, lcSport);
   const label = court.replace(/^(Soccer |Basketball |)/,'');
@@ -3415,6 +3453,7 @@ function lcCard(court) {
       <button class="lc-tbtn setclk" onclick="applyClockInput('${g.id}','lc-clockin-${g.id}')">⏱ Set</button>
       ${g.status!=='final'?`<button class="lc-tbtn end" onclick="lcEnd('${g.id}')">✅ End</button>`:'<span style="color:#86efac;font-size:11px;font-weight:700;align-self:center">FINAL</span>'}
     </div>
+    ${g.sport==='volleyball' ? lcVBSetBlock(g) : ''}
     <div class="lc-teams">
       <div class="lc-tcol">
         <div class="lc-tname">${g.team1}</div>
