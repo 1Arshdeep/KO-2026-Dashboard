@@ -1528,9 +1528,11 @@ function populateBBKnockoutTeams() {
   const rrGames = Object.values(state.games).filter(g =>
     g.sport === 'basketball' && g.phase === 'rr'
   );
-  if (!rrGames.length) return;
-  if (rrGames.filter(g => g.status === 'final').length < rrGames.length) return;
-
+  const bbLocked = (typeof FINAL_STANDINGS !== 'undefined') && FINAL_STANDINGS.basketball;
+  if (!bbLocked) {
+    if (!rrGames.length) return;
+    if (rrGames.filter(g => g.status === 'final').length < rrGames.length) return;
+  }
   const s = computeRRStandings('basketball');
   const seeds = [0, 1, 2, 3].map(i => (s[i] || {}).team || 'TBD');
 

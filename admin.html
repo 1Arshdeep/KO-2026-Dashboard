@@ -3250,7 +3250,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ===== INIT =====
-const BB_SCHEMA_V = 27;  // v27: locked FINAL Day-1 standings + Day-2 bracket seeds
+const BB_SCHEMA_V = 28;  // v28: seed KO brackets from locked standings (no all-games-final gate)
 
 function needsRebuild(games, schemaV) {
   const list = Object.values(games || {});
@@ -3348,9 +3348,11 @@ function populateBBKnockoutTeams() {
   const rrGames = Object.values(state.games).filter(g =>
     g.sport === 'basketball' && g.phase === 'rr'
   );
-  if (!rrGames.length) return;
-  if (rrGames.filter(g => g.status === 'final').length < rrGames.length) return;
-
+  const bbLocked = (typeof FINAL_STANDINGS !== 'undefined') && FINAL_STANDINGS.basketball;
+  if (!bbLocked) {
+    if (!rrGames.length) return;
+    if (rrGames.filter(g => g.status === 'final').length < rrGames.length) return;
+  }
   const s = computeRRStandings('basketball');
   const seed = i => (s[i] || {}).team || 'TBD';  // i is 0-based (seed #1 = index 0)
   // TOP-8 quarterfinals: QF1 #1v#8, QF2 #4v#5, QF3 #2v#7, QF4 #3v#6
@@ -3364,8 +3366,11 @@ function populateBBKnockoutTeams() {
 // Volleyball TOP-4 knockout: SF1 #1v#4, SF2 #2v#3, once all RR games are final.
 function populateVBKnockoutTeams() {
   const rrGames = Object.values(state.games).filter(g => g.sport === 'volleyball' && g.phase === 'rr');
-  if (!rrGames.length) return;
-  if (rrGames.filter(g => g.status === 'final').length < rrGames.length) return;
+  const vbLocked = (typeof FINAL_STANDINGS !== 'undefined') && FINAL_STANDINGS.volleyball;
+  if (!vbLocked) {
+    if (!rrGames.length) return;
+    if (rrGames.filter(g => g.status === 'final').length < rrGames.length) return;
+  }
   const s = computeRRStandings('volleyball');
   const seed = i => (s[i] || {}).team || 'TBD';
   const SF = { 'Semifinal 1':[0,3], 'Semifinal 2':[1,2] };
