@@ -1184,26 +1184,87 @@ function formatCountUp(sec) {
   return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
 }
 
+// Winner of a set: an explicit admin award (w) first, else the higher score.
+function vbSetWinnerSide(set) {
+  if (!set) return null;
+  if (set.w === 'team1' || set.w === 'team2') return set.w;
+  if ((set.s1 || 0) > (set.s2 || 0)) return 'team1';
+  if ((set.s2 || 0) > (set.s1 || 0)) return 'team2';
+  return null;
+}
+
+// Count sets won straight from the set scores. Do not trust setsWon1/setsWon2:
+// a scorekeeper laptop running older code never updates them, which left the
+// TV showing 0-0 while the per-set scores clearly showed a winner.
+function vbSetsWon(g) {
+  const sets = g.sets || [];
+  const curSet = g.currentSet || 0;
+  const isDone = g.status === 'final';
+  let w1 = 0, w2 = 0, counted = 0;
+  const liveAny = (g.score1 || 0) > 0 || (g.score2 || 0) > 0;
+  sets.forEach((st, i) => {
+    const played = st && (st.done || (st.s1 || 0) > 0 || (st.s2 || 0) > 0);
+    if (!played) return;
+    // the set actually being played right now does not count yet
+    if (i === curSet && !isDone && (liveAny || !played)) return;
+    counted++;
+    const side = vbSetWinnerSide(st);
+    if (side === 'team1') w1++; else if (side === 'team2') w2++;
+  });
+  // final match whose last set was never banked into sets[] - count the live score
+  const curStored = sets[curSet] && ((sets[curSet].s1 || 0) > 0 || (sets[curSet].s2 || 0) > 0);
+  if (isDone && liveAny && !curStored) {
+    counted++;
+    if ((g.score1 || 0) > (g.score2 || 0)) w1++;
+    else if ((g.score2 || 0) > (g.score1 || 0)) w2++;
+  }
+  // no usable set data - fall back to whatever the admin stored
+  if (!counted) return [g.setsWon1 || 0, g.setsWon2 || 0];
+  return [w1, w2];
+}
+
+// Resolve one cell of the set grid.
+// Scorekeeper laptops on older code leave currentSet/score out of step with the
+// stored sets (e.g. currentSet 0, live 0-0, but sets[0] already holds 15-5), so
+// a stored score always wins over an empty live score.
+function vbCell(g, i, team, isLv, isDone) {
+  const set = (g.sets || [])[i];
+  const curSet = g.currentSet || 0;
+  const liveVal = team === 1 ? (g.score1 || 0) : (g.score2 || 0);
+  const liveAny = (g.score1 || 0) > 0 || (g.score2 || 0) > 0;
+  const storedAny = !!set && ((set.s1 || 0) > 0 || (set.s2 || 0) > 0);
+  const isCur = i === curSet && (isLv || isDone);
+
+  if (isCur && (liveAny || !storedAny)) {
+    if (isLv) return { val: liveVal, kind: 'live' };
+    // match already final - the last set is complete, not "in play"
+    const side = (g.score1 || 0) > (g.score2 || 0) ? 'team1'
+               : (g.score2 || 0) > (g.score1 || 0) ? 'team2' : null;
+    const won = side === (team === 1 ? 'team1' : 'team2');
+    return { val: liveVal, kind: won ? 'won' : 'plain' };
+  }
+  if (storedAny || (set && set.done)) {
+    const my = team === 1 ? (set.s1 || 0) : (set.s2 || 0);
+    const won = vbSetWinnerSide(set) === (team === 1 ? 'team1' : 'team2');
+    return { val: my, kind: won ? 'won' : 'plain' };
+  }
+  return { val: null, kind: 'empty' };
+}
+
 function renderVolleyballSetScore(g) {
   const sets = g.sets || [];
   const curSet = g.currentSet || 0;
-  const sw1 = g.setsWon1 || 0;
-  const sw2 = g.setsWon2 || 0;
+  const [sw1, sw2] = vbSetsWon(g);
   const isLv = (isLiveByTime(g) && g.status !== 'final') || g.status === 'live';
   const isDone = g.status === 'final';
   const setCell = (i, team) => {
-    const set = sets[i];
-    const liveVal = team === 1 ? g.score1 : g.score2;
-    if (set && set.done) {
-      const my = team === 1 ? set.s1 : set.s2;
-      const their = team === 1 ? set.s2 : set.s1;
-      return `<span class="vb-sset${my > their ? ' vb-sset-won' : ''}">${my}</span>`;
-    }
-    if (i === curSet && (isLv || isDone)) {
+    const c = vbCell(g, i, team, isLv, isDone);
+    if (c.kind === 'live') {
       const dot = isLv ? '<span class="vb-live-dot">●</span>' : '';
-      return `<span class="vb-sset vb-sset-live">${dot}${liveVal}</span>`;
+      return `<span class="vb-sset vb-sset-live">${dot}${c.val}</span>`;
     }
-    return `<span class="vb-sset vb-sset-empty">–</span>`;
+    if (c.kind === 'empty') return `<span class="vb-sset vb-sset-empty">–</span>`;
+    return `<span class="vb-sset${c.kind === 'won' ? ' vb-sset-won' : ''}">${c.val}</span>`;
   };
   return `<div class="vb-score-wrap">
     <div class="vb-sr"><span class="vb-sw${sw1>=2?' vb-sw-won':''}">${sw1}</span>${[0,1,2].map(i=>setCell(i,1)).join('')}</div>
@@ -1215,33 +1276,15 @@ function renderVBTVSetScore(g) {
   // Large-format version for TV screens
   const sets = g.sets || [];
   const curSet = g.currentSet || 0;
-  const sw1 = g.setsWon1 || 0;
-  const sw2 = g.setsWon2 || 0;
+  const [sw1, sw2] = vbSetsWon(g);
   const isLv = (isLiveByTime(g) && g.status !== 'final') || g.status === 'live';
   const isDone = g.status === 'final';
-  // A set's winner: explicit award (w) first, otherwise the higher score.
-  const winnerSide = set => {
-    if (!set) return null;
-    if (set.w === 'team1' || set.w === 'team2') return set.w;
-    if ((set.s1||0) > (set.s2||0)) return 'team1';
-    if ((set.s2||0) > (set.s1||0)) return 'team2';
-    return null;
-  };
+  const winnerSide = vbSetWinnerSide;
   const setCell = (i, team) => {
-    const set = sets[i];
-    const liveVal = team === 1 ? g.score1 : g.score2;
-    if (i === curSet && (isLv || isDone)) {
-      return `<span class="tvh-vb-sset tvh-vb-sset-live">${liveVal}</span>`;
-    }
-    // show any set that has been played, not just ones explicitly ended -
-        // switching sets in admin used to make the previous score vanish here
-    const played = set && (set.done || (set.s1||0) > 0 || (set.s2||0) > 0);
-    if (played) {
-      const my = team === 1 ? set.s1 : set.s2;
-      const won = winnerSide(set) === (team === 1 ? 'team1' : 'team2');
-      return `<span class="tvh-vb-sset${won?' tvh-vb-sset-won':''}">${my||0}</span>`;
-    }
-    return `<span class="tvh-vb-sset tvh-vb-sset-empty">–</span>`;
+    const c = vbCell(g, i, team, isLv, isDone);
+    if (c.kind === 'live')  return `<span class="tvh-vb-sset tvh-vb-sset-live">${c.val}</span>`;
+    if (c.kind === 'empty') return `<span class="tvh-vb-sset tvh-vb-sset-empty">–</span>`;
+    return `<span class="tvh-vb-sset${c.kind === 'won' ? ' tvh-vb-sset-won' : ''}">${c.val}</span>`;
   };
   const row = (team, name) => `<div class="tvh-vb-row">
     <div class="tvh-vb-tname">${name}</div>
