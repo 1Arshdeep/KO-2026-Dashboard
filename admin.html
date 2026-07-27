@@ -1821,6 +1821,54 @@ function getGameEmoji(game) {
 }
 
 // ===== UI RENDER =====
+// Turn a bracket placeholder into something a scorekeeper can read.
+// Resolves to the real team when it can (seed from standings, winner/loser of a
+// finished game); otherwise gives plain English instead of a raw code.
+function displayTeam(name, sport) {
+  if (!name) return 'TBD';
+  const n = String(name).trim();
+
+  // #1 .. #8  -> seed from the sport's standings
+  let m = n.match(/^#(\d+)$/);
+  if (m) {
+    const i = parseInt(m[1], 10) - 1;
+    try {
+      const st = computeRRStandings(sport) || [];
+      if (st[i] && st[i].team) return applyKoSubs(st[i].team);
+    } catch (e) {}
+    return `Seed #${m[1]}`;
+  }
+
+  // A1 / B2 -> soccer group position
+  m = n.match(/^([AB])([1-9])$/);
+  if (m) {
+    try {
+      const st = computeGroupStandings(m[1]) || [];
+      const row = st[parseInt(m[2], 10) - 1];
+      if (row && row.team) return applyKoSubs(row.team);
+    } catch (e) {}
+    return `Group ${m[1]} #${m[2]}`;
+  }
+
+  // BBQF1W / BBSF2L / VBSF1W / SF1L -> that game's winner or loser
+  m = n.match(/^(BB|VB)?(QF|SF)(\d)(W|L)$/);
+  if (m) {
+    const roundName = (m[2] === 'QF' ? 'Quarterfinal ' : 'Semifinal ') + m[3];
+    const wantWin = m[4] === 'W';
+    const sp = m[1] === 'BB' ? 'basketball' : m[1] === 'VB' ? 'volleyball' : sport;
+    const src = Object.values(state.games).find(x =>
+      x.sport === sp && x.round === roundName && x.phase === 'ko');
+    if (src && src.status === 'final') {
+      const t = wantWin ? src.winner : src.loser;
+      if (t) return applyKoSubs(t);
+    }
+    const short = (m[2] === 'QF' ? 'QF' : 'SF') + m[3];
+    return `${short} ${wantWin ? 'Winner' : 'Loser'}`;
+  }
+
+  return n;
+}
+
 function buildGameSelect() {
   const sel = document.getElementById('game-select');
   const prevId = currentGameId;
@@ -1840,7 +1888,8 @@ function buildGameSelect() {
     opt.value = g.id;
     const timeStr = formatTs(getEffectiveStart(g));
     const emoji = getGameEmoji(g);
-    opt.textContent = `[${timeStr}] ${g.court} — ${g.team1} vs ${g.team2} ${emoji}`;
+    const t1 = displayTeam(g.team1, g.sport), t2 = displayTeam(g.team2, g.sport);
+    opt.textContent = `[${timeStr}] ${g.court} — ${t1} vs ${t2} ${emoji}`;
     opt.selected = g.id === prevId;
     sel.appendChild(opt);
   });
@@ -1875,12 +1924,14 @@ function renderGameMeta() {
 
 function renderScoreCard() {
   const g = currentGameId ? state.games[currentGameId] : null;
-  document.getElementById('name1').textContent = g ? g.team1 : '—';
-  document.getElementById('name2').textContent = g ? g.team2 : '—';
+  const dt1 = g ? displayTeam(g.team1, g.sport) : '—';
+  const dt2 = g ? displayTeam(g.team2, g.sport) : '—';
+  document.getElementById('name1').textContent = dt1;
+  document.getElementById('name2').textContent = dt2;
   document.getElementById('score1').textContent = g ? g.score1 : 0;
   document.getElementById('score2').textContent = g ? g.score2 : 0;
-  document.getElementById('dq-name1').textContent = g ? g.team1 : 'Team 1';
-  document.getElementById('dq-name2').textContent = g ? g.team2 : 'Team 2';
+  document.getElementById('dq-name1').textContent = g ? dt1 : 'Team 1';
+  document.getElementById('dq-name2').textContent = g ? dt2 : 'Team 2';
   const tabs = document.getElementById('vb-settabs');
   const title = document.getElementById('score-card-title');
   if (tabs) {
@@ -3530,11 +3581,11 @@ function lcCard(court) {
   const ts = lcTimerState(g.id);
   const cardCls = ts==='final'?'final':ts==='run'?'live':ts==='pause'?'paused':'';
   const evDefs = LC_EVT_DEFS[g.sport]||[];
-  const teamBlock = (teamKey, name) => `
+  const teamBlock = (teamKey, rawName) => { const name = displayTeam(rawName, g.sport); return `
     <div class="lc-evtcol">
       <div class="lc-evthd">${name}</div>
       ${evDefs.map(d=>`<button class="lc-ebtn ${d.cls}" onclick="lcLogEvent('${g.id}','${teamKey}','${d.t}')">${d.ic} ${d.lb}</button>`).join('')}
-    </div>`;
+    </div>`; };
   return `<div class="lc-card ${cardCls}" id="lc-card-${g.id}">
     <div class="lc-hd">
       <div><div class="lc-court">${SPORT_ICON_MAP[g.sport]||''} ${label}</div><div class="lc-round">${g.round} · ${formatTs(getEffectiveStart(g))}</div></div>
@@ -3555,7 +3606,7 @@ function lcCard(court) {
     ${g.sport==='volleyball' ? lcVBSetBlock(g) : ''}
     <div class="lc-teams">
       <div class="lc-tcol">
-        <div class="lc-tname">${g.team1}</div>
+        <div class="lc-tname">${displayTeam(g.team1, g.sport)}</div>
         <div class="lc-score" id="lc-score-${g.id}-1">${g.score1}</div>
         <div class="lc-scbtns">
           <button class="lc-scbtn" onclick="lcScore('${g.id}',1,-1)">−1</button>
@@ -3566,7 +3617,7 @@ function lcCard(court) {
       </div>
       <div class="lc-vs">VS</div>
       <div class="lc-tcol">
-        <div class="lc-tname">${g.team2}</div>
+        <div class="lc-tname">${displayTeam(g.team2, g.sport)}</div>
         <div class="lc-score" id="lc-score-${g.id}-2">${g.score2}</div>
         <div class="lc-scbtns">
           <button class="lc-scbtn" onclick="lcScore('${g.id}',2,-1)">−1</button>
