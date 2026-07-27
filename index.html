@@ -1287,7 +1287,7 @@ function renderVBTVSetScore(g) {
     return `<span class="tvh-vb-sset${c.kind === 'won' ? ' tvh-vb-sset-won' : ''}">${c.val}</span>`;
   };
   const row = (team, name) => `<div class="tvh-vb-row">
-    <div class="tvh-vb-tname">${name}</div>
+    <div class="tvh-vb-tname">${displayTeam(name, g.sport)}</div>
     <div class="tvh-vb-sw${(team===1?sw1:sw2)>=2?' tvh-vb-sw-won':''}">${team===1?sw1:sw2}</div>
     ${[0,1,2].map(i=>setCell(i,team)).join('')}
   </div>`;
@@ -2376,6 +2376,49 @@ function buildBracketSection(sport, phase, label, opts) {
   return html;
 }
 
+// Resolve a bracket placeholder to the real team where possible, otherwise
+// render plain English ("SF1 Winner") rather than a raw code.
+function displayTeam(name, sport) {
+  if (!name) return 'TBD';
+  const n = String(name).trim();
+
+  let m = n.match(/^#(\d+)$/);
+  if (m) {
+    const i = parseInt(m[1], 10) - 1;
+    try {
+      const st = computeRRStandings(sport) || [];
+      if (st[i] && st[i].team) return applyKoSubs(st[i].team);
+    } catch (e) {}
+    return `Seed #${m[1]}`;
+  }
+
+  m = n.match(/^([AB])([1-9])$/);
+  if (m) {
+    try {
+      const st = computeGroupStandings(m[1]) || [];
+      const row = st[parseInt(m[2], 10) - 1];
+      if (row && row.team) return applyKoSubs(row.team);
+    } catch (e) {}
+    return `Group ${m[1]} #${m[2]}`;
+  }
+
+  m = n.match(/^(BB|VB)?(QF|SF)(\d)(W|L)$/);
+  if (m) {
+    const roundName = (m[2] === 'QF' ? 'Quarterfinal ' : 'Semifinal ') + m[3];
+    const wantWin = m[4] === 'W';
+    const sp = m[1] === 'BB' ? 'basketball' : m[1] === 'VB' ? 'volleyball' : sport;
+    const src = Object.values(state.games).find(x =>
+      x.sport === sp && x.round === roundName && x.phase === 'ko');
+    if (src && src.status === 'final') {
+      const t = wantWin ? src.winner : src.loser;
+      if (t) return applyKoSubs(t);
+    }
+    return `${m[2]}${m[3]} ${wantWin ? 'Winner' : 'Loser'}`;
+  }
+
+  return n;
+}
+
 function isTbdToken(t) {
   return /^T\d+$/.test(t) || t === 'TBD' || /^[AB]\d$/.test(t) || /^SF[12][WL]$/.test(t) ||
     /^BBSF\d+[WL]?$/.test(t) || /^VBSF\d+[WL]?$/.test(t) || /^BBQF\d+W$/.test(t) || /^#\d+$/.test(t);
@@ -2395,12 +2438,12 @@ function matchupCard(g) {
     <div class="match-time">${timeStr} · ${g.court}</div>
     <div class="tr ${t1w?'won':''} ${!t1w&&isDone?'lost':''} ${g.dq==='team1'?'dq-row':''}">
       <span class="tr-seed"></span>
-      <span class="tr-name ${isTbdToken(g.team1)?'tbd':''}">${g.team1}${g.dq==='team1'?' 🚫':''}</span>
+      <span class="tr-name ${isTbdToken(g.team1)?'tbd':''}">${displayTeam(g.team1, g.sport)}${g.dq==='team1'?' 🚫':''}</span>
       <span class="tr-score">${isDone||isLv?(g.sport==='volleyball'?(g.setsWon1||0):g.score1):''}</span>
     </div>
     <div class="tr ${t2w?'won':''} ${!t2w&&isDone?'lost':''} ${g.dq==='team2'?'dq-row':''}">
       <span class="tr-seed"></span>
-      <span class="tr-name ${isTbdToken(g.team2)?'tbd':''}">${g.team2}${g.dq==='team2'?' 🚫':''}</span>
+      <span class="tr-name ${isTbdToken(g.team2)?'tbd':''}">${displayTeam(g.team2, g.sport)}${g.dq==='team2'?' 🚫':''}</span>
       <span class="tr-score">${isDone||isLv?(g.sport==='volleyball'?(g.setsWon2||0):g.score2):''}</span>
     </div>
   </div>`;
@@ -3238,12 +3281,12 @@ function tvHashRenderCourt(screen) {
       ${statusLabel ? `<div class="tvh-single-status ${statusClass}">${statusLabel}</div>` : ''}
       ${isVB && showScore ? renderVBTVSetScore(game) : `<div class="tvh-single-matchup">
         <div class="tvh-single-team">
-          <div class="tvh-single-tname">${game.team1}</div>
+          <div class="tvh-single-tname">${displayTeam(game.team1, game.sport)}</div>
           ${showScore ? `<div class="tvh-single-score">${s1}</div>` : ''}
         </div>
         <div class="tvh-single-vs">VS</div>
         <div class="tvh-single-team">
-          <div class="tvh-single-tname">${game.team2}</div>
+          <div class="tvh-single-tname">${displayTeam(game.team2, game.sport)}</div>
           ${showScore ? `<div class="tvh-single-score">${s2}</div>` : ''}
         </div>
       </div>`}
@@ -3255,7 +3298,7 @@ function tvHashRenderCourt(screen) {
           })()) : ''}
       <div class="tvh-single-round" style="color:${sc}">${game.round || ''}</div>
       ${isLive ? '' : tvHashRosterHtml(game)}
-      ${nextUp ? `<div class="tvh-single-next">AFTER THIS: <strong>${nextUp.team1} vs ${nextUp.team2}</strong> · ${nextUp.round || ''} · ${fmtTime(effectiveStart(nextUp))}</div>` : ''}`;
+      ${nextUp ? `<div class="tvh-single-next">AFTER THIS: <strong>${displayTeam(nextUp.team1, nextUp.sport)} vs ${displayTeam(nextUp.team2, nextUp.sport)}</strong> · ${nextUp.round || ''} · ${fmtTime(effectiveStart(nextUp))}</div>` : ''}`;
   }
   const hasClock = /tvh-gameclock/.test(body);
   el.innerHTML = tvHashHdr(`${SPORT_ICON[sport]} ${displayCourt}`) + `<div class="tvh-single-body${hasClock?' has-clock':''}">${body}</div>`;
