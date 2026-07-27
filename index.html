@@ -1137,7 +1137,8 @@ function renderBanner() {
   banner.classList.remove('empty');
 
   const cards = liveGames.map(g => {
-    const t1lead = g.sport==='volleyball' ? (g.setsWon1||0) >= (g.setsWon2||0) : g.score1 >= g.score2;
+    const [_lw1, _lw2] = g.sport==='volleyball' ? vbDisplayScore(g) : [0,0];
+    const t1lead = g.sport==='volleyball' ? _lw1 >= _lw2 : g.score1 >= g.score2;
     const elap = g.status === 'live' ? elapsedMin(g) : null;
     const eSec = g.status === 'live' ? elapsedSec(g) : null;
     const durSec = (g.slotMin || 25) * 60;
@@ -1166,11 +1167,11 @@ function renderBanner() {
       </div>
       <div class="lb-team ${t1lead?'leader':''}">
         <span class="lb-team-name">${g.team1}${g.dq==='team1'?' 🚫':''}</span>
-        <span class="lb-team-score">${g.sport==='volleyball'?(g.setsWon1||0):g.score1}</span>
+        <span class="lb-team-score">${g.sport==='volleyball'?_lw1:g.score1}</span>
       </div>
       <div class="lb-team ${!t1lead?'leader':''}">
         <span class="lb-team-name">${g.team2}${g.dq==='team2'?' 🚫':''}</span>
-        <span class="lb-team-score">${g.sport==='volleyball'?(g.setsWon2||0):g.score2}</span>
+        <span class="lb-team-score">${g.sport==='volleyball'?_lw2:g.score2}</span>
       </div>
       ${nextGame ? `<div class="lb-card-next">Next: ${nextGame.team1} vs ${nextGame.team2} @ ${fmtTime(effectiveStart(nextGame))}</div>` : ''}
     </div>`;
@@ -1249,6 +1250,19 @@ function vbCell(g, i, team, isLv, isDone) {
     return { val: my, kind: won ? 'won' : 'plain' };
   }
   return { val: null, kind: 'empty' };
+}
+
+// What to print as a volleyball match's score.
+// Matches actually played in sets show sets won; matches scored as a single
+// game (the Saturday round-robin) have empty sets and their real score in
+// score1/score2, so show that instead of a meaningless 0-0.
+function vbPlayedInSets(g) {
+  return (g.sets || []).some(st => st && (st.done || (st.s1 || 0) > 0 || (st.s2 || 0) > 0));
+}
+
+function vbDisplayScore(g) {
+  if (vbPlayedInSets(g)) return vbSetsWon(g);
+  return [g.score1 || 0, g.score2 || 0];
 }
 
 function renderVolleyballSetScore(g) {
@@ -2433,18 +2447,19 @@ function matchupCard(g) {
   const timeStr = fmtTime(effectiveStart(g)) + (dly!==0?` <span style="color:${dly>0?'var(--live)':'var(--green)'};font-size:9px">${dly>0?'+':''}${dly}m</span>`:'');
   const knownTeams = state.teams[g.sport] || [];
   const isGhost = knownTeams.length > 0 && !knownTeams.includes(g.team1) && !knownTeams.includes(g.team2);
+  const [_mw1, _mw2] = g.sport === 'volleyball' ? vbDisplayScore(g) : [0, 0];
 
   return `<div class="matchup ${isLv?'is-live':''} ${isGhost&&!isDone?'matchup-ghost':''}">
     <div class="match-time">${timeStr} · ${g.court}</div>
     <div class="tr ${t1w?'won':''} ${!t1w&&isDone?'lost':''} ${g.dq==='team1'?'dq-row':''}">
       <span class="tr-seed"></span>
       <span class="tr-name ${isTbdToken(g.team1)?'tbd':''}">${displayTeam(g.team1, g.sport)}${g.dq==='team1'?' 🚫':''}</span>
-      <span class="tr-score">${isDone||isLv?(g.sport==='volleyball'?(g.setsWon1||0):g.score1):''}</span>
+      <span class="tr-score">${isDone||isLv?(g.sport==='volleyball'?_mw1:g.score1):''}</span>
     </div>
     <div class="tr ${t2w?'won':''} ${!t2w&&isDone?'lost':''} ${g.dq==='team2'?'dq-row':''}">
       <span class="tr-seed"></span>
       <span class="tr-name ${isTbdToken(g.team2)?'tbd':''}">${displayTeam(g.team2, g.sport)}${g.dq==='team2'?' 🚫':''}</span>
-      <span class="tr-score">${isDone||isLv?(g.sport==='volleyball'?(g.setsWon2||0):g.score2):''}</span>
+      <span class="tr-score">${isDone||isLv?(g.sport==='volleyball'?_mw2:g.score2):''}</span>
     </div>
   </div>`;
 }
@@ -3261,8 +3276,9 @@ function tvHashRenderCourt(screen) {
     const {game, isLive, isFinal, remaining} = info;
     const showScore = isLive || isFinal;
     const isVB = game.sport === 'volleyball';
-    const s1 = showScore ? (isVB ? (game.setsWon1||0) : game.score1) : '';
-    const s2 = showScore ? (isVB ? (game.setsWon2||0) : game.score2) : '';
+    const [_vw1, _vw2] = isVB ? vbDisplayScore(game) : [0, 0];
+    const s1 = showScore ? (isVB ? _vw1 : game.score1) : '';
+    const s2 = showScore ? (isVB ? _vw2 : game.score2) : '';
     const nextUp = remaining && remaining[0];
     const statusClass = isLive ? 'tvh-status-live' : isFinal ? 'tvh-status-done' : 'tvh-status-next';
     // Live game clock — driven by the scorekeeper's timer (synced via Firebase)
@@ -3316,8 +3332,9 @@ function tvHashCourtCard(court) {
   const {game, isLive, isFinal, remaining} = info;
   const showScore = isLive || isFinal;
   const isVB = game.sport === 'volleyball';
-  const s1 = showScore ? (isVB ? (game.setsWon1||0) : game.score1) : '';
-  const s2 = showScore ? (isVB ? (game.setsWon2||0) : game.score2) : '';
+  const [_vw1, _vw2] = isVB ? vbDisplayScore(game) : [0, 0];
+  const s1 = showScore ? (isVB ? _vw1 : game.score1) : '';
+  const s2 = showScore ? (isVB ? _vw2 : game.score2) : '';
   const nextUp = remaining && remaining[0];
   const nextHtml = nextUp
     ? `<div class="tvh-card-next"><span class="tvh-card-next-lbl">${(isLive || isFinal) ? 'UP NEXT' : 'AFTER THIS'}</span> <strong>${nextUp.team1} vs ${nextUp.team2}</strong> · ${nextUp.round || ''} · ${fmtTime(effectiveStart(nextUp))}</div>`
@@ -3365,8 +3382,9 @@ function tvHashRenderFinal(screen) {
   } else {
     const isDone = g.status === 'final', isLive = g.status === 'live';
     const isVBf = g.sport === 'volleyball';
-    const s1 = (isLive || isDone) ? (isVBf ? (g.setsWon1||0) : g.score1) : '—';
-    const s2 = (isLive || isDone) ? (isVBf ? (g.setsWon2||0) : g.score2) : '—';
+    const [_gw1, _gw2] = isVBf ? vbDisplayScore(g) : [0, 0];
+    const s1 = (isLive || isDone) ? (isVBf ? _gw1 : g.score1) : '—';
+    const s2 = (isLive || isDone) ? (isVBf ? _gw2 : g.score2) : '—';
     const t1w = isDone && g.winner === g.team1, t2w = isDone && g.winner === g.team2;
     body = `
       ${isDone && g.winner ? `<div class="tvh-champion-banner" style="background:${sc}">🏆 CHAMPION: ${g.winner} 🏆</div>` : ''}
