@@ -1261,8 +1261,15 @@ function vbPlayedInSets(g) {
 }
 
 function vbDisplayScore(g) {
-  if (vbPlayedInSets(g)) return vbSetsWon(g);
-  return [g.score1 || 0, g.score2 || 0];
+  // Show the points on the board, not a sets-won tally: the live/most recent
+  // set score if there is one, otherwise the last completed set.
+  if ((g.score1 || 0) > 0 || (g.score2 || 0) > 0) return [g.score1 || 0, g.score2 || 0];
+  const played = (g.sets || []).filter(st => st && (st.done || (st.s1 || 0) > 0 || (st.s2 || 0) > 0));
+  if (played.length) {
+    const last = played[played.length - 1];
+    return [last.s1 || 0, last.s2 || 0];
+  }
+  return [0, 0];
 }
 
 function renderVolleyballSetScore(g) {
