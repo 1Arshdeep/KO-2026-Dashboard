@@ -1642,7 +1642,7 @@ function getPodium(sport) {
     // winner/loser can hold an unresolved bracket token (a scorekeeper laptop
     // writes VBSF1W back instead of the team) - resolve it, and show TBD rather
     // than a placeholder if it still is not decided
-    const t = displayTeam(raw, g.sport);
+    const t = displayTeam(raw, g.sport || sport);
     if (!t || t === 'TBD') return null;
     if (/^(QF|SF)\d+\s+(Winner|Loser)$/i.test(t)) return null;
     if (/^Seed #/i.test(t) || /^Group [AB] #/i.test(t)) return null;
@@ -2513,7 +2513,7 @@ function displayTeam(name, sport) {
       x.sport === sp && x.round === roundName && x.phase === 'ko');
     if (src && src.status === 'final') {
       const t = wantWin ? src.winner : src.loser;
-      if (t) return applyKoSubs(t);
+      if (t) return displayTeam(t, sp);
     }
     return `${m[2]}${m[3]} ${wantWin ? 'Winner' : 'Loser'}`;
   }
