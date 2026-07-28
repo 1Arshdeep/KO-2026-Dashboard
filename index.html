@@ -637,6 +637,24 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
 .tvh-vb-tname { flex:1 1 auto; min-width:0; font-size:clamp(24px,3.4vw,78px); font-weight:900;
   font-family:'Archivo',sans-serif; line-height:1.05; overflow-wrap:anywhere;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden; }
+
+/* ===== DAY-2 CHAMPIONS PODIUM ===== */
+#panel-champions{margin-bottom:14px}
+.champ-wrap{background:linear-gradient(135deg,rgba(212,160,23,.13),rgba(212,160,23,.03));
+  border:1px solid var(--gold);border-radius:12px;padding:14px 16px}
+.champ-hdr{font-size:12px;font-weight:900;letter-spacing:2px;color:var(--gold);
+  text-align:center;margin-bottom:12px;font-family:'Archivo',sans-serif}
+.champ-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.champ-card{background:rgba(0,0,0,.22);border:1px solid var(--gray3);border-radius:10px;padding:12px}
+.champ-sport{font-size:12px;font-weight:900;letter-spacing:1.5px;text-align:center;
+  margin-bottom:10px;font-family:'Archivo',sans-serif}
+.champ-row{display:flex;align-items:center;gap:9px;padding:5px 0;font-size:14px;min-width:0}
+.champ-medal{font-size:17px;flex:0 0 auto;width:22px;text-align:center}
+.champ-place{font-size:10px;color:var(--dim);letter-spacing:1px;flex:0 0 62px}
+.champ-team{font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;flex:1}
+.champ-row.gold .champ-team{color:var(--gold);font-size:16px;font-weight:900}
+.champ-pending{color:var(--dim);font-style:italic;font-weight:600}
+@media(max-width:640px){ .champ-grid{grid-template-columns:1fr} }
 </style>
 <!-- Khalsa Olympics brand: fonts, icons, tokens (visual restyle only) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -747,6 +765,7 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
 
 <!-- ── DASHBOARD VIEW ── -->
 <div class="view active" id="view-dashboard">
+  <div id="panel-champions"></div>
   <div id="panel-soccer"></div>
   <div id="panel-basketball" style="display:none"></div>
   <div id="panel-volleyball" style="display:none"></div>
@@ -1609,7 +1628,61 @@ window.addEventListener('popstate', e => {
   if (e.state && e.state.sport) showSport(e.state.sport, false);
 });
 
+// Day-2 podium for a sport: Final winner/loser and the 3rd-place winner.
+function getPodium(sport) {
+  const ko = Object.values(state.games).filter(g => g.sport === sport && g.phase === 'ko');
+  // match the Final exactly - a loose /final/ also matches "Quarterfinal"
+  const isFinalRound = r => /^(grand\s+)?final$/i.test(String(r || '').trim());
+  const fin = ko.find(g => isFinalRound(g.round));
+  const third = ko.find(g => /^(3rd|third)\s*place$|bronze/i.test(String(g.round || '').trim()));
+  const pick = (g, which) => {
+    if (!g || g.status !== 'final') return null;
+    const t = which === 'w' ? g.winner : g.loser;
+    return t ? applyKoSubs(t) : null;
+  };
+  return {
+    champion: pick(fin, 'w'),
+    runnerUp: pick(fin, 'l'),
+    third: pick(third, 'w'),
+    finalGame: fin,
+    thirdGame: third
+  };
+}
+
+function renderChampions() {
+  const el = document.getElementById('panel-champions');
+  if (!el) return;
+  const SPORTS = [
+    ['soccer', '\u26bd SOCCER'],
+    ['basketball', '\ud83c\udfc0 BASKETBALL'],
+    ['volleyball', '\ud83c\udfd0 VOLLEYBALL']
+  ];
+  const podiums = SPORTS.map(([sp, label]) => [sp, label, getPodium(sp)]);
+  // nothing decided anywhere yet - stay out of the way
+  if (!podiums.some(([, , p]) => p.champion || p.runnerUp || p.third)) { el.innerHTML = ''; return; }
+
+  const row = (medal, place, team, cls) => `<div class="champ-row ${cls}">
+      <span class="champ-medal">${medal}</span>
+      <span class="champ-place">${place}</span>
+      <span class="champ-team ${team ? '' : 'champ-pending'}">${team || 'TBD'}</span>
+    </div>`;
+
+  el.innerHTML = `<div class="champ-wrap">
+    <div class="champ-hdr">\ud83c\udfc6 CHAMPIONS</div>
+    <div class="champ-grid">
+      ${podiums.map(([sp, label, p]) => `
+        <div class="champ-card">
+          <div class="champ-sport" style="color:${SPORT_COLOR[sp]}">${label}</div>
+          ${row('\ud83e\udd47', '1ST', p.champion, 'gold')}
+          ${row('\ud83e\udd48', '2ND', p.runnerUp, '')}
+          ${row('\ud83e\udd49', '3RD', p.third, '')}
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
 function renderDashboard() {
+  renderChampions();
   renderSoccerBracket();
   renderBBPanel();
   renderVBPanel();
@@ -2788,7 +2861,7 @@ function renderTVSport(sport) {
   // Count totals for header badge
   const all = Object.values(state.games).filter(g => g.sport === sport);
   const done = all.filter(g => g.status === 'final').length;
-  const champion = all.find(g => g.winner && (g.round.toLowerCase().includes('grand final') || g.round.toLowerCase().includes('champion')));
+  const champion = (() => { const t = getPodium(sport).champion; return t ? {winner: t} : null; })();
 
   el.innerHTML = `
     <div class="tv-sport-left">
