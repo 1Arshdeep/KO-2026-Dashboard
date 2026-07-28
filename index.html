@@ -1637,8 +1637,16 @@ function getPodium(sport) {
   const third = ko.find(g => /^(3rd|third)\s*place$|bronze/i.test(String(g.round || '').trim()));
   const pick = (g, which) => {
     if (!g || g.status !== 'final') return null;
-    const t = which === 'w' ? g.winner : g.loser;
-    return t ? applyKoSubs(t) : null;
+    const raw = which === 'w' ? g.winner : g.loser;
+    if (!raw) return null;
+    // winner/loser can hold an unresolved bracket token (a scorekeeper laptop
+    // writes VBSF1W back instead of the team) - resolve it, and show TBD rather
+    // than a placeholder if it still is not decided
+    const t = displayTeam(raw, g.sport);
+    if (!t || t === 'TBD') return null;
+    if (/^(QF|SF)\d+\s+(Winner|Loser)$/i.test(t)) return null;
+    if (/^Seed #/i.test(t) || /^Group [AB] #/i.test(t)) return null;
+    return t;
   };
   return {
     champion: pick(fin, 'w'),
