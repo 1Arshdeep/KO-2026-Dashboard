@@ -1638,7 +1638,7 @@ function getPodium(sport) {
   const pick = (g, which) => {
     if (!g || g.status !== 'final') return null;
     const t = which === 'w' ? g.winner : g.loser;
-    return t ? applyKoSubs(t) : null;
+    return t ? displayTeam(t, sport) : null;
   };
   return {
     champion: pick(fin, 'w'),
@@ -2505,7 +2505,7 @@ function displayTeam(name, sport) {
       x.sport === sp && x.round === roundName && x.phase === 'ko');
     if (src && src.status === 'final') {
       const t = wantWin ? src.winner : src.loser;
-      if (t) return applyKoSubs(t);
+      if (t) return displayTeam(t, sp);
     }
     return `${m[2]}${m[3]} ${wantWin ? 'Winner' : 'Loser'}`;
   }
