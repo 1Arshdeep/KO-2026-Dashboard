@@ -675,6 +675,8 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
 .st-rank{color:var(--dim);font-size:11px;width:26px}
 .st-pos{color:var(--gold);font-weight:900}
 .st-neg{color:var(--live)}
+.st-finish{color:var(--dim);font-size:11px;white-space:nowrap}
+.st-finish.st-medal{color:var(--gold);font-weight:800;font-size:12px}
 .st-form{display:flex;gap:3px;justify-content:flex-end}
 .st-pill{width:18px;height:18px;border-radius:4px;font-size:10px;font-weight:900;
   display:flex;align-items:center;justify-content:center;color:#0a0e1a}
@@ -2251,6 +2253,33 @@ function renderRRStandingsTable(sport) {
 // ══════════════════════════════════════════════════════════════
 let statsSport = 'soccer';
 
+// Where each team actually finished the tournament. Record alone does not give
+// this: a team can win more games overall and still lose the Final.
+// 1 champion, 2 runner-up, 3 bronze, 4 fourth, then knockout exit round,
+// then everyone who did not qualify.
+function computeFinishRanks(sport) {
+  const ko = Object.values(state.games).filter(g => g.sport === sport && g.phase === 'ko');
+  const nameOf = t => t ? applyKoSubs(displayTeam(t, sport)) : null;
+  const find = re => ko.find(g => re.test(String(g.round || '').trim()) && g.status === 'final');
+  const fin   = find(/^(grand\s+)?final$/i);
+  const third = find(/^(3rd|third)\s*place$|bronze/i);
+  const rank = {}, label = {};
+  const set = (team, r, lb) => {
+    if (!team || isTbdToken(team)) return;
+    if (rank[team] === undefined || r < rank[team]) { rank[team] = r; label[team] = lb; }
+  };
+  if (fin)   { set(nameOf(fin.winner), 1, '\ud83e\udd47 1st'); set(nameOf(fin.loser), 2, '\ud83e\udd48 2nd'); }
+  if (third) { set(nameOf(third.winner), 3, '\ud83e\udd49 3rd'); set(nameOf(third.loser), 4, '4th'); }
+  // knockout exits: semifinal losers already covered by the bronze match
+  ko.filter(g => /^semifinal/i.test(String(g.round || '')) && g.status === 'final')
+    .forEach(g => { set(nameOf(g.loser), 5, 'Semifinal'); });
+  ko.filter(g => /^quarterfinal/i.test(String(g.round || '')) && g.status === 'final')
+    .forEach(g => { set(nameOf(g.loser), 6, 'Quarterfinal'); });
+  // anyone else who appeared in a knockout game at all
+  ko.forEach(g => { [g.team1, g.team2].forEach(t => set(nameOf(t), 7, 'Knockout')); });
+  return { rank, label };
+}
+
 // One row per team, built from that team's completed games.
 // Volleyball uses vbDisplayScore so single-game matches count their points.
 function computeTeamStats(sport) {
@@ -2301,7 +2330,10 @@ function computeTeamStats(sport) {
     });
   });
 
+  const finish = computeFinishRanks(sport);
   const list = Object.values(rows).map(r => {
+    r.finishRank = finish.rank[r.team] !== undefined ? finish.rank[r.team] : 99;
+    r.finishLabel = finish.label[r.team] || '\u2014';
     r.diff = r.pf - r.pa;
     r.winPct = r.gp ? Math.round((r.w / r.gp) * 1000) / 10 : 0;
     r.ppg = r.gp ? Math.round((r.pf / r.gp) * 10) / 10 : 0;
@@ -2309,7 +2341,9 @@ function computeTeamStats(sport) {
     r.form = r.form.slice(-5);
     return r;
   });
-  list.sort((a,b) => b.w - a.w || b.diff - a.diff || b.pf - a.pf || a.team.localeCompare(b.team));
+  // tournament finish first, then record for teams that finished level
+  list.sort((a,b) => a.finishRank - b.finishRank || b.w - a.w || b.diff - a.diff
+                     || b.pf - a.pf || a.team.localeCompare(b.team));
   return list;
 }
 
@@ -2360,6 +2394,7 @@ function renderTeamStats() {
 
   const body = rows.map((r, i) => `<tr>
       <td><span class="st-rank">${i+1}</span> <span class="st-team">${r.team}</span></td>
+      <td class="st-finish${r.finishRank<=3?' st-medal':''}">${r.finishLabel}</td>
       <td>${r.gp}</td><td>${r.w}</td>${isSoccer?`<td>${r.d}</td>`:''}<td>${r.l}</td>
       <td>${r.winPct}%</td>
       <td>${r.pf}</td><td>${r.pa}</td><td>${signed(r.diff)}</td>
@@ -2377,11 +2412,11 @@ function renderTeamStats() {
 
   el.innerHTML = `
     <div class="sec-title">${SPORTS.find(x=>x[0]===sport)[1]} \u2014 Team Stats</div>
-    <div class="st-note">${rows.length} teams \u00b7 ${totalGames} completed games${dqGames?` \u00b7 ${dqGames} forfeit/DQ`:''} \u00b7 sorted by wins, then ${isSoccer?'goal':'point'} difference</div>
+    <div class="st-note">${rows.length} teams \u00b7 ${totalGames} completed games${dqGames?` \u00b7 ${dqGames} forfeit/DQ`:''} \u00b7 sorted by tournament finish, then record</div>
     <div class="st-scroll">
       <table class="st-table">
         <thead><tr>
-          <th>Team</th><th class="st-num">GP</th><th class="st-num">W</th>${isSoccer?'<th class="st-num">D</th>':''}<th class="st-num">L</th>
+          <th>Team</th><th class="st-num">Finish</th><th class="st-num">GP</th><th class="st-num">W</th>${isSoccer?'<th class="st-num">D</th>':''}<th class="st-num">L</th>
           <th class="st-num">Win%</th>
           <th class="st-num">${ptsLabel}</th><th class="st-num">${paLabel}</th><th class="st-num">Diff</th>
           <th class="st-num">${isSoccer?'GF':'PF'}/G</th><th class="st-num">${isSoccer?'GA':'PA'}/G</th>
