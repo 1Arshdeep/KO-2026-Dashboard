@@ -655,6 +655,39 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
 .champ-row.gold .champ-team{color:var(--gold);font-size:16px;font-weight:900}
 .champ-pending{color:var(--dim);font-style:italic;font-weight:600}
 @media(max-width:640px){ .champ-grid{grid-template-columns:1fr} }
+
+/* ===== TEAM STATS PAGE ===== */
+.st-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.st-tab{background:transparent;border:1px solid var(--gray3);color:var(--dim);padding:7px 15px;
+  border-radius:20px;cursor:pointer;font-size:12px;font-weight:700;white-space:nowrap}
+.st-tab.active{color:var(--navy);font-weight:800}
+.st-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.st-table{width:100%;border-collapse:collapse;font-size:13px;min-width:660px}
+.st-table th{background:var(--gray2);color:var(--dim);font-size:10px;letter-spacing:.08em;
+  text-transform:uppercase;padding:8px 9px;text-align:right;white-space:nowrap;font-weight:800}
+.st-table th:first-child,.st-table td:first-child{text-align:left}
+.st-table th.st-num{text-align:right}
+.st-table td{padding:8px 9px;border-bottom:1px solid var(--gray2);text-align:right;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.st-table tbody tr:hover{background:rgba(255,255,255,.03)}
+.st-team{font-weight:800;color:var(--text);max-width:190px;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap}
+.st-rank{color:var(--dim);font-size:11px;width:26px}
+.st-pos{color:var(--gold);font-weight:900}
+.st-neg{color:var(--live)}
+.st-form{display:flex;gap:3px;justify-content:flex-end}
+.st-pill{width:18px;height:18px;border-radius:4px;font-size:10px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;color:#0a0e1a}
+.st-w{background:var(--green,#4cbb7f)} .st-l{background:var(--live,#e5484d);color:#fff}
+.st-d{background:var(--gray3);color:var(--text)}
+.st-note{font-size:11px;color:var(--dim);margin:8px 0 18px}
+.st-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px;margin-top:14px}
+.st-card{background:var(--gray2);border:1px solid var(--gray3);border-radius:10px;padding:11px 13px}
+.st-card-hd{font-size:12px;font-weight:900;color:var(--gold);margin-bottom:8px;letter-spacing:.05em}
+.st-kv{display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:3px 0}
+.st-kv span:first-child{color:var(--dim)}
+.st-kv span:last-child{font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+@media(max-width:640px){ .st-table{font-size:12px} .st-team{max-width:120px} }
 </style>
 <!-- Khalsa Olympics brand: fonts, icons, tokens (visual restyle only) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -752,6 +785,7 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
     <button class="nav-btn active" onclick="showView('dashboard')" id="nav-dashboard"><i class="fa-solid fa-trophy"></i> Brackets</button>
     <button class="nav-btn" onclick="showView('schedule')" id="nav-schedule"><i class="fa-solid fa-calendar"></i> KO Schedule</button>
     <button class="nav-btn" onclick="showView('standings')" id="nav-standings"><i class="fa-solid fa-ranking-star"></i> Standings</button>
+    <button class="nav-btn" onclick="showView('stats')" id="nav-stats"><i class="fa-solid fa-chart-simple"></i> Stats</button>
     <button class="nav-btn" onclick="openTVPicker()"><i class="fa-solid fa-tv"></i> TV</button>
   </div>
 </div>
@@ -779,6 +813,12 @@ body.tv-hash-on .header,body.tv-hash-on .sport-tabs,body.tv-hash-on #liveBanner,
 <!-- ── STANDINGS VIEW (all 3 sports at once) ── -->
 <div class="view" id="view-standings">
   <div id="standingsContent"></div>
+</div>
+
+<!-- ── TEAM STATS VIEW (per team, per sport) ── -->
+<div class="view" id="view-stats">
+  <div id="statsSportTabs" class="st-tabs"></div>
+  <div id="statsContent"></div>
 </div>
 
 
@@ -1594,9 +1634,10 @@ function showView(v, pushState = true) {
   document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
   document.getElementById(`nav-${v}`)?.classList.add('active');
   currentView = v;
-  document.querySelector('.sport-tabs').style.display = (v === 'standings') ? 'none' : '';
+  document.querySelector('.sport-tabs').style.display = (v === 'standings' || v === 'stats') ? 'none' : '';
   if (v === 'schedule') renderSchedule();
   if (v === 'standings') renderAllStandings();
+  if (v === 'stats') renderTeamStats();
   if (v === 'scorer') { seUpdateSport(); seLoadRecentResults(); }
   if (v === 'dashboard') renderDashboard();
   if (pushState && history.pushState) {
@@ -2205,6 +2246,172 @@ function renderRRStandingsTable(sport) {
 }
 
 // Combined standings for all 3 sports on one page (no sport-tab filtering).
+// ══════════════════════════════════════════════════════════════
+// TEAM STATS (per team, per sport)
+// ══════════════════════════════════════════════════════════════
+let statsSport = 'soccer';
+
+// One row per team, built from that team's completed games.
+// Volleyball uses vbDisplayScore so single-game matches count their points.
+function computeTeamStats(sport) {
+  // Do not filter on the raw names here - knockout games store tokens that
+  // resolve to real teams. Resolve first, then drop anything still unresolved.
+  const games = Object.values(state.games).filter(g =>
+    g.sport === sport && g.status === 'final' && g.team1 && g.team2);
+
+  const rows = {};
+  const get = name => {
+    if (!rows[name]) rows[name] = {team:name, gp:0, w:0, d:0, l:0, pf:0, pa:0,
+      biggestWin:null, worstLoss:null, dqAgainst:0, dqFor:0, form:[], last:null};
+    return rows[name];
+  };
+
+  games.sort((a,b) => (a.scheduledStart||0)-(b.scheduledStart||0)).forEach(g => {
+    const t1 = applyKoSubs(displayTeam(g.team1, sport));
+    const t2 = applyKoSubs(displayTeam(g.team2, sport));
+    if (isTbdToken(t1) || isTbdToken(t2)) return;
+    let s1, s2;
+    if (sport === 'volleyball') { const p = vbDisplayScore(g); s1 = p[0]; s2 = p[1]; }
+    else { s1 = g.score1 || 0; s2 = g.score2 || 0; }
+    // A basketball or volleyball game marked final at 0-0 with no forfeit was
+    // never actually scored - counting it would invent a draw. A soccer 0-0 is
+    // a real result, so keep those.
+    if (sport !== 'soccer' && !g.dq && s1 === 0 && s2 === 0) return;
+
+    [[t1, s1, s2, 'team1'], [t2, s2, s1, 'team2']].forEach(([name, own, opp, side]) => {
+      const r = get(name);
+      r.gp++; r.pf += own; r.pa += opp;
+      const dqSelf = g.dq === side;
+      const dqOpp  = g.dq && g.dq !== side;
+      if (dqSelf) r.dqAgainst++;
+      if (dqOpp)  r.dqFor++;
+      let res;
+      if (dqSelf) res = 'L';
+      else if (dqOpp) res = 'W';
+      else if (own > opp) res = 'W';
+      else if (own < opp) res = 'L';
+      else res = 'D';
+      if (res === 'W') r.w++; else if (res === 'L') r.l++; else r.d++;
+      r.form.push(res);
+      const margin = own - opp;
+      if (res === 'W' && (!r.biggestWin || margin > r.biggestWin.margin))
+        r.biggestWin = {margin, score:`${own}-${opp}`, vs: name === t1 ? t2 : t1};
+      if (res === 'L' && (!r.worstLoss || margin < r.worstLoss.margin))
+        r.worstLoss = {margin, score:`${own}-${opp}`, vs: name === t1 ? t2 : t1};
+    });
+  });
+
+  const list = Object.values(rows).map(r => {
+    r.diff = r.pf - r.pa;
+    r.winPct = r.gp ? Math.round((r.w / r.gp) * 1000) / 10 : 0;
+    r.ppg = r.gp ? Math.round((r.pf / r.gp) * 10) / 10 : 0;
+    r.papg = r.gp ? Math.round((r.pa / r.gp) * 10) / 10 : 0;
+    r.form = r.form.slice(-5);
+    return r;
+  });
+  list.sort((a,b) => b.w - a.w || b.diff - a.diff || b.pf - a.pf || a.team.localeCompare(b.team));
+  return list;
+}
+
+// Goals / points credited to individual players, from the event log.
+function computeScorers(sport) {
+  const tally = {};
+  Object.values(state.games).filter(g => g.sport === sport).forEach(g => {
+    (g.events || []).forEach(e => {
+      if (!e || !e.player) return;
+      if (e.type && !/goal|point|score|basket/i.test(e.type)) return;
+      const team = e.team === '1' ? g.team1 : g.team2;
+      const key = `${e.player}|||${team}`;
+      tally[key] = (tally[key] || 0) + 1;
+    });
+  });
+  return Object.entries(tally)
+    .map(([k, n]) => { const [player, team] = k.split('|||');
+      return {player, team: applyKoSubs(displayTeam(team, sport)), count: n}; })
+    .sort((a, b) => b.count - a.count || a.player.localeCompare(b.player));
+}
+
+function renderTeamStats() {
+  const tabsEl = document.getElementById('statsSportTabs');
+  const el = document.getElementById('statsContent');
+  if (!tabsEl || !el) return;
+
+  const SPORTS = [['soccer','\u26bd Soccer'],['basketball','\ud83c\udfc0 Basketball'],['volleyball','\ud83c\udfd0 Volleyball']];
+  tabsEl.innerHTML = SPORTS.map(([sp,label]) =>
+    `<button class="st-tab ${sp===statsSport?'active':''}"
+       style="${sp===statsSport?`background:${SPORT_COLOR[sp]};border-color:${SPORT_COLOR[sp]}`:''}"
+       onclick="setStatsSport('${sp}')">${label}</button>`).join('');
+
+  const sport = statsSport;
+  const isSoccer = sport === 'soccer';
+  const ptsLabel = isSoccer ? 'GF' : 'PF';
+  const paLabel  = isSoccer ? 'GA' : 'PA';
+  const rows = computeTeamStats(sport);
+
+  if (!rows.length) {
+    el.innerHTML = `<div class="sec-title">${SPORTS.find(x=>x[0]===sport)[1]} \u2014 Team Stats</div>
+      <div style="color:var(--dim);padding:24px 0">No completed games yet.</div>`;
+    return;
+  }
+
+  const pill = r => `<div class="st-form">${r.form.map(f =>
+    `<span class="st-pill st-${f.toLowerCase()}">${f}</span>`).join('')}</div>`;
+  const signed = n => `<span class="${n>0?'st-pos':n<0?'st-neg':''}">${n>0?'+':''}${n}</span>`;
+
+  const body = rows.map((r, i) => `<tr>
+      <td><span class="st-rank">${i+1}</span> <span class="st-team">${r.team}</span></td>
+      <td>${r.gp}</td><td>${r.w}</td>${isSoccer?`<td>${r.d}</td>`:''}<td>${r.l}</td>
+      <td>${r.winPct}%</td>
+      <td>${r.pf}</td><td>${r.pa}</td><td>${signed(r.diff)}</td>
+      <td>${r.ppg}</td><td>${r.papg}</td>
+      <td>${pill(r)}</td>
+    </tr>`).join('');
+
+  const scorers = computeScorers(sport);
+  const totalGames = Object.values(state.games).filter(g => g.sport===sport && g.status==='final').length;
+  const dqGames = Object.values(state.games).filter(g => g.sport===sport && g.dq).length;
+
+  const best = rows.reduce((a,b)=> b.diff > (a?a.diff:-1e9) ? b : a, null);
+  const topOff = [...rows].sort((a,b)=>b.ppg-a.ppg)[0];
+  const topDef = [...rows].sort((a,b)=>a.papg-b.papg)[0];
+
+  el.innerHTML = `
+    <div class="sec-title">${SPORTS.find(x=>x[0]===sport)[1]} \u2014 Team Stats</div>
+    <div class="st-note">${rows.length} teams \u00b7 ${totalGames} completed games${dqGames?` \u00b7 ${dqGames} forfeit/DQ`:''} \u00b7 sorted by wins, then ${isSoccer?'goal':'point'} difference</div>
+    <div class="st-scroll">
+      <table class="st-table">
+        <thead><tr>
+          <th>Team</th><th class="st-num">GP</th><th class="st-num">W</th>${isSoccer?'<th class="st-num">D</th>':''}<th class="st-num">L</th>
+          <th class="st-num">Win%</th>
+          <th class="st-num">${ptsLabel}</th><th class="st-num">${paLabel}</th><th class="st-num">Diff</th>
+          <th class="st-num">${isSoccer?'GF':'PF'}/G</th><th class="st-num">${isSoccer?'GA':'PA'}/G</th>
+          <th class="st-num">Last 5</th>
+        </tr></thead>
+        <tbody>${body}</tbody>
+      </table>
+    </div>
+    <div class="st-cards">
+      <div class="st-card">
+        <div class="st-card-hd">\ud83c\udfc5 LEADERS</div>
+        <div class="st-kv"><span>Most wins</span><span>${rows[0].team} (${rows[0].w})</span></div>
+        <div class="st-kv"><span>Best ${isSoccer?'goal':'point'} diff</span><span>${best?`${best.team} (${best.diff>0?'+':''}${best.diff})`:'\u2014'}</span></div>
+        <div class="st-kv"><span>Best attack</span><span>${topOff?`${topOff.team} (${topOff.ppg}/g)`:'\u2014'}</span></div>
+        <div class="st-kv"><span>Best defence</span><span>${topDef?`${topDef.team} (${topDef.papg}/g)`:'\u2014'}</span></div>
+      </div>
+      ${rows.filter(r=>r.biggestWin).length ? `<div class="st-card">
+        <div class="st-card-hd">\ud83d\udca5 BIGGEST WINS</div>
+        ${[...rows].filter(r=>r.biggestWin).sort((a,b)=>b.biggestWin.margin-a.biggestWin.margin).slice(0,5)
+          .map(r=>`<div class="st-kv"><span>${r.team}</span><span>${r.biggestWin.score} v ${r.biggestWin.vs}</span></div>`).join('')}
+      </div>`:''}
+      ${scorers.length ? `<div class="st-card">
+        <div class="st-card-hd">\u26bd TOP SCORERS</div>
+        ${scorers.slice(0,8).map(p=>`<div class="st-kv"><span>${p.player} \u00b7 ${p.team}</span><span>${p.count}</span></div>`).join('')}
+      </div>`:''}
+    </div>`;
+}
+
+function setStatsSport(sp) { statsSport = sp; renderTeamStats(); }
+
 function renderAllStandings() {
   const el = document.getElementById('standingsContent');
   el.innerHTML = `
