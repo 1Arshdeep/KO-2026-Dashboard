@@ -1763,6 +1763,18 @@ const SOCCER_FINAL_STANDINGS = {
     ['Babbar Khalsa Ballers',6,2,0,4,14,23,-9,6],
     ['Sharomani Akaali Dal',6,1,0,5,5,36,-31,3],
     ['Panjab Lions',6,0,0,6,0,2,-2,-15]
+  ],
+  // Group B locked to the published final table. Four Group B fixtures were
+  // reverted to "upcoming" by a scorekeeper laptop after the table was final,
+  // so recomputing from raw games under-counted games played.
+  B: [
+    ['Rebel FC',6,5,1,0,25,3,22,16],
+    ['Mohali fc',6,5,0,1,20,3,17,15],
+    ['Punjab Kings',6,4,0,2,17,11,6,12],
+    ['Dixie United',6,3,1,2,12,4,8,7],
+    ['Akaal Fauj',6,2,0,4,6,29,-23,6],
+    ['Kaurs United FC',6,1,0,5,4,19,-15,3],
+    ['McMaster University',6,0,0,6,3,18,-15,-6]
   ]
 };
 function lockedGroupStandings(grp) {
@@ -2280,53 +2292,82 @@ function computeFinishRanks(sport) {
   return { rank, label };
 }
 
-// One row per team, built from that team's completed games.
-// Volleyball uses vbDisplayScore so single-game matches count their points.
-function computeTeamStats(sport) {
-  // Do not filter on the raw names here - knockout games store tokens that
-  // resolve to real teams. Resolve first, then drop anything still unresolved.
-  const games = Object.values(state.games).filter(g =>
-    g.sport === sport && g.status === 'final' && g.team1 && g.team2);
-
-  const rows = {};
-  const get = name => {
-    if (!rows[name]) rows[name] = {team:name, gp:0, w:0, d:0, l:0, pf:0, pa:0,
-      biggestWin:null, worstLoss:null, dqAgainst:0, dqFor:0, form:[], last:null};
-    return rows[name];
+// Group / round-robin record straight from the official standings tables - the
+// same source the Standings page shows. Six soccer and two basketball group
+// games were never marked final, so recomputing from raw games disagreed with
+// the published tables. Knockout games are then added on top.
+function officialBase(sport) {
+  const base = {};
+  const add = (team, o) => {
+    if (!team) return;
+    const n = applyKoSubs(team);
+    base[n] = Object.assign({gp:0,w:0,d:0,l:0,pf:0,pa:0,diff:0,exact:false}, o, {team:n});
   };
+  if (sport === 'soccer') {
+    ['A','B'].forEach(grp => {
+      let rows = null;
+      try { rows = (typeof lockedGroupStandings === 'function') ? lockedGroupStandings(grp) : null; } catch(e) {}
+      if (!rows || !rows.length) { try { rows = computeGroupStandings(grp) || []; } catch(e) { rows = []; } }
+      (rows || []).forEach(r => add(r.team, {
+        gp:r.played||0, w:r.won||0, d:r.drawn||0, l:r.lost||0,
+        pf:r.gf||0, pa:r.ga||0, diff:(r.gf||0)-(r.ga||0), exact:true, group:grp
+      }));
+    });
+  } else {
+    let rows = null;
+    try { rows = (typeof lockedRRStandings === 'function') ? lockedRRStandings(sport) : null; } catch(e) {}
+    if (!rows || !rows.length) { try { rows = computeRRStandings(sport) || []; } catch(e) { rows = []; } }
+    (rows || []).forEach(r => add(r.team, {
+      gp:r.played||0, w:r.won||0, d:r.drawn||0, l:r.lost||0,
+      pf:r.pf||0, pa:r.pa||0, diff:(r.diff !== undefined ? r.diff : (r.pf||0)-(r.pa||0)),
+      // the locked round-robin tables carry a difference but no points for/against
+      exact: !!(r.pf || r.pa)
+    }));
+  }
+  return base;
+}
 
-  games.sort((a,b) => (a.scheduledStart||0)-(b.scheduledStart||0)).forEach(g => {
+// One row per team: official group/round-robin record plus every knockout game.
+function computeTeamStats(sport) {
+  const rows = officialBase(sport);
+  const get = name => {
+    if (!rows[name]) rows[name] = {team:name, gp:0,w:0,d:0,l:0,pf:0,pa:0,diff:0,exact:true};
+    const r = rows[name];
+    if (!r.form) { r.form = []; r.biggestWin = null; r.worstLoss = null; r.dqFor = 0; r.dqAgainst = 0; r.koGp = 0; }
+    return r;
+  };
+  Object.keys(rows).forEach(get);
+
+  const ko = Object.values(state.games).filter(g =>
+    g.sport === sport && g.phase === 'ko' && g.status === 'final' && g.team1 && g.team2)
+    .sort((a,b) => (a.scheduledStart||0)-(b.scheduledStart||0));
+
+  ko.forEach(g => {
     const t1 = applyKoSubs(displayTeam(g.team1, sport));
     const t2 = applyKoSubs(displayTeam(g.team2, sport));
     if (isTbdToken(t1) || isTbdToken(t2)) return;
     let s1, s2;
     if (sport === 'volleyball') { const p = vbDisplayScore(g); s1 = p[0]; s2 = p[1]; }
     else { s1 = g.score1 || 0; s2 = g.score2 || 0; }
-    // A basketball or volleyball game marked final at 0-0 with no forfeit was
-    // never actually scored - counting it would invent a draw. A soccer 0-0 is
-    // a real result, so keep those.
-    if (sport !== 'soccer' && !g.dq && s1 === 0 && s2 === 0) return;
+    // a knockout game left at 0-0 with no forfeit was never scored
+    if (!g.dq && s1 === 0 && s2 === 0) return;
 
-    [[t1, s1, s2, 'team1'], [t2, s2, s1, 'team2']].forEach(([name, own, opp, side]) => {
+    [[t1, s1, s2, 'team1', t2], [t2, s2, s1, 'team2', t1]].forEach(([name, own, opp, side, foe]) => {
       const r = get(name);
-      r.gp++; r.pf += own; r.pa += opp;
-      const dqSelf = g.dq === side;
-      const dqOpp  = g.dq && g.dq !== side;
+      r.gp++; r.koGp++; r.pf += own; r.pa += opp; r.diff += (own - opp);
+      const dqSelf = g.dq === side, dqOpp = g.dq && g.dq !== side;
       if (dqSelf) r.dqAgainst++;
       if (dqOpp)  r.dqFor++;
       let res;
-      if (dqSelf) res = 'L';
-      else if (dqOpp) res = 'W';
-      else if (own > opp) res = 'W';
-      else if (own < opp) res = 'L';
-      else res = 'D';
+      if (dqSelf) res = 'L'; else if (dqOpp) res = 'W';
+      else if (own > opp) res = 'W'; else if (own < opp) res = 'L'; else res = 'D';
       if (res === 'W') r.w++; else if (res === 'L') r.l++; else r.d++;
       r.form.push(res);
       const margin = own - opp;
       if (res === 'W' && (!r.biggestWin || margin > r.biggestWin.margin))
-        r.biggestWin = {margin, score:`${own}-${opp}`, vs: name === t1 ? t2 : t1};
+        r.biggestWin = {margin, score:`${own}-${opp}`, vs: foe};
       if (res === 'L' && (!r.worstLoss || margin < r.worstLoss.margin))
-        r.worstLoss = {margin, score:`${own}-${opp}`, vs: name === t1 ? t2 : t1};
+        r.worstLoss = {margin, score:`${own}-${opp}`, vs: foe};
     });
   });
 
@@ -2334,14 +2375,12 @@ function computeTeamStats(sport) {
   const list = Object.values(rows).map(r => {
     r.finishRank = finish.rank[r.team] !== undefined ? finish.rank[r.team] : 99;
     r.finishLabel = finish.label[r.team] || '\u2014';
-    r.diff = r.pf - r.pa;
     r.winPct = r.gp ? Math.round((r.w / r.gp) * 1000) / 10 : 0;
-    r.ppg = r.gp ? Math.round((r.pf / r.gp) * 10) / 10 : 0;
-    r.papg = r.gp ? Math.round((r.pa / r.gp) * 10) / 10 : 0;
-    r.form = r.form.slice(-5);
+    r.ppg  = (r.gp && r.exact) ? Math.round((r.pf / r.gp) * 10) / 10 : null;
+    r.papg = (r.gp && r.exact) ? Math.round((r.pa / r.gp) * 10) / 10 : null;
+    r.form = (r.form || []).slice(-5);
     return r;
   });
-  // tournament finish first, then record for teams that finished level
   list.sort((a,b) => a.finishRank - b.finishRank || b.w - a.w || b.diff - a.diff
                      || b.pf - a.pf || a.team.localeCompare(b.team));
   return list;
@@ -2397,22 +2436,26 @@ function renderTeamStats() {
       <td class="st-finish${r.finishRank<=3?' st-medal':''}">${r.finishLabel}</td>
       <td>${r.gp}</td><td>${r.w}</td>${isSoccer?`<td>${r.d}</td>`:''}<td>${r.l}</td>
       <td>${r.winPct}%</td>
-      <td>${r.pf}</td><td>${r.pa}</td><td>${signed(r.diff)}</td>
-      <td>${r.ppg}</td><td>${r.papg}</td>
+      <td>${r.exact?r.pf:'\u2014'}</td><td>${r.exact?r.pa:'\u2014'}</td><td>${signed(r.diff)}</td>
+      <td>${r.ppg!==null?r.ppg:'\u2014'}</td><td>${r.papg!==null?r.papg:'\u2014'}</td>
       <td>${pill(r)}</td>
     </tr>`).join('');
 
   const scorers = computeScorers(sport);
-  const totalGames = Object.values(state.games).filter(g => g.sport===sport && g.status==='final').length;
+  const koPlayed = Object.values(state.games).filter(g =>
+    g.sport===sport && g.phase==='ko' && g.status==='final' &&
+    (g.dq || (g.score1||0)>0 || (g.score2||0)>0)).length;
+  const anyExact = rows.some(r => r.exact);
   const dqGames = Object.values(state.games).filter(g => g.sport===sport && g.dq).length;
 
   const best = rows.reduce((a,b)=> b.diff > (a?a.diff:-1e9) ? b : a, null);
-  const topOff = [...rows].sort((a,b)=>b.ppg-a.ppg)[0];
-  const topDef = [...rows].sort((a,b)=>a.papg-b.papg)[0];
+  const withRate = rows.filter(r => r.ppg !== null && r.gp > 0);
+  const topOff = withRate.length ? [...withRate].sort((a,b)=>b.ppg-a.ppg)[0] : null;
+  const topDef = withRate.length ? [...withRate].sort((a,b)=>a.papg-b.papg)[0] : null;
 
   el.innerHTML = `
     <div class="sec-title">${SPORTS.find(x=>x[0]===sport)[1]} \u2014 Team Stats</div>
-    <div class="st-note">${rows.length} teams \u00b7 ${totalGames} completed games${dqGames?` \u00b7 ${dqGames} forfeit/DQ`:''} \u00b7 sorted by tournament finish, then record</div>
+    <div class="st-note">${rows.length} teams \u00b7 official ${isSoccer?'group stage':'round robin'} + ${koPlayed} knockout games${dqGames?` \u00b7 ${dqGames} forfeit/DQ`:''} \u00b7 sorted by tournament finish, then record${anyExact?'':` \u00b7 ${isSoccer?'goals':'points'} for/against not recorded for the round robin, difference is official`}</div>
     <div class="st-scroll">
       <table class="st-table">
         <thead><tr>
@@ -2434,7 +2477,7 @@ function renderTeamStats() {
         <div class="st-kv"><span>Best defence</span><span>${topDef?`${topDef.team} (${topDef.papg}/g)`:'\u2014'}</span></div>
       </div>
       ${rows.filter(r=>r.biggestWin).length ? `<div class="st-card">
-        <div class="st-card-hd">\ud83d\udca5 BIGGEST WINS</div>
+        <div class="st-card-hd">\ud83d\udca5 BIGGEST KNOCKOUT WINS</div>
         ${[...rows].filter(r=>r.biggestWin).sort((a,b)=>b.biggestWin.margin-a.biggestWin.margin).slice(0,5)
           .map(r=>`<div class="st-kv"><span>${r.team}</span><span>${r.biggestWin.score} v ${r.biggestWin.vs}</span></div>`).join('')}
       </div>`:''}
